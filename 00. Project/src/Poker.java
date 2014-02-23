@@ -1,31 +1,42 @@
-import GUI.GUI;
 import Host.Host;
+import java.lang.*;
 
 public class Poker {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		GUI gui = new GUI();
-		new Thread(gui).start();
-		
-		while(true){
-			if(gui.isHost){
-				//make host
-				//make player
-				
-				break;
-			}
-			if(gui.isPlayer){
-				//make player
-				//player or spectator
-				
-				break;
-			}
-		}
+	public static void main(String[] args) throws Exception {
+	
+		startClientProcess();
+		hostProcess();
 		
 	}
+	
+	public static void startClientProcess() throws Exception
+	{
+		Process client = new ProcessBuilder("Client.java", "myArg").start();	
+	}
+	
+	public static void hostProcess() throws Exception
+	{
+		while(true)
+		{
+			waitToStart();
+			startHostProcess();
+			waitToEnd();
+		}
+	}
 
+	public static void startHostProcess() throws Exception
+	{
+		Process host = new ProcessBuilder("Host.java", "myArg").start();
+	}
+	
+	public static void waitToStart()
+	{
+		//wait for the client.gui to start the host or client to be called to become a new host
+	}
+	
+	public static void waitToEnd()
+	{
+		//wait until the game ends or the player loses.
+	}
 }

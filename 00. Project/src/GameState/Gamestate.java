@@ -1,4 +1,4 @@
-package Host;
+package GameState;
 
 //sends Gamestate from server to host while in the game
 public class Gamestate {

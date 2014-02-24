@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 
 public class HostMessageHandler {
-	final static int port=1234;
+	final static int port=4321;
 	public static void main(String args[]){
 		ServerSocket server=null;
 		try{

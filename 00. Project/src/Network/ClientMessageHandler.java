@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class ClientMessageHandler {
-	final static int port=1234;
+	final static int port=4321;
 	public ClientMessageHandler(InetAddress IP){
 		Socket client=null;
 		ObjectOutputStream oos=null;

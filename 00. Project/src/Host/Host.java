@@ -3,19 +3,16 @@ package Host;
 import GameState.*;
 
 
-public class Host implements Runnable{
-	public Host()
+public class Host
+{
+	public static void main()
 	{
-		
-	}
-	
-	public void run(){
 		setup();
 		waitToStart();
 		startGame();	
 		endGame();
 	}
-	
+		
 	public void setup()
 	{
 		//creates HostMessageHandler

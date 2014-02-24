@@ -45,7 +45,7 @@ public class ClientMessageHandler {
 	public static void main(String args[]){
 		InetAddress serverIP=null;
 		try {
-			serverIP=InetAddress.getByName("172.0.0.1");
+			serverIP=InetAddress.getByName("127.0.0.1");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

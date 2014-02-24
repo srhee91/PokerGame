@@ -131,8 +131,8 @@ public class OngoingMode extends BasicGameState {
 						
 						System.out.println("checked/called!");
 						
-						Poker.PlayerAction action = Poker.PlayerAction.FOLD;
-						Poker.OnPlayerAction(action);						
+						/*Poker.PlayerAction action = Poker.PlayerAction.FOLD;
+						Poker.OnPlayerAction(action);	*/					
 					}
 		});
 		

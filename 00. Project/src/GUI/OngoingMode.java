@@ -19,10 +19,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class OngoingMode extends BasicGameState {
 	
-	// use this to call methods that notify GUI to mode events
-	private Poker poker;
-	
-	
+
 	private static final String RESOURCES_PATH = "./resources/";
 	private static final String CARDSPRITES_FOLDER = "cardsprites2/";
 	private static final String BUTTONS_FOLDER = "buttons/";
@@ -69,13 +66,6 @@ public class OngoingMode extends BasicGameState {
 	Button raiseButton;
 	Button allInButton;
 	
-	
-	
-	
-	public OngoingMode(Poker poker) {
-		super();
-		this.guiContext = guiContext;
-	}
 	
 	
 	

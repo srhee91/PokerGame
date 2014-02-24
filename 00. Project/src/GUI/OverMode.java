@@ -8,14 +8,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class OverMode extends BasicGameState
 {
-	// use this to call methods that notify GUI to mode events
-	private GUI guiContext;
 
-	
-	public OverMode(GUI guiContext) {
-		this.guiContext = guiContext;
-	}
-	
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		
 	}

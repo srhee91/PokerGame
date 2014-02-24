@@ -1,6 +1,10 @@
+import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.SlickException;
+
 import GUI.GUI;
 import Host.Host;
-import java.lang.*;
+
+
 
 public class Poker {
 
@@ -8,8 +12,14 @@ public class Poker {
 	
 	public static void main(String[] args) throws Exception {
 	
-		GUI gui = new GUI();
-		gui.run();
+		try {
+			AppGameContainer app = new AppGameContainer(new GUI("Poker"));
+			app.setDisplayMode(1000, 600, false);
+			app.start();
+		}
+		catch (SlickException e) {
+			System.out.println("ERROR: PokerGame() could not be started");
+		}
 	}
 	
 	public static void startHostProcess() throws Exception

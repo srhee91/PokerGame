@@ -29,7 +29,7 @@ public class ClientMessageHandler {
 		Scanner input=new Scanner(System.in);
 		System.out.println("Input your message:");
 		while(true){
-			message=new Message("PerfectFelina","CleverHoward",input.nextLine());
+			message=new Message("qwe","asd",input.nextLine());
 			try{
 				//System.out.println("Send: \n"+message.toString());
 				oos.writeObject(message);

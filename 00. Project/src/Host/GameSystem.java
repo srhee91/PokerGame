@@ -12,6 +12,6 @@ public class GameSystem {
 	public int campareHand(int i, int j, int flops[] ){
 		int score;
 		
-		return ;
+		return 0;
 	}
 }

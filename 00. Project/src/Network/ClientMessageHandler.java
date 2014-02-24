@@ -42,4 +42,14 @@ public class ClientMessageHandler {
 			
 		}
 	}
+	public static void main(String args[]){
+		InetAddress serverIP=null;
+		try {
+			serverIP=InetAddress.getByName("172.0.0.1");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		System.out.println("connect to "+serverIP.getHostAddress());
+		ClientMessageHandler client=new ClientMessageHandler(serverIP);
+	}
 }

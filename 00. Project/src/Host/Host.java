@@ -7,10 +7,10 @@ public class Host
 {
 	public static void main()
 	{
-		setup();
+		/*setup();
 		waitToStart();
 		startGame();	
-		endGame();
+		endGame();*/
 	}
 		
 	public void setup()
@@ -25,7 +25,7 @@ public class Host
 	
 	public void startGame()
 	{		
-		//when the game starts
+		/*//when the game starts
 		gameSet();
 		
 		while(!onePlayerLeft){
@@ -45,7 +45,7 @@ public class Host
 		}
 		//celebrate the winner
 		//losers will just become a spectator without any notification
-		celebrateWinner();
+		celebrateWinner();*/
 	}
 	
 	public void gameSet()

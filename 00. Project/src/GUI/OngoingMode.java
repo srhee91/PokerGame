@@ -16,6 +16,7 @@ import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import Poker.Poker;
 
 public class OngoingMode extends BasicGameState {
 	
@@ -130,9 +131,8 @@ public class OngoingMode extends BasicGameState {
 						
 						System.out.println("checked/called!");
 						
-						
-						
-						
+						Poker.PlayerAction action = Poker.PlayerAction.FOLD;
+						Poker.OnPlayerAction(action);						
 					}
 		});
 		

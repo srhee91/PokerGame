@@ -1,8 +1,9 @@
+package Poker;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 import GUI.GUI;
-import Host.Host;
 
 
 
@@ -18,7 +19,7 @@ public class Poker {
 			app.start();
 		}
 		catch (SlickException e) {
-			System.out.println("ERROR: PokerGame() could not be started");
+			System.out.println("ERROR: GUI could not be started");
 		}
 	}
 	
@@ -31,4 +32,9 @@ public class Poker {
 	{
 		//create a Thread of ClientMessageHandler
 	}
+	
+	
+	public static enum PlayerAction{CHECK, RAISE, FOLD}
+	
+	
 }

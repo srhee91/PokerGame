@@ -1,9 +1,6 @@
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
 /bin
-
-03. Design Document/Design_Document_v.04(Final).pdf

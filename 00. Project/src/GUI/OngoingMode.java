@@ -131,8 +131,8 @@ public class OngoingMode extends BasicGameState {
 						
 						System.out.println("checked/called!");
 						
-						/*Poker.PlayerAction action = Poker.PlayerAction.FOLD;
-						Poker.OnPlayerAction(action);	*/					
+						Poker.PlayerAction action = Poker.PlayerAction.FOLD;
+						Poker.onPlayerAction(action, 0);						
 					}
 		});
 		
@@ -180,6 +180,14 @@ public class OngoingMode extends BasicGameState {
 			playerCards[i][0].update(delta);
 			playerCards[i][1].update(delta);
 		}
+		
+		// temporary method for transitioning between modes
+		if (container.getInput().isKeyPressed(Input.KEY_1))
+			game.enterState(1);
+		else if (container.getInput().isKeyPressed(Input.KEY_2))
+			game.enterState(2);
+		else if (container.getInput().isKeyPressed(Input.KEY_4))
+			game.enterState(4);
 		
 		
 		// TEST!!!
@@ -315,7 +323,7 @@ public class OngoingMode extends BasicGameState {
 	
 
 	public int getID() {
-		return 0;
+		return 3;
 	}
 
 	/*

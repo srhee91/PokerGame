@@ -2,17 +2,22 @@ package Host;
 
 import java.util.Random;
 
+import GameState.CalculateRank;
+
 
 
 
 public class Deck {
 	final int CARD_NUM = 52;
 	Card[] deck = new Card[CARD_NUM];
-	Card[] flop = new Card[5];
 	Card[] burn = new Card[3];
-	Card[] player;
 	Random generator = new Random();
+	public static Card[] flop = new Card[5];
+	public static Card[] player;
+	
 	private static int i=0,j=0,k=0,f=0;
+	
+	
 	
 	
 	public Deck(){					//initialize card 
@@ -23,6 +28,7 @@ public class Deck {
 			}
 		}
 	}
+	
 	public void shuffle(){    
 		 int ran1, ran2;
 		 Card temp1;
@@ -35,15 +41,17 @@ public class Deck {
 	            deck[ran1]=temp1;
 	        }
 	}
-	public void drawcardsToPlayer(int numberofplayer){
-        player = new Card[2*numberofplayer]; 
-		while(i<numberofplayer*2){
+	
+	public void drawcardsToPlayer(final int PLAYER_MAX){
+        player = new Card[2*PLAYER_MAX]; 
+		while(i<PLAYER_MAX*2){
 			player[i]=deck[j];
 			j++;
 			i++;
 		}
 		burnCard();
 	}
+	
 	public void burnCard(){
 		while(k<3){
 			burn[k]=deck[j];
@@ -53,6 +61,7 @@ public class Deck {
 		}
 		
 	}
+	
 	private void flipCard(Card[] flop1, Card[] deck1,int k){
 		if(k==0){
 			flop[f]=deck[++j];
@@ -66,14 +75,18 @@ public class Deck {
 			flop[++f]=deck[++j];
 		}
 	}
-	public int handcalcalculater(Card flop[], Card[] player){
-		
-		return 0;
-	}
+
 	public static void main(String[] args){
 		Deck obj=new Deck();
 		obj.shuffle();
-		obj.drawcardsToPlayer(2);
+		obj.drawcardsToPlayer(3);
+		CalculateRank obj1=new CalculateRank();
+		obj1.merge();
+		obj1.printMerge();
+		for(int i=0;i<CalculateRank.PLAYER_MAX;i++){
+			System.out.println("Player "+(i+1)+": "+obj1.isFlush(CalculateRank.merge_arr[i]));
+		}
+		/*
 		for(int i=0;i<3;i++){
 			 System.out.println("burn" + obj.burn[i].toString());
 			}
@@ -86,7 +99,17 @@ public class Deck {
 		}
 		for(int i=0;i<52;i++){
 		 System.out.println(obj.deck[i].toString());
-		}
+		}*/
+		/*
+		int j=1;
+		for(int i=0;i<6;i+=2){
+			System.out.println("player "+ j + " = " +Deck.player[i].toString());
+			System.out.println("player "+ j + " = " +Deck.player[i+1].toString());
+			j++;
+		}*/
+		
+		
+		
 	}
 	
 }

@@ -59,7 +59,7 @@ public class Card {
 		default:
 			number = this.number + "";
 		}
-		return "kind:" +kind+ ", number:" +number;
+		return "kind:" +kind+ ", num:" +number;
 	}
 	
 	

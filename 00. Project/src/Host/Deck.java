@@ -1,20 +1,23 @@
 package Host;
 
-public class Deck {
-	 public final static int kinds = 13;
-	 public final static int SPADES = 0;
-	 public final static int HEARTS = 1; 
-	 public final static int CLOVER = 2;
-	 public final static int DIAMOND = 3; 
-	 private int suit=0;
-	 private int value=0;
 
-	 public Deck(int theValue, int theSuit) {
-	      if (theSuit != SPADES && theSuit != HEARTS && theSuit != DIAMOND && theSuit != CLOVER)
-	         throw new IllegalArgumentException("Illegal playing card suit");
-	      if ((theValue < 1 || theValue > 13))
-	         throw new IllegalArgumentException("Illegal playing card value");
-	      value = theValue;
-	      suit = theSuit;
-	   }
+
+
+public class Deck {
+	final int CARD_NUM = 52;
+	Card[] deck = new Card[CARD_NUM];
+		
+	
+	public Deck(){					//initialize card 
+		int i = 0;
+		
+		for(int j = 1; j < Card.KIND_MAX + 1; j++) {
+			for(int k = 1; k < Card.NUM_MAX + 1; k++) {
+				deck[i++] = new Card(j, k);
+				//System.out.println(deck[i].toString());
+			}
+		}
+	}
+	
 }
+

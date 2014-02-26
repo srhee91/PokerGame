@@ -12,20 +12,12 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
-import org.newdawn.slick.gui.TextField;
-import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import Poker.Poker;
 
-public class OngoingMode extends BasicGameState {
+public class OngoingMode extends TableMode {
 	
-
-	private static final String RESOURCES_PATH = "./resources/";
-	private static final String CARDSPRITES_FOLDER = "cardsprites2/";
-	private static final String BUTTONS_FOLDER = "buttons/";
-		
-	private Image background;	
 	
 	private Image[][] cardFaces;
 	private Image cardBack;
@@ -34,61 +26,54 @@ public class OngoingMode extends BasicGameState {
 	private Card[][] playerCards;
 	
 	private final int[][] centerCardPositions = {{283, 230}, {373, 230}, {463, 230}, {553, 230}, {643, 230}};
-	private final int[][][] playerCardPositions = {
-			{{422, 465}, {504, 465}},
-			{{32, 322}, {114, 322}},
-			{{32, 132}, {114, 132}},
-			{{222, 42}, {304, 42}},
-			{{422, 42}, {504, 42}},
-			{{622, 42}, {704, 42}},
-			{{812, 132}, {894, 132}},
-			{{812, 322}, {894, 322}},
-		};
+	
+	private final int[][] mainPlayerCardOffsets = {{172, 35}, {254, 35}};
+	
+	private final int[] mainCheckButtonOffset = {10, 35};
+	private final int[] mainFoldButtonOffset = {10, 90};
+	private final int[] mainRaiseButtonOffset = {340, 90};
+	private final int[] mainAllInButtonOffset = {440, 54};
+	private final int[] mainRaiseTextFieldOffset = {340, 35};
+	
+	private final int[][] playerCardOffsets = {{7, 32}, {89, 32}};
+	
+	
 	
 	private Image chip;
 	private Image chipBig;
 	private Image dealerChip;
 
-	private TrueTypeFont infoFont;	// UI font
 	private TrueTypeFont infoFontBig;
 	
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont allInButtonFont;
 	
-	private TrueTypeFont raiseByFont;
-	private TrueTypeFont textFieldFont;
-	private TrueTypeFont dollarSignFont;	
-	
-	private TextField textField;
-	
+
 	
 	Button foldButton;
 	Button checkButton;
 	Button raiseButton;
 	Button allInButton;
 	
-	
+	RaiseTextField raiseTextField;
+
 	
 	
 	public void init(GameContainer container, StateBasedGame game)throws SlickException {
 		
-		// load background image of table surface
-		background = new Image("./resources/table_background.jpg");
-				
+		super.init(container, game);
+
+
 		// load images of chips
-		chip = new Image(RESOURCES_PATH + "chip25.png");
-		chipBig = new Image(RESOURCES_PATH + "chip30.png");
-		dealerChip = new Image(RESOURCES_PATH + "dchip25.png");
-		
+		chip = new Image(GUI.RESOURCES_PATH + "chip25.png");
+		chipBig = new Image(GUI.RESOURCES_PATH + "chip30.png");
+		dealerChip = new Image(GUI.RESOURCES_PATH + "dchip25.png");
 		
 		// load UI fonts
-		infoFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 16), true);
 		infoFontBig = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 26), true);
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
-		raiseByFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.ITALIC, 12), true);
-		textFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 16), true);
-		dollarSignFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 18), true);
+		
 		
 		
 		// load 52 cards
@@ -96,19 +81,15 @@ public class OngoingMode extends BasicGameState {
 		String indexStr;
 		for (int i=1; i<=13; ++i) {
 			indexStr = String.format("%02d", i);
-			cardFaces[0][i] = new Image(RESOURCES_PATH+CARDSPRITES_FOLDER+"c"+indexStr+".png");
-			cardFaces[1][i] = new Image(RESOURCES_PATH+CARDSPRITES_FOLDER+"d"+indexStr+".png");
-			cardFaces[2][i] = new Image(RESOURCES_PATH+CARDSPRITES_FOLDER+"h"+indexStr+".png");
-			cardFaces[3][i] = new Image(RESOURCES_PATH+CARDSPRITES_FOLDER+"s"+indexStr+".png");
+			cardFaces[0][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"c"+indexStr+".png");
+			cardFaces[1][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"d"+indexStr+".png");
+			cardFaces[2][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"h"+indexStr+".png");
+			cardFaces[3][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"s"+indexStr+".png");
 		}
 		// load card back
-		cardBack = new Image(RESOURCES_PATH+CARDSPRITES_FOLDER+"BackBlue.png");
+		cardBack = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"BackBlue.png");
 		
 		
-		textField = new org.newdawn.slick.gui.TextField(container, textFieldFont, 605, 484, 75, 26);
-		textField.setBackgroundColor(new Color(1.0f, 1.0f, 1.0f, 0.2f));
-		textField.setBorderColor(new Color(0.0f, 0.0f, 0.0f, 0.0f));
-
 				
 		centerCards = new Card[5];
 		for (int i=0; i<5; ++i) {
@@ -116,28 +97,32 @@ public class OngoingMode extends BasicGameState {
 		}
 		playerCards = new Card[8][2];
 		for (int i=0; i<8; ++i) {
-			playerCards[i][0] = new Card(cardBack, cardFaces[0][1], playerCardPositions[i][0][0], playerCardPositions[i][0][1], true);
-			playerCards[i][1] = new Card(cardBack, cardFaces[3][8], playerCardPositions[i][1][0], playerCardPositions[i][1][1], true);
+			int[] cardPosition = getPlayerCardPosition(i, 0);
+			playerCards[i][0] = new Card(cardBack, cardFaces[3][1], cardPosition[0], cardPosition[1], true);
+			cardPosition = getPlayerCardPosition(i, 1);
+			playerCards[i][1] = new Card(cardBack, cardFaces[3][1], cardPosition[0], cardPosition[1], true);
 		}
 
 		
-		checkButton = new Button(container, RESOURCES_PATH+BUTTONS_FOLDER+"button_blue.png",
-				RESOURCES_PATH+BUTTONS_FOLDER+"button_blue_down.png", 260, 465, 
+		raiseTextField = new RaiseTextField(container,
+				mainPanelPosition[0] + mainRaiseTextFieldOffset[0],
+				mainPanelPosition[1] + mainRaiseTextFieldOffset[1]);
+		
+		
+		
+		checkButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_blue.png",
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_blue_down.png",
+				mainPanelPosition[0] + mainCheckButtonOffset[0], mainPanelPosition[1] + mainCheckButtonOffset[1],
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {
-						
-						
-						
-						System.out.println("checked/called!");
-						
-						Poker.PlayerAction action = Poker.PlayerAction.FOLD;
-						Poker.onPlayerAction(action, 0);						
+						System.out.println("checked/called!");					
 					}
 		});
 		
-		foldButton = new Button(container, RESOURCES_PATH+BUTTONS_FOLDER+"button_red.png",
-				RESOURCES_PATH+BUTTONS_FOLDER+"button_red_down.png", 260, 520, 
+		foldButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_red.png",
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_red_down.png",
+				mainPanelPosition[0] + mainFoldButtonOffset[0], mainPanelPosition[1] + mainFoldButtonOffset[1],
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {
@@ -145,8 +130,9 @@ public class OngoingMode extends BasicGameState {
 					}
 		});
 				
-		raiseButton = new Button(container, RESOURCES_PATH+BUTTONS_FOLDER+"button_green.png",
-				RESOURCES_PATH+BUTTONS_FOLDER+"button_green_down.png", 590, 520, 
+		raiseButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_green.png",
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_green_down.png",
+				mainPanelPosition[0] + mainRaiseButtonOffset[0], mainPanelPosition[1] + mainRaiseButtonOffset[1],
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {
@@ -154,8 +140,9 @@ public class OngoingMode extends BasicGameState {
 					}
 		});
 		
-		allInButton = new Button(container, RESOURCES_PATH+BUTTONS_FOLDER+"button_purple.png",
-				RESOURCES_PATH+BUTTONS_FOLDER+"button_purple_down.png", 690, 484, 
+		allInButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_purple.png",
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_purple_down.png",
+				mainPanelPosition[0] + mainAllInButtonOffset[0], mainPanelPosition[1] + mainAllInButtonOffset[1],
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {
@@ -164,14 +151,27 @@ public class OngoingMode extends BasicGameState {
 		});
 	
 	}
+	private int[] getPlayerCardPosition(int playerIndex, int cardIndex) {
+		int[] ret = new int[2];
+		if (playerIndex==0) {
+			ret[0] = mainPanelPosition[0] + mainPlayerCardOffsets[cardIndex][0];
+			ret[1] = mainPanelPosition[1] + mainPlayerCardOffsets[cardIndex][1];
+		}
+		else {
+			ret[0] = panelPositions[playerIndex][0] + playerCardOffsets[cardIndex][0];
+			ret[1] = panelPositions[playerIndex][1] + playerCardOffsets[cardIndex][1];
+		}
+		return ret;
+	}
+	
+	
+	
 	
 	
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-		/*
-		if (container.getInput().isKeyPressed(Input.KEY_1)) {
-			game.enterState(1);
-		}*/
 		
+		super.update(container, game, delta);
+
 		// update all cards
 		for (int i=0; i<5; ++i) {
 			centerCards[i].update(delta);
@@ -181,6 +181,8 @@ public class OngoingMode extends BasicGameState {
 			playerCards[i][1].update(delta);
 		}
 		
+		
+		
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
 			game.enterState(1);
@@ -188,7 +190,6 @@ public class OngoingMode extends BasicGameState {
 			game.enterState(2);
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
-		
 		
 		// TEST!!!
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
@@ -202,14 +203,14 @@ public class OngoingMode extends BasicGameState {
 			foldButton.setEnable(!foldButton.getEnable());
 			raiseButton.setEnable(!raiseButton.getEnable());
 			allInButton.setEnable(!allInButton.getEnable());
+			raiseTextField.setEnable(!raiseTextField.getEnable());
 		}
 	}
 	
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		
-		background.draw(0, 0, container.getWidth(), container.getHeight());
+		super.render(container, game, g);
 		
-		drawPanels(g);			// draw all translucent rects
 		drawPlayerNames(g);		// draw player names
 		drawChipAmounts(g);
 		drawInteractiveElements(container, g);
@@ -230,53 +231,26 @@ public class OngoingMode extends BasicGameState {
 	
 	private void drawInteractiveElements(GameContainer container, Graphics g) {
 		g.setColor(Color.white);
-		g.setFont(buttonFont);
-		checkButton.render(g,  "Check");
-		foldButton.render(g,  "Fold");
-		raiseButton.render(g, "Raise");
-		g.setFont(allInButtonFont);
-		allInButton.render(g, "All In");
+		checkButton.render(g, buttonFont, "Check");
+		foldButton.render(g,  buttonFont, "Fold");
+		raiseButton.render(g, buttonFont, "Raise");
+		allInButton.render(g, allInButtonFont, "All In");
 		
-		// 250, 430
-		g.setFont(dollarSignFont);
-		g.drawString("$", 590, 497-dollarSignFont.getHeight()/2);
-		g.setFont(raiseByFont);
-		g.drawString("Raise by:", 600, 465);
-		
-		textField.render(container, g);
+		raiseTextField.render(container, g);
 	}
 
-	private void drawPanels(Graphics g) {
-		g.setColor(new Color(32, 32, 32, 128));
-		
-		g.fillRoundRect(250, 430, 500, 150, 10);	// mainplayer rect
-		
-		g.fillRoundRect(215, 10, 170, 140, 10);
-		g.fillRoundRect(415, 10, 170, 140, 10);
-		g.fillRoundRect(615, 10, 170, 140, 10);
-		
-		g.fillRoundRect(25, 100, 170, 140, 10);
-		g.fillRoundRect(25, 290, 170, 140, 10);
-		
-		g.fillRoundRect(805, 100, 170, 140, 10);
-		g.fillRoundRect(805, 290, 170, 140, 10);
-	}
+
 	
 	private void drawPlayerNames(Graphics g) {
-		g.setColor(new Color(255, 255, 255, 255));
-		g.setFont(infoFont);
+		g.setColor(Color.white);
+
+		drawStringCentered(g, infoFont, "Player0", mainPanelPosition[0]+mainPlayerNameOffset[0],
+				mainPanelPosition[1]+mainPlayerNameOffset[1]);
 		
-		drawStringCentered(g, "Player0", 500, 445);
-		
-		drawStringCentered(g, "Player3", 300, 25);
-		drawStringCentered(g, "Player4", 500, 25);
-		drawStringCentered(g, "Player5", 700, 25);
-		
-		drawStringCentered(g, "Player2", 110, 115);
-		drawStringCentered(g, "Player1", 110, 305);
-		
-		drawStringCentered(g, "Player6", 890, 115);
-		drawStringCentered(g, "Player7", 890, 305);
+		for (int i=1; i<8; ++i) {
+			drawStringCentered(g, infoFont, "Player"+i, panelPositions[i][0]+playerNameOffset[0],
+					panelPositions[i][1]+playerNameOffset[1]);
+		}
 	}
 	
 	private void drawChipAmounts(Graphics g) {
@@ -301,22 +275,15 @@ public class OngoingMode extends BasicGameState {
 		};
 		dealerChip.draw(dealerChipPositions[player][0]+5, dealerChipPositions[player][1]);
 	}
-	
-	private void drawStringCentered(Graphics g, String s, int x, int y) {
-		org.newdawn.slick.Font font = g.getFont();
-		g.drawString(s, x-font.getWidth(s)/2, y-font.getHeight(s)/2);
-	}
 	private void drawChipAmount(Graphics g, int amount, int x, int y) {
 		chip.draw(x, y);
 		g.setColor(Color.white);
-		g.setFont(infoFont);
-		g.drawString("$"+amount, x+30, y+12-infoFont.getHeight()/2);
+		infoFont.drawString(x+30, y+12-infoFont.getHeight()/2, "$"+amount);
 	}
 	private void drawChipAmountBig(Graphics g, int amount, int x, int y) {
 		chipBig.draw(x, y);
 		g.setColor(Color.white);
-		g.setFont(infoFontBig);
-		g.drawString("$"+amount, x+40, y+15-infoFontBig.getHeight()/2);
+		infoFontBig.drawString(x+40, y+15-infoFontBig.getHeight()/2, "$"+amount);
 	}
 	
 	
@@ -325,29 +292,29 @@ public class OngoingMode extends BasicGameState {
 	public int getID() {
 		return 3;
 	}
-
-	/*
-	playerbox
-	locations: 25,290  25,100  215,10  415,10  615,10  805,100  805,290
-	offset values:
-	170 x 140
-	player string: 85,15 (center)
-	card1: 7,32
-	card2: 89,32
-	chip: 72,145
-	
-	mainPlayerBox
-	location: 250,430
-	offset values:
-	500 x 150
-	player string: 250,15 (center)
-	card1: 172,35
-	card2: 254,35
-	checkButton: 10,35 150x45
-	foldButton: 10,90 150x45
-	raiseButton: 340,90 150x45
-	allInButton: 440,43 50x26
-	dollarSign: 340,54 (left-center)
-	raiseBy: 350,35
-	*/
 }
+
+/*
+playerbox
+170 x 140
+locations: 25,290  25,100  215,10  415,10  615,10  805,100  805,290
+offset values:
+player string: 85,15 (center)
+card1: 7,32
+card2: 89,32
+chip: 72,145
+
+mainPlayerBox
+500 x 150
+location: 250,430
+offset values:
+player string: 250,15 (center)
+card1: 172,35
+card2: 254,35
+checkButton: 10,35 150x45
+foldButton: 10,90 150x45
+raiseButton: 340,90 150x45
+allInButton: 440,43 50x26
+dollarSign: 340,54 (left-center)
+raiseBy: 350,35
+*/

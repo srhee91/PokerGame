@@ -3,11 +3,11 @@ package GUI;
 
 import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 
 public class Button {
 
@@ -52,24 +52,22 @@ public class Button {
 		return area.isAcceptingInput();
 	}
 	
-	public void render(Graphics g, String s) {
+	public void render(Graphics g,  TrueTypeFont font, String s) {
 		
 		area.render(container, g);
 		
 		// calculate where string should be drawn
-		// ASSUMING g HAS NOT BEEN TRANSFORMED
-		Font font = g.getFont();
 		int x = area.getX() + (area.getWidth()-font.getWidth(s))/2;
 		int y = area.getY() + (area.getHeight()-font.getHeight(s))/2;
 		
 		if (!area.isAcceptingInput()) {	// draw string at half alpha if button inactive
 			Color gColor = g.getColor();
 			g.setColor(gColor.multiply(new Color(1.0f, 1.0f, 1.0f, 0.5f)));
-			g.drawString(s, x, y);
+			font.drawString(x, y, s);
 			g.setColor(gColor);
 		}
 		else {
-			g.drawString(s, x, y);
+			font.drawString(x, y, s);
 		}
 	}
 }

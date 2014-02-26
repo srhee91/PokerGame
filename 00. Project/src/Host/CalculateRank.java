@@ -1,6 +1,5 @@
 package Host;
 
-import Host.*;
 import java.util.*;
 
 //For debugging Goto Deck.java
@@ -32,11 +31,11 @@ public class CalculateRank {
 		}
 	}
 
-	public void find_Match(){			//Will find the best Rank.
+	public void findBestHand(){			//Will find the best Rank.
 		
 	}
 	
-	public int find_Rank(Card[]play){	//overal method that will decide the final rank
+	public int compareHands(Card[]play){	//overal method that will decide the final rank
 		int rank=0;						//See the Rank.java
 		return rank;
 	}

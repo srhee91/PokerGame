@@ -38,6 +38,7 @@ public class Card {
 			break;
 		case 2:
 			kind = "HEART";
+			break;
 		case 3:
 			kind = "DIAMOND";
 			break;

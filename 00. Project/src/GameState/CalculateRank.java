@@ -36,10 +36,11 @@ public class CalculateRank {
 		
 	}
 	
-	public int find_Rank(Card[]play){
+	public int find_Rank(Card[]play){	//overal method that will decide the final rank
 		int rank=0;						//See the Rank.java
 		return rank;
 	}
+	
 	public int isFlush(Card[]play){
 		
 		int isFlush=0;					
@@ -71,15 +72,32 @@ public class CalculateRank {
 		return isFlush; 
 	}
 	public int isStraight(Card[]play){
-		int isStraight=0;
-		int arr[]=new int[7];
-		
-		return isStraight;
+		 int isStraight=0;		
+		    int temp[]=new int[7];			//temporary array that will hold 1 set of 7 cards
+		    int count=0;
+		        
+		    for(int i=0;i<7;i++){
+		        //temp[i]=play[i].getNumber();
+		    }
+		    
+		    Arrays.sort(temp); 			//sort
+		    //System.out.println(Arrays.toString(temp)); for debugging
+
+		    for(int i=0;i<3;i++){
+		        count=0;
+		        int k=i+4;
+		        for(int j=i;j<k;j++){
+		            if (temp[j] + 1 == temp[j + 1]) {
+		                count++;
+		            }else if (temp[j] == temp[j+1])   k++;
+		            if (k > 6) break;
+		        }
+		        if(count==4){
+		        	isStraight=1;
+		        	break;
+		        }
+		    }
+		    return isStraight;
 	}
 	
-	
-
-	
-	
-
 }

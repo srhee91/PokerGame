@@ -3,7 +3,7 @@ package GameState;
 import Host.*;
 import java.util.*;
 
-
+//For debugging Goto Deck.java
 public class CalculateRank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
@@ -62,7 +62,7 @@ public class CalculateRank {
 					break;
 			}
 		}
-		//for debugging
+		//for debugging goto Deck.java
 		//System.out.println("clover:"+clover_num+" "+"heart:"+heart_num+" "+"diamond:"+diamond_num+" "+"spade"+spade_num); 
 		
 		if(clover_num>=5||heart_num>=5||diamond_num>=5||spade_num>=5){

@@ -4,9 +4,6 @@ import java.util.Random;
 
 
 
-
-
-
 public class Deck {
 	final int CARD_NUM = 52;
 	Card[] deck = new Card[CARD_NUM];
@@ -15,9 +12,7 @@ public class Deck {
 	public static Card[] flop = new Card[5];
 	public static Card[] player;
 	
-	private static int i=0,j=0,k=0,f=0;
-	
-	
+	private static int deckcount=0,burncount=0,flopcount=0;
 	
 	
 	public Deck(){					//initialize card 
@@ -30,49 +25,49 @@ public class Deck {
 	}
 	
 	public void shuffle(){    
-		 int ran1, ran2;
-		 Card temp1;
-	        for (int i=0; i<1000; i++)
-	        {
-	            ran1 = generator.nextInt(deck.length-1);
-	            ran2 = generator.nextInt(deck.length-1);
-	            temp1 = deck[ran2];
-	            deck[ran2]=deck[ran1];
-	            deck[ran1]=temp1;
-	        }
+		int ran1, ran2;
+		Card temp1;
+        for (int i=0; i<1000; i++)
+        {
+            ran1 = generator.nextInt(deck.length-1);
+            ran2 = generator.nextInt(deck.length-1);
+            temp1 = deck[ran2];
+            deck[ran2]=deck[ran1];
+            deck[ran1]=temp1;
+        }
 	}
 	
 	public void drawcardsToPlayer(final int PLAYER_MAX){
+		int i=0;
         player = new Card[2*PLAYER_MAX]; 
 		while(i<PLAYER_MAX*2){
-			player[i]=deck[j];
-			j++;
+			player[i]=deck[deckcount];
+			deckcount++;
 			i++;
 		}
 		burnCard();
 	}
 	
 	public void burnCard(){
-		while(k<3){
-			burn[k]=deck[j];
-			flipCard(flop,deck,k);
-			k++;
-			j++;
+		while(burncount<3){
+			burn[burncount]=deck[deckcount];
+			flipCard(flop,deck,burncount);
+			burncount++;
+			deckcount++;
 		}
-		
 	}
 	
-	private void flipCard(Card[] flop1, Card[] deck1,int k){
-		if(k==0){
-			flop[f]=deck[++j];
-			flop[++f]=deck[++j];
-			flop[++f]=deck[++j];
+	private void flipCard(Card[] flop1, Card[] deck1,int burncount){
+		if(burncount==0){
+			flop[flopcount]=deck[++deckcount];
+			flop[++flopcount]=deck[++deckcount];
+			flop[++flopcount]=deck[++deckcount];
 		}
-		else if(k==1){
-			flop[++f]=deck[++j];
+		else if(burncount==1){
+			flop[++flopcount]=deck[++deckcount];
 		}
-		else if(k==2){
-			flop[++f]=deck[++j];
+		else if(burncount==2){
+			flop[++flopcount]=deck[++deckcount];
 		}
 	}
 
@@ -109,9 +104,6 @@ public class Deck {
 			j++;
 		}*/
 		
-		
-		
 	}
-	
 }
 

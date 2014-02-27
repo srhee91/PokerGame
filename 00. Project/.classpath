@@ -6,7 +6,11 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="PokerGame/native"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/lwjgl.jar"/>
+	<classpathentry kind="lib" path="libs/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Project_v01/native"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="libs/slick.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

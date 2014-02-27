@@ -133,6 +133,43 @@ public class CalculateRank {
 		    return null;
 	}
 	public int[] findPair(Card[]play){
+		int temp[]=new int[]{1,1,1,1,1,1,3};
+		int max_pair=0;
+		int max_element=0;
+		int high_num=0;
+		int pair_helper=0;
+		for(int i=0;i<7;i++){
+	        //temp[i]=play[i].getNumber();
+	    }
+		
+		Arrays.sort(temp); 
+		for(int i=0;i<6;i++){
+			if(temp[i]==temp[i+1]){
+				int j=i;
+				pair_helper=1;
+				while(temp[j]==temp[j+1]){
+					pair_helper++;
+					j++;
+					if(j==6){
+						break;
+					}
+				}
+				i=j;
+				//System.out.println("helper:"+pair_helper);
+				if(max_pair<pair_helper){
+					max_pair=pair_helper;
+				}
+			}
+			
+		}
+		if(max_pair==4){
+			max_element=getMostPopularElement(temp);
+			for(int i=6;i>=0;i--){
+				if(temp[i]==max_element){
+					
+				}
+			}
+		}
 		
 		return null;
 	}
@@ -140,6 +177,7 @@ public class CalculateRank {
     private static int getMostPopularElement(int[] a){
 
         int maxElementIndex = getArrayMaximumElementIndex(a); 
+        System.out.println("maxElementIndex:"+maxElementIndex);
         int[] b= new int[a[maxElementIndex]+1];
         for(int i = 0; i<a.length;i++){
                ++b[a[i]];

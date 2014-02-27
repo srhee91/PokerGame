@@ -81,7 +81,9 @@ public class Deck {
 		for(int i=0;i<CalculateRank.PLAYER_MAX;i++){
 			System.out.println("Flush Player "+(i+1)+": "+obj1.isFlush(CalculateRank.merge_arr[i]));
 			System.out.println("Straight Player "+(i+1)+": "+obj1.isStraight(CalculateRank.merge_arr[i]));
+			obj1.findPair(CalculateRank.merge_arr[i]);
 		}
+		
 		/*
 		for(int i=0;i<3;i++){
 			 System.out.println("burn" + obj.burn[i].toString());

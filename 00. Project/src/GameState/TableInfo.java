@@ -14,7 +14,8 @@ public class TableInfo {
 	Pot potThisTurn;
 	int highestBet;
 	public int flopTurnRiverState;
-		
+	
+	PlayerInfo isMe;
 	
 	public TableInfo()
 	{

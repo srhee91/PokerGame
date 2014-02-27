@@ -28,20 +28,20 @@ public class Pot {
 	//parameter player[] is the array of players. 
 	public void gatherPots(PlayerInfo player[], int highestBet) {
 		
-		if(splitPot != null)	splitPot.gatherPots(player);
+		if(splitPot != null)	splitPot.gatherPots(player, highestBet);
 		
 		else {
 			
-			//check for someone who folded/left
+			//check for someone who folded/left OR didn't bet
 			for(int i=0; i<player.length; i++) {
-				if(player[i].hasFolded || player[i].hasLeft) {
+				if(player[i].hasFolded || player[i].hasLeft || player[i].betAmount == 0) {
 					totalPot += player[i].betAmount;
 					player[i].betAmount = 0;
 					playerInvolved[i] = false;
 				}
-			}
+			}			
 			
-			//check if someone went all in
+			//check if someone went all in, and find the lowest all in
 			int lowestBet = PokerInfo.INIT_CHIP*8 + 1; 
 			for(int i=0; i<player.length; i++)
 			{
@@ -49,6 +49,22 @@ public class Pot {
 					if(lowestBet > player[i].betAmount) lowestBet = player[i].betAmount;
 				}
 			}
+			//if someone went all in.....
+			if(lowestBet != (PokerInfo.INIT_CHIP*8 + 1))
+			{
+				//subtract the all in amount and add it to this totalPot; Then, splitPot the rest;
+				for(int i=0; i<player.length; i++)
+				{
+					if(player[i].betAmount > 0){
+						totalPot += lowestBet;
+						player[i].betAmount -= lowestBet;
+					}
+				}
+				//splitPot the rest;
+				splitPot = new Pot();
+				splitPot.gatherPots(player, highestBet-lowestBet);
+			}
+			
 			
 			//if it gets to this point its normal pot (no all ins)
 			//save the total pot
@@ -59,5 +75,17 @@ public class Pot {
 			}
 			
 		}
+	}
+	
+	public void printPot()
+	{
+		if(splitPot != null)	splitPot.printPot();
+		
+		System.out.println("totalPot : " + totalPot);
+		System.out.print("Splitted to : Player ");
+		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
+			if(playerInvolved[i])	System.out.print(i + " ");
+		}
+		System.out.println("\n");
 	}
 }

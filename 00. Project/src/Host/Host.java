@@ -81,7 +81,7 @@ public class Host
 	
 	public void updateTurn()
 	{
-		
+		gatherPots();
 	}
 	
 	public void updateGame()

@@ -7,36 +7,32 @@ import Host.*;
 
 public class PlayerInfo {
 
-	private Card cardsInHand[];
-	private int chipAmount;
-	private int pot;
-	boolean cardsVisible;
-	boolean betThisTurn;
-	public PlayerInfo()
-	{
-		cardsInHand=new Card[2];
+	public Card cards[];
+	public int totalChip;
+	public int betAmount;
+
+	//Constructor - gets 2 cards and initialize chip amount
+	public PlayerInfo(Card cards[]) {
+		this.cards = cards;
+		totalChip = PokerInfo.INIT_CHIP;
+		betAmount = 0;
 	}
-	public void setCards(int playerID){
-		
-	}
-	public void setChipAmount(int chip){
-		chipAmount=chip;
-	}
-	public void setPot(int pot){
-		this.pot=pot;
-	}
-	public Card getFirstCard(){
-		return cardsInHand[0];
-	}
-	public Card getSecondCard(){
-		return cardsInHand[1];
-	}
-	public int getChipAmount(){
-		return chipAmount;
-	}
-	public int getPot(){
-		return pot;
-	}
-	 
 	
+	//Checks if the player went all in.
+	public boolean isAllIn() {
+		if(totalChip == 0)	return true;
+		return false;
+	}	 
+	
+	//the player bets the betAmount.
+	//If the bet is higher than players totalChip, return false;
+	//If successfully bet, return true;
+	public boolean bet(int betAmount) {
+		if(betAmount > totalChip)	return false;
+		
+		this.betAmount = betAmount;
+		totalChip -= betAmount;
+		
+		return true;
+	}
 }

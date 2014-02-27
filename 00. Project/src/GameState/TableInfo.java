@@ -1,5 +1,7 @@
 package GameState;
 
+import Host.Pot;
+
 public class TableInfo {
 
 	int flops[];

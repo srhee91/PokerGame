@@ -1,4 +1,5 @@
 package Host;
+
 import java.util.*;
 
 //For debugging Goto Deck.java
@@ -31,14 +32,66 @@ public class CalculateRank {
 		}
 	}
 
-	public void findBestHand(){			//Will find the best Rank.
-		
-		
+	//finds the best hand out of all players
+	public void findWinner(){
+			
 	}
-	
-	public int compareHands(Card[]play){	//overal method that will decide the final rank
+	//compare hands between two players?
+	public int compareHands(Card[]play){
 		int rank=0;						//See the Rank.java
 		return rank;
+	}
+	
+	//finds the best hands of the player
+	public void findBestHand(PlayerInfo player){
+		
+		//combine cards
+		
+		//find the best hand
+		int highHand[];
+		if(highHand = isRoyalStraightFlush(cards)){
+			
+		}
+		else if(highHand = isStraightFlush(cards)){
+			
+		}
+		else if(highHand = isFourCard(cards)){
+			
+		}
+		else if(highHand = isFullHouse(cards)){
+			
+		}
+		else if(highHand = isFlush(cards)){
+			
+		}
+		else if(highHand = isStraight(cards)){
+			
+		}
+		else if(highHand = isThreeOfKind(cards)){
+			
+		}
+		else if(highHand = isTwoPair(cards)){
+			
+		}
+		else if(highHand = isOnePair(cards)){
+			
+		}
+		else{	//No Pair
+			
+		}
+	}
+	
+	public int[] isRoyalStraightFlush(Card cards[]){
+		return null;
+	}
+	public int[] isStraightFlush(Card cards[]){
+		return null;
+	}
+	public int[] isFourCard(Card cards[]){
+		return null;
+	}
+	public int[] isFullHouse(Card cards[]){
+		return null;
 	}
 	
 	public int isFlush(Card[]play){
@@ -98,6 +151,7 @@ public class CalculateRank {
 		
 		return isFlush; 
 	}
+	
 	public int[] isStraight(Card[]play){
 		 int isStraight=0;		
 		    int temp[]=new int[7];			//temporary array that will hold 1 set of 7 cards
@@ -132,6 +186,18 @@ public class CalculateRank {
 		    
 		    return null;
 	}
+
+	public int[] isThreeOfKind(Card cards[]){
+		return null;
+	}
+	public int[] isTwoPair(Card cards[]){
+		return null;
+	}
+	public int[] isOnePair(Card cards[]){
+		return null;
+	}
+
+	
 	public int[] findPair(Card[]play){
 		int temp[]=new int[]{1,1,1,1,1,1,3};
 		int max_pair=0;

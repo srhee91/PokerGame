@@ -10,12 +10,16 @@ public class PlayerInfo {
 	public Card cards[];
 	public int totalChip;
 	public int betAmount;
+	
+	public boolean hasFolded, hasLeft;
 
 	//Constructor - gets 2 cards and initialize chip amount
 	public PlayerInfo(Card cards[]) {
 		this.cards = cards;
 		totalChip = PokerInfo.INIT_CHIP;
 		betAmount = 0;
+		hasFolded = false;
+		hasLeft = false;
 	}
 	
 	//Checks if the player went all in.
@@ -36,4 +40,10 @@ public class PlayerInfo {
 		
 		return true;
 	}
+	
+	//setter
+	public void left()
+	{	hasLeft = true;	}
+	public void folded()
+	{	hasFolded = true; }
 }

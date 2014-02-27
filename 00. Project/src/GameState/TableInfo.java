@@ -1,10 +1,10 @@
 package GameState;
 
-import Host.Pot;
+import Host.*;
 
 public class TableInfo {
 
-	int flops[];
+	Card flops[];
 	int flopState;
 	PlayerInfo whoseTurn;
 	PlayerInfo dealer;
@@ -17,8 +17,8 @@ public class TableInfo {
 	
 	PlayerInfo isMe;
 	
-	public TableInfo()
+	public TableInfo(Card cards[])
 	{
-		
+		this.flops = flops;
 	}
 }

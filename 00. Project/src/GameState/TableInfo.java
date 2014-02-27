@@ -13,6 +13,8 @@ public class TableInfo {
 	Pot potTotal;
 	Pot potThisTurn;
 	int highestBet;
+	public int flopTurnRiverState;
+		
 	
 	public TableInfo()
 	{

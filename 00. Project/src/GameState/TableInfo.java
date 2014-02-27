@@ -6,10 +6,10 @@ public class TableInfo {
 
 	Card flops[];
 	int flopState;
-	PlayerInfo whoseTurn;
-	PlayerInfo dealer;
-	PlayerInfo bigBlinder;
-	PlayerInfo smallBlinder;
+	int whoseTurn;
+	int dealer;
+	int bigBlinder;
+	int smallBlinder;
 	Pot potTotal;
 	Pot potThisTurn;
 	int highestBet;
@@ -17,8 +17,23 @@ public class TableInfo {
 	
 	PlayerInfo isMe;
 	
-	public TableInfo(Card cards[])
+	public TableInfo(Card flops[])
 	{
 		this.flops = flops;
+	}
+	public void dealerPlayer(int player){
+		player = dealer;
+	}
+	public void bigblindPlayer(int player){
+		player = bigBlinder;
+	}
+	public void smallblindPlayer(int player){
+		player = smallBlinder;
+	}
+	public void potTotal(){
+		
+	}
+	public void whoseTurn(int player){
+		player = whoseTurn;
 	}
 }

@@ -1,7 +1,7 @@
 package Host;
 
 import GameState.PlayerInfo;
-
+//this is pot
 public class Pot {
 
 	public Pot insidePot;

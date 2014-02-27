@@ -56,6 +56,9 @@ public class Card {
 		case 13:
 			number = "K";
 			break;
+		case 1:
+			number = "A";
+			break;
 		default:
 			number = this.number + "";
 		}

@@ -18,9 +18,9 @@ public class GUI extends StateBasedGame
 
 	@Override
 	public void initStatesList(GameContainer container) throws SlickException
-	{this.addState(new LobbyMode());
+	{
 		this.addState(new StartMode());
-		
+		this.addState(new LobbyMode());
 		this.addState(new OngoingMode());
 		this.addState(new OverMode());
 	}

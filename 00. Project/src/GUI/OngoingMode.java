@@ -26,18 +26,22 @@ public class OngoingMode extends TableMode {
 	private Card[][] playerCards;
 	
 	private final int[][] centerCardPositions = {{283, 230}, {373, 230}, {463, 230}, {553, 230}, {643, 230}};
+	private final int[] centerChipAmount = {485, 340};
 	
-	private final int[][] mainPlayerCardOffsets = {{172, 35}, {254, 35}};
-	
+	private final int[][] mainCardOffsets = {{172, 35}, {254, 35}};
 	private final int[] mainCheckButtonOffset = {10, 35};
 	private final int[] mainFoldButtonOffset = {10, 90};
 	private final int[] mainRaiseButtonOffset = {340, 90};
 	private final int[] mainAllInButtonOffset = {440, 54};
 	private final int[] mainRaiseTextFieldOffset = {340, 35};
+	private final int[] mainChipAmountOffset = {37, -30};
+	private final int[] mainDealerChipOffset = {7, -30};
 	
 	private final int[][] playerCardOffsets = {{7, 32}, {89, 32}};
+	private final int[] playerChipAmountOffset = {72, 145};
+	private final int[] playerDealerChipOffset = {42, 145};
 	
-	
+
 	
 	private Image chip;
 	private Image chipBig;
@@ -154,12 +158,12 @@ public class OngoingMode extends TableMode {
 	private int[] getPlayerCardPosition(int playerIndex, int cardIndex) {
 		int[] ret = new int[2];
 		if (playerIndex==0) {
-			ret[0] = mainPanelPosition[0] + mainPlayerCardOffsets[cardIndex][0];
-			ret[1] = mainPanelPosition[1] + mainPlayerCardOffsets[cardIndex][1];
+			ret[0] = mainPanelPosition[0] + mainCardOffsets[cardIndex][0];
+			ret[1] = mainPanelPosition[1] + mainCardOffsets[cardIndex][1];
 		}
 		else {
-			ret[0] = panelPositions[playerIndex][0] + playerCardOffsets[cardIndex][0];
-			ret[1] = panelPositions[playerIndex][1] + playerCardOffsets[cardIndex][1];
+			ret[0] = playerPanelPositions[playerIndex][0] + playerCardOffsets[cardIndex][0];
+			ret[1] = playerPanelPositions[playerIndex][1] + playerCardOffsets[cardIndex][1];
 		}
 		return ret;
 	}
@@ -207,6 +211,7 @@ public class OngoingMode extends TableMode {
 		}
 	}
 	
+	
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		
 		super.render(container, game, g);
@@ -244,37 +249,38 @@ public class OngoingMode extends TableMode {
 	private void drawPlayerNames(Graphics g) {
 		g.setColor(Color.white);
 
-		drawStringCentered(g, infoFont, "Player0", mainPanelPosition[0]+mainPlayerNameOffset[0],
-				mainPanelPosition[1]+mainPlayerNameOffset[1]);
+		drawStringCentered(g, infoFont, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
-			drawStringCentered(g, infoFont, "Player"+i, panelPositions[i][0]+playerNameOffset[0],
-					panelPositions[i][1]+playerNameOffset[1]);
+			drawStringCentered(g, infoFont, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+					playerPanelPositions[i][1]+playerNameOffset[1]);
 		}
 	}
 	
 	private void drawChipAmounts(Graphics g) {
-		drawChipAmountBig(g, 200, 485, 340);
+		drawChipAmountBig(g, 200, centerChipAmount[0], centerChipAmount[1]);
+			
+		drawChipAmount(g, 100, mainPanelPosition[0]+mainChipAmountOffset[0],
+				mainPanelPosition[1]+mainChipAmountOffset[1]);	// mainplayer
 		
-		drawChipAmount(g, 100, 287, 400);	// mainplayer
-		
-		drawChipAmount(g, 25, 287, 155);
-		drawChipAmount(g, 25, 487, 155);
-		drawChipAmount(g, 25, 687, 155);
-		
-		drawChipAmount(g, 25, 97, 245);
-		drawChipAmount(g, 25, 97, 435);
-		
-		drawChipAmount(g, 25, 877, 245);
-		drawChipAmount(g, 25, 877, 435);
+		for (int i=1; i<8; ++i) {
+			drawChipAmount(g, 25, playerPanelPositions[i][0]+playerChipAmountOffset[0],
+					playerPanelPositions[i][1]+playerChipAmountOffset[1]);
+		}
 	}
 	
 	private void drawDealerChip(Graphics g, int player) {
-		final int[][] dealerChipPositions = {
-			{252, 400}, {62, 435}, {62, 245}, {252, 155}, {452, 155}, {652, 155}, {842, 245}, {842, 435}
-		};
-		dealerChip.draw(dealerChipPositions[player][0]+5, dealerChipPositions[player][1]);
+		if (player==0) {
+			dealerChip.draw(mainPanelPosition[0]+mainDealerChipOffset[0],
+					mainPanelPosition[1]+mainDealerChipOffset[1]);
+		}
+		else {
+			dealerChip.draw(playerPanelPositions[player][0]+playerDealerChipOffset[0],
+					playerPanelPositions[player][1]+playerDealerChipOffset[1]);
+		}
 	}
+	
 	private void drawChipAmount(Graphics g, int amount, int x, int y) {
 		chip.draw(x, y);
 		g.setColor(Color.white);

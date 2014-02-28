@@ -18,9 +18,9 @@ public class TableMode extends BasicGameState {
 	
 	protected final int mainPanelPosition[] = {250, 430};
 	protected final int mainPanelSize[] = {500, 150};
-	protected final int mainPlayerNameOffset[] = {250, 15};
+	protected final int mainNameOffset[] = {250, 15};
 	
-	protected final int panelPositions[][] = {{-1, -1},
+	protected final int playerPanelPositions[][] = {{-1, -1},
 											{25, 290},
 											{25, 100},
 											{215, 10},
@@ -28,7 +28,7 @@ public class TableMode extends BasicGameState {
 											{615, 10},
 											{805, 100},
 											{805, 290}};
-	protected final int panelSize[] = {170, 140};
+	protected final int playerPanelSize[] = {170, 140};
 	protected final int playerNameOffset[] = {85, 15};
 	
 	
@@ -67,8 +67,8 @@ public class TableMode extends BasicGameState {
 				mainPanelSize[0], mainPanelSize[1], 10);	// mainplayer rect
 		
 		for (int i=1; i<8; ++i) {
-			g.fillRoundRect(panelPositions[i][0], panelPositions[i][1],
-					panelSize[0], panelSize[1], 10);
+			g.fillRoundRect(playerPanelPositions[i][0], playerPanelPositions[i][1],
+					playerPanelSize[0], playerPanelSize[1], 10);
 		}
 	}
 	

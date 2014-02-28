@@ -12,6 +12,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Circle;
+import org.newdawn.slick.gui.AbstractComponent;
+import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -20,14 +22,17 @@ public class LobbyMode extends TableMode {
 	private TrueTypeFont portNumberFont;
 	private TrueTypeFont mainStatusFont;
 	private TrueTypeFont labelFont;
-	
+	private TrueTypeFont startButtonFont;
 
-	private int[] labelOffset = {85, 70};
+	private int[] playerPanelCenterOffset = {85, 70};
+	private int[] playerPanelLabelOffset = {85, 75};
 	private int[] mainTextOffset = {250, 75};
 	private int[] portNumberPosition = {500, 290};
+	private int[] mainStartButtonOffset = {150, 50};
 	
-	private Animation waitingAnimation;
+	private Animation[] waitingAnimations;
 	
+	private Button startButton;
 	
 	
 	@Override
@@ -35,26 +40,49 @@ public class LobbyMode extends TableMode {
 		
 		super.init(container, game);
 		
-		mainStatusFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 26), true);
+		mainStatusFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 32), true);
 		portNumberFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 48), true);
-		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 16), true);
+		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 19), true);
+		startButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
+		
+		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_orange.png", 
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_orange_down.png",
+				mainPanelPosition[0]+mainStartButtonOffset[0],
+				mainPanelPosition[1]+mainStartButtonOffset[1],
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent source) {
+						
+						System.out.println("started game!");
+						
+					}
+				});
+		startButton.setEnable(false);
 		
 		
-		waitingAnimation = new Animation();
+		waitingAnimations = new Animation[3];
 		
 		/*
 		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"waiting.png", 60, 60);
-		for (int i=0; i<60; ++i) {
-			waitingAnimation.addFrame(sheet.getSprite(i%8, i/8), 16);
-		}
+		for (int A=0; A<3; ++A) {
+			waitingAnimations[A] = new Animation();
+			for (int i=0; i<60; ++i) {
+				waitingAnimations[A].addFrame(sheet.getSprite(i%8, i/8), 16);
+			}
+			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/3));
+		}	
 		*/
 		
 		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"waiting2.png", 60, 60);
-		for (int i=0; i<30; ++i) {
-			waitingAnimation.addFrame(sheet.getSprite(i%5, i/5), 32);
-		}
+		for (int A=0; A<3; ++A) {
+			waitingAnimations[A] = new Animation();
+			for (int i=0; i<30; ++i) {
+				waitingAnimations[A].addFrame(sheet.getSprite(i%5, i/5), 32);
+			}
+			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/3));
+		}	
 		
-
 	}
 
 	@Override
@@ -92,40 +120,48 @@ public class LobbyMode extends TableMode {
 	private void drawPlayerNamesAndStatuses(Graphics g) {
 		
 		// for testing!!!!!!!
-		boolean playerJoined[] = {false, false, false, false, false, false, false, true};
+		boolean playerJoined[] = {false, false, false, true, true, true, true, true};
 		int hostIndex = 4;
-		boolean isHost = false;
-		boolean enoughPlayers = false;
+		boolean isHost = true;
+		boolean enoughPlayers = true;
 		
 		g.setColor(Color.white);
-		drawStringCentered(g, infoFont, "Player0", mainPanelPosition[0]+mainPlayerNameOffset[0],
-				mainPanelPosition[1]+mainPlayerNameOffset[1]);
+		drawStringCentered(g, infoFont, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
 			
 			if (i==hostIndex) {
 				
 				g.setColor(Color.white);
-				drawStringCentered(g, infoFont, "Player"+i, panelPositions[i][0]+playerNameOffset[0],
-						panelPositions[i][1]+playerNameOffset[1]);
+				drawStringCentered(g, infoFont, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+						playerPanelPositions[i][1]+playerNameOffset[1]);
+				
 				
 				drawLabelCentered(g, labelFont, "HOST", Color.white, new Color(142, 68, 173, 255),
-						panelPositions[i][0]+labelOffset[0], 
-						panelPositions[i][1]+labelOffset[1]);
+						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
+						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
+				
 			}
 			else if (playerJoined[i]) {
 				
 				g.setColor(Color.white);
-				drawStringCentered(g, infoFont, "Player"+i, panelPositions[i][0]+playerNameOffset[0],
-						panelPositions[i][1]+playerNameOffset[1]);
-								
+				drawStringCentered(g, infoFont, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+						playerPanelPositions[i][1]+playerNameOffset[1]);
+						
+				/*
 				drawLabelCentered(g, labelFont, "JOINED", Color.white, new Color(52, 152, 219, 255),
-						panelPositions[i][0]+labelOffset[0], 
-						panelPositions[i][1]+labelOffset[1]);
+						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
+						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
+				*/
+				drawStringCentered(g, labelFont, "JOINED",
+						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
+						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
 			}
 			else {
-				waitingAnimation.draw(panelPositions[i][0]+labelOffset[0]-waitingAnimation.getWidth()/2,
-						panelPositions[i][1]+labelOffset[1]-waitingAnimation.getHeight()/2);
+				Animation waitingAnimation = waitingAnimations[i%3];
+				waitingAnimation.draw(playerPanelPositions[i][0]+playerPanelCenterOffset[0]-waitingAnimation.getWidth()/2,
+						playerPanelPositions[i][1]+playerPanelCenterOffset[1]-waitingAnimation.getHeight()/2);
 			}
 		}
 		
@@ -143,8 +179,9 @@ public class LobbyMode extends TableMode {
 			}
 			else {
 				
-				// draw start button visible
-				
+				// draw start button
+				startButton.setEnable(true);
+				startButton.render(g, startButtonFont, "Start Game");
 			}
 		}
 	}

@@ -6,17 +6,17 @@ public class TableInfo {
 
 	Card flops[];
 	int flopState;
-	int whoseTurn;
-	int dealer;
-	int bigBlinder;
-	int smallBlinder;
+	int whoseTurn;		//player index
+	int dealer;			//player index
+	int bigBlinder;		//player index
+	int smallBlinder;	//player index
 	Pot potTotal;
-	Pot potThisTurn;
+	//Pot potThisTurn;  Pot.java handles this
 	public int highestBet;
-	public int currentBetAmount;
+	//public int currentBetAmount;	??
 	public int flopTurnRiverState;
 	
-	PlayerInfo isMe;
+	public int me;		//player index
 	
 	public TableInfo(Card flops[])
 	{
@@ -33,9 +33,6 @@ public class TableInfo {
 	}
 	public void smallblindPlayer(int player){
 		player = smallBlinder;
-	}
-	public void potTotal(){
-		
 	}
 	public void whoseTurn(int player){
 		player = whoseTurn;

@@ -12,7 +12,8 @@ public class TableInfo {
 	int smallBlinder;
 	Pot potTotal;
 	Pot potThisTurn;
-	int highestBet;
+	public int highestBet;
+	public int currentBetAmount;
 	public int flopTurnRiverState;
 	
 	PlayerInfo isMe;
@@ -20,6 +21,9 @@ public class TableInfo {
 	public TableInfo(Card flops[])
 	{
 		this.flops = flops;
+	}
+	public TableInfo() {
+		// TODO Auto-generated constructor stub
 	}
 	public void dealerPlayer(int player){
 		player = dealer;

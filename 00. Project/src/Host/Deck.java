@@ -77,11 +77,20 @@ public class Deck {
 		obj.drawcardsToPlayer(3);
 		CalculateRank obj1=new CalculateRank();
 		obj1.merge();
-		obj1.printMerge();
+		//obj1.printMerge();
+		
+		Card[]temp=new Card[7];
+		temp[0]=new Card(1,8);
+		temp[1]=new Card(1,10);
+		temp[2]=new Card(1,11);
+		temp[3]=new Card(1,12);
+		temp[4]=new Card(1,13);
+		temp[5]=new Card(1,7);
+		temp[6]=new Card(1,9);
 		for(int i=0;i<CalculateRank.PLAYER_MAX;i++){
-			System.out.println("Flush Player "+(i+1)+": "+obj1.isFlush(CalculateRank.merge_arr[i]));
+			System.out.println("Flush Player "+(i+1)+": "+obj1.isFlush(temp));
 			System.out.println("Straight Player "+(i+1)+": "+obj1.isStraight(CalculateRank.merge_arr[i]));
-			obj1.findPair(CalculateRank.merge_arr[i]);
+			obj1.findPair(temp);
 		}
 		
 		/*

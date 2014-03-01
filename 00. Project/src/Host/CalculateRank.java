@@ -39,49 +39,60 @@ public class CalculateRank {
 			
 	}
 	//compare hands between two players?
-	public int compareHands(Card[]play){
+	public int compareHands(Card[]card){
 		int rank=0;						//See the Rank.java
 		return rank;
 	}
 	
 	//finds the best hands of the player
-	public void findBestHand(PlayerInfo player){
+	public void findBestHand(Card[] cards){
 		
 		//combine cards
 		
 		//find the best hand
-		int highHand[];
-		/*
-		if(highHand = isRoyalStraightFlush(cards)){
-			
+		int highHand[] = null;
+		
+		if(isRoyalStraightFlush(cards)!=null){
+			System.out.println("RoyalStraightFlush");
+			highHand = isRoyalStraightFlush(cards);
 		}
-		else if(highHand = isStraightFlush(cards)){
-			
+		else if(isStraightFlush(cards)!=null){
+			System.out.println("StraightFlush");
+			highHand = isStraightFlush(cards);
 		}
-		else if(highHand = isFourCard(cards)){
-			
+		else if(isFourCard(cards)!=null){
+			System.out.println("FourCard");
+			highHand = isFourCard(cards);
 		}
-		else if(highHand = isFullHouse(cards)){
-			
+		else if(isFullHouse(cards)!=null){
+			System.out.println("FullHouse");
+			highHand = isFullHouse(cards);
 		}
-		else if(highHand = isFlush(cards)){
-			
+		else if(isFlush(cards)!=0){
+			System.out.println("Flush");
+			//highHand = isFlush(cards);
 		}
-		else if(highHand = isStraight(cards)){
-			
+		else if(isStraight(cards)!=null){
+			System.out.println("Straight");
+			highHand = isStraight(cards);
 		}
-		else if(highHand = isThreeOfKind(cards)){
-			
+		else if(isThreeOfKind(cards)!=null){
+			System.out.println("ThreeOfKind");
+			highHand = isThreeOfKind(cards);
 		}
-		else if(highHand = isTwoPair(cards)){
-			
+		else if(isTwoPair(cards)!=null){
+			System.out.println("TwoPair");
+			highHand = isTwoPair(cards);
 		}
-		else if(highHand = isOnePair(cards)){
-			
+		else if(isOnePair(cards)!=null){
+			System.out.println("OnePair");
+			highHand = isOnePair(cards);
 		}
 		else{	//No Pair
-			
-		}*/
+			System.out.println("noPair");
+			highHand=noPair(cards);
+		}
+		System.out.println(Arrays.toString(highHand));
 	}
 	public int[] isRoyalStraightFlush(Card cards[]){
 		int royal_flush_helper=0;
@@ -140,14 +151,43 @@ public class CalculateRank {
 		return null;
 	}
 	public int[] isFullHouse(Card cards[]){
-		if(findPair(cards)==3){
-			
-		}
+		int temp[];
+		int best_set[]=new int[5];
+		int pop_num1;
+		int pop_num2=0;
+		temp=sort_toIntArray(cards);
 		
+		if(findPair(cards)==3){
+			pop_num1=getMostPopularElement(temp);
+			for(int i=0;i<6;i++){
+				if((temp[i]==temp[i+1])&&(temp[i]!=pop_num1)){
+					pop_num2=temp[i];
+					break;
+				}
+			}
+			if(pop_num2!=0){
+				if(pop_num1>pop_num2){
+					for(int j=0;j<2;j++){
+						best_set[j]=pop_num2;
+					}
+					for(int j=2;j<5;j++){
+						best_set[j]=pop_num1;
+					}
+				}else{
+					for(int j=0;j<3;j++){
+						best_set[j]=pop_num1;
+					}
+					for(int j=3;j<5;j++){
+						best_set[j]=pop_num2;
+					}
+				}
+				return best_set;
+			}
+		}
 		return null;
 	}
 	
-	public int isFlush(Card[]play){
+	public int isFlush(Card[]card){
 		
 		int isFlush=0;					
 		int clover_num=0;				//CLOVER = 1;
@@ -158,7 +198,7 @@ public class CalculateRank {
 		
 
 		for(int i=0;i<7;i++){
-			switch(play[i].getKind()){
+			switch(card[i].getKind()){
 			case 1:	clover_num++;
 					break;
 			case 2:	heart_num++;
@@ -183,12 +223,12 @@ public class CalculateRank {
 		return isFlush; 
 	}
 	
-	public int[] isStraight(Card[]card){
+	public int[] isStraight(Card[]cards){
 		 int isStraight=0;		
 		    int temp[];			//temporary array that will hold 1 set of 7 cards
 		    int count=0;
 		        
-		   temp=sort_toIntArray(card);
+		   temp=sort_toIntArray(cards);
 		//  System.out.println(Arrays.toString(temp)); //for debugging
 
 		    for(int i=2; i>=0;i--){
@@ -215,22 +255,115 @@ public class CalculateRank {
 	}
 
 	public int[] isThreeOfKind(Card cards[]){
+		 int temp[];
+		 int pop_num;
+		 int high_num1;
+		 int high_num2;
+		 int best_set[]=new int[5];
+		 temp=sort_toIntArray(cards);
+		 pop_num=getMostPopularElement(temp);
+		 
+		if(findPair(cards)==3&&isFullHouse(cards)==null){
+			int i;
+			for(i=6;pop_num==temp[i];i--){}
+				high_num1=temp[i];
+				
+			for(;pop_num==temp[i];i--){}
+				high_num2=temp[i];
+				
+			for(int j=0;j<3;j++){
+				best_set[j]=pop_num;
+			}
+				best_set[3]=high_num1;
+				best_set[4]=high_num2;
+				Arrays.sort(best_set);
+				return best_set;
+		}
 		return null;
 	}
-	public int[] isTwoPair(Card cards[]){
+	public int[] isTwoPair(Card cards[]){			//fail case for three pairs
+		 int temp[];
+		 int pop_num1;
+		 int pop_num2=0;
+		 int high_num=0;
+		 int best_set[]=new int[5];
+		 temp=sort_toIntArray(cards);
+		 pop_num1=getMostPopularElement(temp);
+		 
+		if(findPair(cards)==2){
+			for(int i=0;i<6;i++){
+				if((temp[i]==temp[i+1])&&temp[i]!=pop_num1){
+					pop_num2=temp[i];
+					break;
+				}
+			}
+			if(pop_num2!=0){
+				int i;
+				high_num=temp[6];
+				for(i=6;(temp[i]==pop_num1||temp[i]==pop_num2);i--){
+					high_num=temp[i];
+				}
+				
+				for(int j=0;j<2;j++){
+					best_set[j]=pop_num2;
+				}
+				for(int j=2;j<4;j++){
+					best_set[j]=pop_num1;
+				}
+				best_set[4]=high_num;
+				Arrays.sort(best_set);
+				return best_set;
+			}
+		}
 		return null;
 	}
 	public int[] isOnePair(Card cards[]){
+		 int temp[];
+		 int pop_num;
+		 int high_num1=0;
+		 int high_num2=0;
+		 int high_num3=0;
+		 int best_set[]=new int[5];
+		 temp=sort_toIntArray(cards);
+		 pop_num=getMostPopularElement(temp);
+		if(findPair(cards)==2&&isTwoPair(cards)!=null){
+			int i;
+			for(i=6;temp[i]==pop_num;i--){}
+			high_num1=temp[i];
+			for(;temp[i]==pop_num;i--){}
+			high_num2=temp[i];
+			for(;temp[i]==pop_num;i--){}
+			high_num3=temp[i];
+			
+			for(int j=0;j<2;j++){
+				best_set[i]=pop_num;
+			}
+			best_set[2]=high_num1;
+			best_set[3]=high_num2;
+			best_set[4]=high_num3;
+			Arrays.sort(best_set);
+			return best_set;
+		}
 		return null;
+	}
+	public int[] noPair(Card cards[]){
+		 int temp[];
+		 int best_set[]=new int[5];
+		 temp=sort_toIntArray(cards);
+		 for(int i=6,j=0;j<5;i--,j++){
+			 best_set[j]=temp[i];
+		 }
+		 Arrays.sort(best_set);
+		 return best_set;
 	}
 
 	
-	public int findPair(Card[]play){
+	private static int findPair(Card[]cards){
 		int temp[];//new int[]{1,1,6,7,7,7,7};
 		int max_pair=0;
 		int pair_helper=0;
 	
-		temp=sort_toIntArray(play);
+		temp=sort_toIntArray(cards);
 		
 		for(int i=0;i<6;i++){
 			if(temp[i]==temp[i+1]){
@@ -271,10 +404,10 @@ public class CalculateRank {
         }
         return maxElementIndex;
     }
-    private static int[] sort_toIntArray(Card[]card){
+    private static int[] sort_toIntArray(Card[]cards){
     	int temp[]=new int[7];
     	for(int i=0;i<7;i++){
-	        temp[i]=card[i].getNumber();
+	        temp[i]=cards[i].getNumber();
 	    }
 	    Arrays.sort(temp);
 	    return temp;

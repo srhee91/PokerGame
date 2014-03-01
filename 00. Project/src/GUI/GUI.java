@@ -1,7 +1,10 @@
 package GUI;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.StateBasedGame;
 
 
@@ -26,6 +29,7 @@ public class GUI extends StateBasedGame
 	}
 	
 	
-	
-	
+	protected static void drawStringCentered(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
+		font.drawString(x-font.getWidth(s)/2, y-font.getHeight(s)/2, s, c);
+	}
 }

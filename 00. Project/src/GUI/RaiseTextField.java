@@ -6,7 +6,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.gui.TextField;
 
 public class RaiseTextField {
 	
@@ -17,10 +16,13 @@ public class RaiseTextField {
 	TrueTypeFont textFieldFont;
 	TrueTypeFont dollarSignFont;
 	
-	private TextField textField;
+	private MyTextField textField;
+	
+	private float alphaWhileDisabled;
+	
+	
 	
 
-	
 	public RaiseTextField(GameContainer container, int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -29,10 +31,15 @@ public class RaiseTextField {
 		textFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 16), true);
 		dollarSignFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 18), true);
 		
-		textField = new TextField(container, textFieldFont, x+15, y+19, 75, 26);
+		textField = new MyTextField(container, textFieldFont, x+15, y+19, 75, 26);
 		textField.setBackgroundColor(new Color(1.0f, 1.0f, 1.0f, 0.2f));
 		textField.setBorderColor(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+		textField.setTextColor(Color.white);
+		textField.setMaxLength(6);
+		textField.setNumeralsOnly(true);
 		textField.setAcceptingInput(true);
+		
+		alphaWhileDisabled = 0.5f;
 	}
 	
 	public void setEnable(boolean enable) {
@@ -41,31 +48,42 @@ public class RaiseTextField {
 		if (enable && !textField.isAcceptingInput()) {
 			textField.setAcceptingInput(true);
 			textField.setBackgroundColor(new Color(1.0f, 1.0f, 1.0f, 0.2f));
-			textField.setTextColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+			textField.setTextColor(Color.white);
 		}
 		else if (!enable && textField.isAcceptingInput()) {
-			textField.setBackgroundColor(new Color(1.0f, 1.0f, 1.0f, 0.1f));
-			textField.setTextColor(new Color(1.0f, 1.0f, 1.0f, 0.5f));
+			textField.setBackgroundColor(new Color(1.0f, 1.0f, 1.0f, 0.2f*alphaWhileDisabled));
+			textField.setTextColor(new Color(1.0f, 1.0f, 1.0f, alphaWhileDisabled));
 			textField.setFocus(false);
 			textField.setAcceptingInput(false);
 		}
 	}
 	
-	
 	public boolean getEnable() {
 		return textField.isAcceptingInput();
 	}
 	
+	public float getAlphaWhileDisabled() {
+		return alphaWhileDisabled;
+	}
+
+	public void setAlphaWhileDisabled(float alpha) {
+		alphaWhileDisabled = alpha;
+		if (!textField.isAcceptingInput()) {
+			textField.setBackgroundColor(new Color(1.0f, 1.0f, 1.0f, 0.2f*alphaWhileDisabled));
+			textField.setTextColor(new Color(1.0f, 1.0f, 1.0f, alphaWhileDisabled));
+		}
+	}
+	
 	public void render(GameContainer container, Graphics g) {
 		textField.render(container, g);
-		
+		Color c;
 		if (textField.isAcceptingInput())
-			g.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+			c = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		else
-			g.setColor(new Color(1.0f, 1.0f, 1.0f, 0.5f));
+			c = new Color(1.0f, 1.0f, 1.0f, alphaWhileDisabled);
 		
-		dollarSignFont.drawString(x, y+32-dollarSignFont.getHeight()/2, "$");
-		raiseByFont.drawString(x+10, y, "Raise by:");
+		dollarSignFont.drawString(x, y+32-dollarSignFont.getHeight()/2, "$", c);
+		raiseByFont.drawString(x+10, y, "Raise by:", c);
 	}
 	
 	

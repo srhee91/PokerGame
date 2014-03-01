@@ -6,15 +6,12 @@ import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
-import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class LobbyMode extends TableMode {
@@ -24,11 +21,11 @@ public class LobbyMode extends TableMode {
 	private TrueTypeFont labelFont;
 	private TrueTypeFont startButtonFont;
 
-	private int[] playerPanelCenterOffset = {85, 70};
-	private int[] playerPanelLabelOffset = {85, 75};
-	private int[] mainTextOffset = {250, 75};
-	private int[] portNumberPosition = {500, 290};
-	private int[] mainStartButtonOffset = {150, 50};
+	private final int[] playerPanelCenterOffset = {85, 70};
+	private final int[] playerPanelLabelOffset = {85, 75};
+	private final int[] mainTextOffset = {250, 75};
+	private final int[] portNumberPosition = {500, 290};
+	private final int[] mainStartButtonOffset = {150, 50};
 	
 	private Animation[] waitingAnimations;
 	
@@ -111,7 +108,7 @@ public class LobbyMode extends TableMode {
 
 	private void drawPortNumber(Graphics g) {
 		g.setColor(Color.white);
-		drawStringCentered(g, portNumberFont, "Port: 80", portNumberPosition[0], portNumberPosition[1]);
+		GUI.drawStringCentered(g, portNumberFont, Color.white, "Port: 80", portNumberPosition[0], portNumberPosition[1]);
 	}
 	
 	
@@ -126,7 +123,7 @@ public class LobbyMode extends TableMode {
 		boolean enoughPlayers = true;
 		
 		g.setColor(Color.white);
-		drawStringCentered(g, infoFont, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCentered(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
@@ -134,7 +131,7 @@ public class LobbyMode extends TableMode {
 			if (i==hostIndex) {
 				
 				g.setColor(Color.white);
-				drawStringCentered(g, infoFont, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringCentered(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 				
 				
@@ -146,7 +143,7 @@ public class LobbyMode extends TableMode {
 			else if (playerJoined[i]) {
 				
 				g.setColor(Color.white);
-				drawStringCentered(g, infoFont, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringCentered(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 						
 				/*
@@ -154,7 +151,7 @@ public class LobbyMode extends TableMode {
 						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
 						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
 				*/
-				drawStringCentered(g, labelFont, "JOINED",
+				GUI.drawStringCentered(g, labelFont, Color.white, "JOINED",
 						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
 						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
 			}
@@ -167,13 +164,13 @@ public class LobbyMode extends TableMode {
 		
 		g.setColor(Color.white);
 		if (!enoughPlayers) {
-			drawStringCentered(g, mainStatusFont, "Waiting for more players ...", 
+			GUI.drawStringCentered(g, mainStatusFont, Color.white, "Waiting for more players ...", 
 					mainPanelPosition[0]+mainTextOffset[0],
 					mainPanelPosition[1]+mainTextOffset[1]);
 		}
 		else {
 			if (!isHost) {
-				drawStringCentered(g, "Waiting for host to start game ...", 
+				GUI.drawStringCentered(g, mainStatusFont, Color.white, "Waiting for host to start game ...", 
 						mainPanelPosition[0]+mainTextOffset[0],
 						mainPanelPosition[1]+mainTextOffset[1]);
 			}
@@ -181,7 +178,7 @@ public class LobbyMode extends TableMode {
 				
 				// draw start button
 				startButton.setEnable(true);
-				startButton.render(g, startButtonFont, "Start Game");
+				startButton.render(g, startButtonFont, Color.white, "Start Game");
 			}
 		}
 	}

@@ -11,7 +11,6 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
-import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -19,32 +18,44 @@ public class StartMode extends BasicGameState
 {
 	private Image background;
 
-	private int[] menuPanelPosition = {40, 250};
-	private int[] menuPanelSize = {220, 230};
+	private final int[] menuPanelPosition = {40, 250};
+	private final int[] menuPanelSize = {220, 230};
 	
-	private int[] hostGameButtonOffset = {10, 65};
-	private int[] joinGameButtonOffset = {10, 120};
-	private int[] spectateGameButtonOffset = {10, 175};
-	private int[] exitButtonOffset = {10, 270};
+	private final int[] hostGameButtonOffset = {10, 65};
+	private final int[] joinGameButtonOffset = {10, 120};
+	private final int[] spectateGameButtonOffset = {10, 175};
+	private final int[] exitButtonOffset = {10, 270};
 	
-	private int[] portTextFieldOffset = {160, 10};
-	private int[] portTextFieldSize = {50, 40};
+	private final int[] portTextFieldOffset = {160, 10};
+	private final int[] portTextFieldSize = {50, 40};
 	
-	private int[] portLabelOffset = {90, 10};
+	private final int[] portLabelOffset = {90, 10};
 
+	private final String emptyPortError = "Please enter the port number of the game you want to host/join/spectate.";
+	private final String invalidPortError = "No game exists with that port number.";
+	
 	
 	private TrueTypeFont buttonFont;
-	private TrueTypeFont textFieldFont;
+	private TrueTypeFont portTextFieldFont;
 	private TrueTypeFont portLabelFont;
+	private TrueTypeFont popupMessageFont;
 	
 	private Button hostGameButton;
 	private Button joinGameButton;
 	private Button spectateGameButton;
 	private Button exitButton;
 	
-	private TextField portTextField;
+	private MyTextField portTextField;
 
+	// popup message stuff
+	private int[] popupPosition = {0, 150};
+	private int[] popupSize = {1000, 300};
 	
+	private TrueTypeFont popupPromptTextFieldFont;
+	
+	
+	private PopupMessage errorMessage;
+	private PopupPrompt prompt;
 	
 	
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -52,17 +63,45 @@ public class StartMode extends BasicGameState
 		background = new Image(GUI.RESOURCES_PATH+"background.png");
 		
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
-		textFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
+		portTextFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
 		portLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
+		popupMessageFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
+		popupPromptTextFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
 		
 		
-		portTextField = new TextField(container, textFieldFont, menuPanelPosition[0]+portTextFieldOffset[0],
+		portTextField = new MyTextField(container, portTextFieldFont, menuPanelPosition[0]+portTextFieldOffset[0],
 				menuPanelPosition[1]+portTextFieldOffset[1], portTextFieldSize[0], portTextFieldSize[1]);
 		portTextField.setBackgroundColor(new Color(255, 255, 255, 32));
 		portTextField.setBorderColor(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+		portTextField.setTextColor(Color.white);
+		portTextField.setMaxLength(2);
+		portTextField.setNumeralsOnly(true);
 		portTextField.setAcceptingInput(true);
 		
 		
+		errorMessage = new PopupMessage(container, popupPosition, popupSize, popupMessageFont, buttonFont,
+				new ComponentListener() {
+					@Override
+					public void componentActivated(AbstractComponent source) {	// OK (exit) action
+						setMenuEnable(true);
+					}
+				});
+		prompt = new PopupPrompt(container, popupPosition, popupSize, popupMessageFont, buttonFont,
+				popupPromptTextFieldFont,
+				new ComponentListener() {
+					@Override
+					public void componentActivated(AbstractComponent source) {	// OK action
+						System.out.println("Player name: "+prompt.getText());
+						setMenuEnable(true);
+					}
+				},
+				new ComponentListener() {
+					@Override
+					public void componentActivated(AbstractComponent source) {	// cancel action
+						setMenuEnable(true);
+					}
+				});
+		prompt.setMaxLength(20);
 		
 		hostGameButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue_down.png",
@@ -73,10 +112,20 @@ public class StartMode extends BasicGameState
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						
-						System.out.println("hosted game!");
+						System.out.println("host game button pressed!");
 						
+						String portString = portTextField.getText();
+						if (portString.isEmpty()) {
+							showErrorMessagePopup(emptyPortError);
+						}
+						else {
+							int port = Integer.parseInt(portString);
+							System.out.println("	creating new game on port "+port);
+							showPromptPopup("Enter player name:");
+						}
 					}
 				});
+		hostGameButton.setAlphaWhileDisabled(1.0f);
 		
 		joinGameButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue_down.png",
@@ -87,11 +136,25 @@ public class StartMode extends BasicGameState
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						
-						System.out.println("joined game!");
+						System.out.println("join game button pressed!");
+						
+						String portString = portTextField.getText();
+						if (portString.isEmpty()) {
+							showErrorMessagePopup(emptyPortError);
+						}
+						else {
+							int port = Integer.parseInt(portString);
+							if (port>9) {
+								showErrorMessagePopup(invalidPortError);
+							}
+							else {
+								System.out.println("	joining game on port "+port);
+							}
+						}
 						
 					}
 				});
-		
+		joinGameButton.setAlphaWhileDisabled(1.0f);
 		
 		spectateGameButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue_down.png",
@@ -102,10 +165,24 @@ public class StartMode extends BasicGameState
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						
-						System.out.println("spectated game!");
+						System.out.println("spectate game button pressed!");
 						
+						String portString = portTextField.getText();
+						if (portString.isEmpty()) {
+							showErrorMessagePopup(emptyPortError);
+						}
+						else {
+							int port = Integer.parseInt(portString);
+							if (port>9) {
+								showErrorMessagePopup(invalidPortError);
+							}
+							else {
+								System.out.println("	spectating game on port "+port);
+							}
+						}
 					}
 				});
+		spectateGameButton.setAlphaWhileDisabled(1.0f);
 		
 		exitButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_darkred.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_darkred_down.png",
@@ -117,9 +194,31 @@ public class StartMode extends BasicGameState
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("exitted game!");
-						
+						System.exit(0);
 					}
 				});
+		exitButton.setAlphaWhileDisabled(1.0f);
+
+	}
+	
+	private void setMenuEnable(boolean enable) {
+		hostGameButton.setEnable(enable);
+		joinGameButton.setEnable(enable);
+		spectateGameButton.setEnable(enable);
+		exitButton.setEnable(enable);
+		portTextField.setAcceptingInput(enable);
+	}
+	
+	private void showErrorMessagePopup(String msg) {
+		setMenuEnable(false);
+		errorMessage.setMessageString(msg);
+		errorMessage.setVisible(true);
+	}
+	
+	private void showPromptPopup(String msg) {
+		setMenuEnable(false);
+		prompt.setMessageString(msg);
+		prompt.setVisible(true);
 	}
 	
 	
@@ -132,7 +231,12 @@ public class StartMode extends BasicGameState
 			game.enterState(3);
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
+
 	}
+	
+
+	
+	
 	
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		
@@ -145,6 +249,11 @@ public class StartMode extends BasicGameState
 		portLabelFont.drawString(menuPanelPosition[0]+portLabelOffset[0],
 				menuPanelPosition[1]+portLabelOffset[1], "Port:");
 		portTextField.render(container, g);
+		
+		
+		// call render on all popup msgs; only visible ones will render
+		errorMessage.render(g);
+		prompt.render(g);
 	}
 	
 	private void drawMenuPanel(Graphics g) {
@@ -156,11 +265,12 @@ public class StartMode extends BasicGameState
 	private void drawMenuButtons(Graphics g) {
 		g.setColor(Color.white);
 		
-		hostGameButton.render(g, buttonFont, "Host Game");
-		joinGameButton.render(g, buttonFont, "Join Game");
-		spectateGameButton.render(g, buttonFont, "Spectate Game");
-		exitButton.render(g, buttonFont, "Exit");
+		hostGameButton.render(g, buttonFont, Color.white, "Host Game");
+		joinGameButton.render(g, buttonFont, Color.white, "Join Game");
+		spectateGameButton.render(g, buttonFont, Color.white, "Spectate Game");
+		exitButton.render(g, buttonFont, Color.white, "Exit");
 	}
+	
 	
 	public int getID() {
 		return 1;

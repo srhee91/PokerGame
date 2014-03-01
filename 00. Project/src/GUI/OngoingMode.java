@@ -209,6 +209,13 @@ public class OngoingMode extends TableMode {
 			allInButton.setEnable(!allInButton.getEnable());
 			raiseTextField.setEnable(!raiseTextField.getEnable());
 		}
+		if (container.getInput().isKeyPressed(Input.KEY_H)) {
+			checkButton.setAlphaWhileDisabled(1.5f-checkButton.getAlphaWhileDisabled());
+			foldButton.setAlphaWhileDisabled(1.5f-foldButton.getAlphaWhileDisabled());
+			raiseButton.setAlphaWhileDisabled(1.5f-raiseButton.getAlphaWhileDisabled());
+			allInButton.setAlphaWhileDisabled(1.5f-allInButton.getAlphaWhileDisabled());
+			raiseTextField.setAlphaWhileDisabled(1.5f-raiseTextField.getAlphaWhileDisabled());
+		}
 	}
 	
 	
@@ -236,10 +243,10 @@ public class OngoingMode extends TableMode {
 	
 	private void drawInteractiveElements(GameContainer container, Graphics g) {
 		g.setColor(Color.white);
-		checkButton.render(g, buttonFont, "Check");
-		foldButton.render(g,  buttonFont, "Fold");
-		raiseButton.render(g, buttonFont, "Raise");
-		allInButton.render(g, allInButtonFont, "All In");
+		checkButton.render(g, buttonFont, Color.white, "Check");
+		foldButton.render(g,  buttonFont, Color.white, "Fold");
+		raiseButton.render(g, buttonFont, Color.white, "Raise");
+		allInButton.render(g, allInButtonFont, Color.white, "All In");
 		
 		raiseTextField.render(container, g);
 	}
@@ -249,11 +256,11 @@ public class OngoingMode extends TableMode {
 	private void drawPlayerNames(Graphics g) {
 		g.setColor(Color.white);
 
-		drawStringCentered(g, infoFont, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCentered(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
-			drawStringCentered(g, infoFont, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+			GUI.drawStringCentered(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 					playerPanelPositions[i][1]+playerNameOffset[1]);
 		}
 	}

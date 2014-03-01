@@ -71,15 +71,7 @@ public class TableMode extends BasicGameState {
 					playerPanelSize[0], playerPanelSize[1], 10);
 		}
 	}
-	
-	protected void drawStringCentered(Graphics g, String s, int x, int y) {
-		org.newdawn.slick.Font font = g.getFont();
-		g.drawString(s, x-font.getWidth(s)/2, y-font.getHeight(s)/2);
-	}
-	
-	protected void drawStringCentered(Graphics g, TrueTypeFont font, String s, int x, int y) {
-		font.drawString(x-font.getWidth(s)/2, y-font.getHeight(s)/2, s);
-	}
+
 	
 	@Override
 	public int getID() {

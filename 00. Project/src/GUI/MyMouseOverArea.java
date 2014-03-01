@@ -454,4 +454,10 @@ public class MyMouseOverArea extends AbstractComponent {
 	public void setLocation(int x, int y) {
 		setLocation((float) x,(float) y);
 	}
+	
+	
+	
+	public void removeAllListeners() {
+		listeners.clear();
+	}
 }

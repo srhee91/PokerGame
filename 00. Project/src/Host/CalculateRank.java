@@ -9,7 +9,6 @@ public class CalculateRank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
 	
-	
 	public CalculateRank(){
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
 	}
@@ -51,7 +50,6 @@ public class CalculateRank {
 		
 		//find the best hand
 		int highHand[] = null;
-		
 		if(isRoyalStraightFlush(cards)!=null){
 			System.out.println("RoyalStraightFlush");
 			highHand = isRoyalStraightFlush(cards);
@@ -156,7 +154,6 @@ public class CalculateRank {
 		int pop_num1;
 		int pop_num2=0;
 		temp=sort_toIntArray(cards);
-		
 		if(findPair(cards)==3){
 			pop_num1=getMostPopularElement(temp);
 			for(int i=0;i<6;i++){
@@ -259,45 +256,85 @@ public class CalculateRank {
 		 int pop_num;
 		 int high_num1;
 		 int high_num2;
+		 int cardcount = 0;
 		 int best_set[]=new int[5];
 		 temp=sort_toIntArray(cards);
 		 pop_num=getMostPopularElement(temp);
 		 
 		if(findPair(cards)==3&&isFullHouse(cards)==null){
 			int i;
-			for(i=6;pop_num==temp[i];i--){}
-				high_num1=temp[i];
-				
-			for(;pop_num==temp[i];i--){}
-				high_num2=temp[i];
-				
+			for(i=6;temp[i]>pop_num;i--){
+				cardcount++;
+				if(cardcount==2){
+					best_set[3]=temp[i+1];
+					best_set[4]=temp[i-3];
+					break;
+				}
+			}
+			if(cardcount==1){
+				best_set[3]=temp[i+1];
+				best_set[4]=temp[i-3];
+			}
+			if(cardcount==0){
+				best_set[3]=temp[i-3];
+				best_set[4]=temp[i-4];
+			}
 			for(int j=0;j<3;j++){
 				best_set[j]=pop_num;
 			}
-				best_set[3]=high_num1;
-				best_set[4]=high_num2;
 				Arrays.sort(best_set);
 				return best_set;
 		}
 		return null;
 	}
-	public int[] isTwoPair(Card cards[]){			//fail case for three pairs
-		 int temp[];
+	//debugged and fixed errors
+	public int[] isTwoPair(Card cards[]){	
+
+		int temp[];
 		 int pop_num1;
 		 int pop_num2=0;
 		 int high_num=0;
-		 int best_set[]=new int[5];
+		 int best_set1[]=new int[5];
 		 temp=sort_toIntArray(cards);
 		 pop_num1=getMostPopularElement(temp);
-		 
-		if(findPair(cards)==2){
-			for(int i=0;i<6;i++){
-				if((temp[i]==temp[i+1])&&temp[i]!=pop_num1){
-					pop_num2=temp[i];
-					break;
+		for(int i=5;i>=0;i--){
+			if((temp[i]==temp[i+1])&&temp[i]!=pop_num1){
+				pop_num2=temp[i];
+				break;
+			}
+		}
+		if(findPair(cards)==2&&pop_num2!=0){
+			//setting higher pair out of two pairs
+			//higher pair will be store as first two; then lower pair gets stored
+			if(pop_num1>pop_num2){
+				for(int j=0;j<2;j++){
+					best_set1[j]=pop_num1;
+				}
+				for(int j=2;j<4;j++){
+					best_set1[j]=pop_num2;
 				}
 			}
-			if(pop_num2!=0){
+			else{
+				for(int j=0;j<2;j++){
+					best_set1[j]=pop_num2;
+				}
+				for(int j=2;j<4;j++){
+					best_set1[j]=pop_num1;
+				}		
+			}
+			for(int i=0;i<=6;i++){
+			    if(temp[i+1]==pop_num1 || temp[i+1]==pop_num2){ // this is highest possible number of card except two pairs.
+			    	high_num = temp[i];
+			    	break;
+			    }
+			}
+			best_set1[4]=high_num;
+			return best_set1;
+			//return best_set1;
+			//Arrays.sort(best_set);
+		   // return best_set;
+			//Old algorithm
+			/*if(pop_num2!=0){
 				int i;
 				high_num=temp[6];
 				for(i=6;(temp[i]==pop_num1||temp[i]==pop_num2);i--){
@@ -311,50 +348,84 @@ public class CalculateRank {
 					best_set[j]=pop_num1;
 				}
 				best_set[4]=high_num;
+				//System.out.println(best_set[4]);
 				Arrays.sort(best_set);
 				return best_set;
-			}
+			}*/
 		}
-		return null;
+		else{
+			return null;
+		}
 	}
+	//debugged. Changed for-loop
 	public int[] isOnePair(Card cards[]){
-		 int temp[];
-		 int pop_num;
-		 int high_num1=0;
-		 int high_num2=0;
-		 int high_num3=0;
-		 int best_set[]=new int[5];
-		 temp=sort_toIntArray(cards);
-		 pop_num=getMostPopularElement(temp);
-		if(findPair(cards)==2&&isTwoPair(cards)!=null){
-			int i;
+		 if(isTwoPair(cards)==null&&findPair(cards)==2){
+			 int temp[];
+			 int pop_num;
+			 int cardcount=0;
+			 int best_set[]=new int[5];
+			 temp=sort_toIntArray(cards);
+			 pop_num=getMostPopularElement(temp);
+			//System.out.println("inside");
+			/*int i;
 			for(i=6;temp[i]==pop_num;i--){}
 			high_num1=temp[i];
 			for(;temp[i]==pop_num;i--){}
 			high_num2=temp[i];
+			//System.out.println(temp[i]);
 			for(;temp[i]==pop_num;i--){}
 			high_num3=temp[i];
-			
-			for(int j=0;j<2;j++){
-				best_set[i]=pop_num;
+			 */
+			int i,set_track=2;
+			for(i=6;temp[i]>pop_num;i--){
+				cardcount++;
+				best_set[set_track]=temp[i];
+				set_track++;
+				if(cardcount==3){
+					break;
+				}
 			}
+			if(cardcount==0){
+				int setcount=2;
+				for(int m=2;m<5;m++ ){
+					best_set[setcount]=temp[i-m];
+					setcount++;
+				}
+			}
+			else if(cardcount==2){
+				best_set[4]=temp[i-1];
+			}
+			else if(cardcount==1){
+				best_set[3]=temp[i-2];
+				best_set[4]=temp[i-3];
+			}
+			for(int j=0;j<2;j++){
+				best_set[j]=pop_num;
+			}
+			/*
 			best_set[2]=high_num1;
 			best_set[3]=high_num2;
 			best_set[4]=high_num3;
+			*/
 			Arrays.sort(best_set);
 			return best_set;
 		}
 		return null;
 	}
 	public int[] noPair(Card cards[]){
-		 int temp[];
-		 int best_set[]=new int[5];
-		 temp=sort_toIntArray(cards);
-		 for(int i=6,j=0;j<5;i--,j++){
-			 best_set[j]=temp[i];
+		 if(findPair(cards)==0){
+			 int temp[];
+			 int best_set[]=new int[5];
+			 temp=sort_toIntArray(cards);
+			 for(int i=6,j=0;j<5;i--,j++){
+				 best_set[j]=temp[i];
+			 }
+			 Arrays.sort(best_set);
+			 return best_set;
 		 }
-		 Arrays.sort(best_set);
-		 return best_set;
+		 else{
+			 return null;
+		 }
 	}
 
 	

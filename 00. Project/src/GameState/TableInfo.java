@@ -17,16 +17,26 @@ public class TableInfo {
 	
 	public Pot potTotal;
 	public int highestBet;	
-		
+	
 	//Constructor
 	public TableInfo() {
-		potTotal = new Pot();
 	}
 
-	//reset Every new hand
-	public void reset(int leftover)
+	//every new hand
+	public void newFlops(Card flops[])
 	{
-		
+		this.flops = flops;
+		flopState = 0;
 	}
+	public void newPot(int leftover)
+	{
+		potTotal = new Pot(leftover);
+	}
+	public void nextDealer()
+	{
+		//change dealer, bigBlinder, smallBlinder
+	}
+	
+	
 	
 }

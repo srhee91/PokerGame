@@ -12,13 +12,11 @@ public class PlayerInfo {
 	
 	public boolean hasFolded, hasLeft;
 
-	//Constructor - gets 2 cards and initialize chip amount
-	public PlayerInfo(Card hands[]) {
-		this.hands = hands;
+	//Constructor
+	public PlayerInfo() {
 		totalChip = PokerInfo.INIT_CHIP;
-		betAmount = 0;
-		hasFolded = false;
 		hasLeft = false;
+		betAmount = 0;
 	}
 	
 	//Checks if the player went all in.
@@ -38,6 +36,11 @@ public class PlayerInfo {
 		totalChip -= betAmount;
 		
 		return true;
+	}
+	
+	public void dealHands(Card hands[]){
+		this.hands = hands;
+		hasFolded = false;
 	}
 	
 	//setter

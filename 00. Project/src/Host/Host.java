@@ -5,12 +5,16 @@ import GameState.*;
 
 public class Host
 {
+	public GameSystem game;
+	
 	public static void main()
 	{
-		/*setup();
-		waitToStart();
-		startGame();	
-		endGame();*/
+		Host host = new Host();
+		
+		host.setup();
+		host.waitToStart();
+		host.startGame();	
+		//host.endGame();
 	}
 		
 	public void setup()
@@ -24,11 +28,13 @@ public class Host
 	}
 	
 	public void startGame()
-	{		
-		/*//when the game starts
-		gameSet();
+	{
+		game = new GameSystem();
 		
-		while(!onePlayerLeft){
+		//when the game starts
+		game.setup();
+		
+		while(!game.onePlayerLeft()){
 			startNewGame();
 			
 			for(int i=0; i<4; i++){
@@ -45,57 +51,6 @@ public class Host
 		}
 		//celebrate the winner
 		//losers will just become a spectator without any notification
-		celebrateWinner();*/
-	}
-	
-	public void gameSet()
-	{
-		//(optional) set games - initial chips for each player, initial blind, etc..
-		//create GameSystem
-	}
-	
-	public void startNewGame()
-	{
-		
-	}
-	
-	public void startNewTurn()
-	{
-		
-	}
-	
-	public void sendGameState()
-	{
-		
-	}
-	
-	public void waitForAction()
-	{
-		
-	}
-	
-	public void updateUserActivity()
-	{
-		
-	}
-	
-	public void updateTurn()
-	{
-		gatherPots();
-	}
-	
-	public void updateGame()
-	{
-		
-	}
-	
-	public void update()
-	{
-		
-	}
-	
-	public void celebrateWinner()
-	{
-		
+		celebrateWinner();
 	}
 }

@@ -1,21 +1,20 @@
 package GameState;
 
-import Host.CalculateRank;
 import Host.*;
 
 
 
 public class PlayerInfo {
 
-	public Card cards[];
+	public Card hands[];
 	public int totalChip;
 	public int betAmount;
 	
 	public boolean hasFolded, hasLeft;
 
 	//Constructor - gets 2 cards and initialize chip amount
-	public PlayerInfo(Card cards[]) {
-		this.cards = cards;
+	public PlayerInfo(Card hands[]) {
+		this.hands = hands;
 		totalChip = PokerInfo.INIT_CHIP;
 		betAmount = 0;
 		hasFolded = false;

@@ -2,39 +2,31 @@ package GameState;
 
 import Host.*;
 
+
 public class TableInfo {
 
-	Card flops[];
-	int flopState;
-	int whoseTurn;		//player index
-	int dealer;			//player index
-	int bigBlinder;		//player index
-	int smallBlinder;	//player index
-	Pot potTotal;
-	//Pot potThisTurn;  Pot.java handles this
-	public int highestBet;
-	//public int currentBetAmount;	??
-	public int flopTurnRiverState;
+	//**Instance variables that hold throughout the entire game;
+	public int whoseTurn;		//player index
+	public int dealer;			//player index
+	public int bigBlinder;		//player index
+	public int smallBlinder;	//player index
+
+	//**Instance variables that reset every hand;
+	public Card flops[];
+	public int flopState;
 	
-	public int me;		//player index
-	
-	public TableInfo(Card flops[])
-	{
-		this.flops = flops;
-	}
+	public Pot potTotal;
+	public int highestBet;	
+		
+	//Constructor
 	public TableInfo() {
-		// TODO Auto-generated constructor stub
+		potTotal = new Pot();
 	}
-	public void dealerPlayer(int player){
-		player = dealer;
+
+	//reset Every new hand
+	public void reset(int leftover)
+	{
+		
 	}
-	public void bigblindPlayer(int player){
-		player = bigBlinder;
-	}
-	public void smallblindPlayer(int player){
-		player = smallBlinder;
-	}
-	public void whoseTurn(int player){
-		player = whoseTurn;
-	}
+	
 }

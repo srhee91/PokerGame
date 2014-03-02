@@ -1,11 +1,11 @@
 package GUI;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.SlickException;
 
 public class PopupMessage {
@@ -22,6 +22,8 @@ public class PopupMessage {
 	protected TrueTypeFont messageFont;
 	protected TrueTypeFont buttonFont;
 	
+	protected AbstractComponent popupSource;	// the most recent source popped up this msg
+	
 	protected boolean visible;
 	
 	
@@ -32,15 +34,17 @@ public class PopupMessage {
 		public ExitListener(ComponentListener listener) {this.listener=listener;}
 		@Override
 		public void componentActivated(AbstractComponent source) {
-			setVisible(false);
-			listener.componentActivated(source);
+			makeInvisible();
+			// provided on-exit listener will be give source that caused the popup,
+			// not the source that caused the exit (which is just okButton)
+			listener.componentActivated(popupSource);
 		}
 	}
 	
 	
-	public PopupMessage(GameContainer container, int[] popupPosition, int[] popupSize,
+	public PopupMessage(GUIContext container, int[] popupPosition, int[] popupSize,
 			TrueTypeFont msgFont, TrueTypeFont buttonFont,
-			ComponentListener onExitListener) throws SlickException {
+			ComponentListener onOkListener) throws SlickException {
 		
 		this.popupPosition = new int[2];
 		this.popupPosition[0] = popupPosition[0];
@@ -57,17 +61,24 @@ public class PopupMessage {
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_green_down.png",
 				popupPosition[0]+okButtonOffset[0],
 				popupPosition[1]+okButtonOffset[1],
-				new ExitListener(onExitListener));
+				new ExitListener(onOkListener));
 		
 		okButton.setEnable(false);
 		visible = false;		
 	}
 	
 	
-	public void setVisible(boolean visible) {
-		okButton.setEnable(visible);
-		this.visible = visible;
+	public void makeVisible(AbstractComponent source) {
+		popupSource = source;
+		okButton.setEnable(true);
+		visible = true;
 	}
+	
+	public void makeInvisible() {
+		okButton.setEnable(false);
+		visible = false;
+	}
+	
 	
 	public boolean isVisible() {
 		return visible;
@@ -81,7 +92,7 @@ public class PopupMessage {
 		this.messageString = messageString;
 	}
 	
-	public void render(Graphics g) {
+	public void render(GUIContext container, Graphics g) {
 		if (visible) {
 			g.setColor(new Color(0.0f, 0.0f, 0.0f, 0.85f));
 			g.fillRect(popupPosition[0], popupPosition[1], popupSize[0], popupSize[1]);
@@ -89,7 +100,7 @@ public class PopupMessage {
 			GUI.drawStringCentered(g, messageFont, Color.white, messageString,
 					popupPosition[0]+messageStringOffset[0], popupPosition[1]+messageStringOffset[1]);
 			
-			okButton.render(g, buttonFont, Color.white, "OK");
+			okButton.render(container, g, buttonFont, Color.white, "OK");
 		}
 	}
 }

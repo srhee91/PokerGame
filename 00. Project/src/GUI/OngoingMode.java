@@ -4,14 +4,15 @@ package GUI;
 import java.awt.Font;
 
 import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
 import Poker.Poker;
@@ -62,7 +63,7 @@ public class OngoingMode extends TableMode {
 	RaiseTextField raiseTextField;
 
 	
-	
+	@Override
 	public void init(GameContainer container, StateBasedGame game)throws SlickException {
 		
 		super.init(container, game);
@@ -171,7 +172,7 @@ public class OngoingMode extends TableMode {
 	
 	
 	
-	
+	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		
 		super.update(container, game, delta);
@@ -218,7 +219,7 @@ public class OngoingMode extends TableMode {
 		}
 	}
 	
-	
+	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		
 		super.render(container, game, g);
@@ -241,12 +242,12 @@ public class OngoingMode extends TableMode {
 
 	
 	
-	private void drawInteractiveElements(GameContainer container, Graphics g) {
+	private void drawInteractiveElements(GUIContext container, Graphics g) {
 		g.setColor(Color.white);
-		checkButton.render(g, buttonFont, Color.white, "Check");
-		foldButton.render(g,  buttonFont, Color.white, "Fold");
-		raiseButton.render(g, buttonFont, Color.white, "Raise");
-		allInButton.render(g, allInButtonFont, Color.white, "All In");
+		checkButton.render(container, g, buttonFont, Color.white, "Check");
+		foldButton.render(container, g,  buttonFont, Color.white, "Fold");
+		raiseButton.render(container, g, buttonFont, Color.white, "Raise");
+		allInButton.render(container, g, allInButtonFont, Color.white, "All In");
 		
 		raiseTextField.render(container, g);
 	}

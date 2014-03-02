@@ -12,6 +12,7 @@ import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class LobbyMode extends TableMode {
@@ -103,7 +104,7 @@ public class LobbyMode extends TableMode {
 		super.render(container, game, g);
 		
 		drawPortNumber(g);
-		drawPlayerNamesAndStatuses(g);
+		drawPlayerNamesAndStatuses(container, g);
 	}
 
 	private void drawPortNumber(Graphics g) {
@@ -114,7 +115,7 @@ public class LobbyMode extends TableMode {
 	
 	
 	
-	private void drawPlayerNamesAndStatuses(Graphics g) {
+	private void drawPlayerNamesAndStatuses(GUIContext container, Graphics g) {
 		
 		// for testing!!!!!!!
 		boolean playerJoined[] = {false, false, false, true, true, true, true, true};
@@ -178,7 +179,7 @@ public class LobbyMode extends TableMode {
 				
 				// draw start button
 				startButton.setEnable(true);
-				startButton.render(g, startButtonFont, Color.white, "Start Game");
+				startButton.render(container, g, startButtonFont, Color.white, "Start Game");
 			}
 		}
 	}

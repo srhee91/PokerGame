@@ -73,13 +73,13 @@ public class Deck {
 	}
 
 	public static void main(String[] args){
-		Deck obj=new Deck();
+		/*Deck obj=new Deck();
 		obj.shuffle();
 		obj.drawcardsToPlayer(3);
 		CalculateRank obj1=new CalculateRank();
 		obj1.merge();
 		int test[];
-		obj1.printMerge();
+		obj1.printMerge();*/
 		/*
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,1);
@@ -89,11 +89,11 @@ public class Deck {
 		temp[4]=new Card(1,9);
 		temp[5]=new Card(1,2);
 		temp[6]=new Card(1,10);*/
-		for(int i=0;i<CalculateRank.PLAYER_MAX;i++){
+	/*	for(int i=0;i<CalculateRank.PLAYER_MAX;i++){
 		
 			
 			obj1.findBestHand(CalculateRank.merge_arr[i]);
-		}
+		}*/
 	
 		/*
 		for(int i=0;i<3;i++){

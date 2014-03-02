@@ -29,6 +29,7 @@ public class LobbyMode extends TableMode {
 	private final int[] mainStartButtonOffset = {150, 50};
 	
 	private Animation[] waitingAnimations;
+	private final int NUM_ANIMATIONS = 4;
 	
 	private Button startButton;
 	
@@ -43,8 +44,8 @@ public class LobbyMode extends TableMode {
 		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 19), true);
 		startButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		
-		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_orange.png", 
-				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_orange_down.png",
+		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig.png", 
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig_down.png",
 				mainPanelPosition[0]+mainStartButtonOffset[0],
 				mainPanelPosition[1]+mainStartButtonOffset[1],
 				new ComponentListener() {
@@ -59,27 +60,16 @@ public class LobbyMode extends TableMode {
 		startButton.setEnable(false);
 		
 		
-		waitingAnimations = new Animation[3];
+		waitingAnimations = new Animation[NUM_ANIMATIONS];
 		
-		/*
-		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"waiting.png", 60, 60);
-		for (int A=0; A<3; ++A) {
+		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"loading2.png", 32, 32);
+		for (int A=0; A<NUM_ANIMATIONS; ++A) {
 			waitingAnimations[A] = new Animation();
-			for (int i=0; i<60; ++i) {
-				waitingAnimations[A].addFrame(sheet.getSprite(i%8, i/8), 16);
+			for (int i=0; i<8; ++i) {
+				waitingAnimations[A].addFrame(sheet.getSprite(i, 0), 64);
 			}
-			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/3));
-		}	
-		*/
-		
-		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"waiting2.png", 60, 60);
-		for (int A=0; A<3; ++A) {
-			waitingAnimations[A] = new Animation();
-			for (int i=0; i<30; ++i) {
-				waitingAnimations[A].addFrame(sheet.getSprite(i%5, i/5), 32);
-			}
-			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/3));
-		}	
+			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/NUM_ANIMATIONS));
+		}
 		
 	}
 
@@ -136,7 +126,7 @@ public class LobbyMode extends TableMode {
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 				
 				
-				drawLabelCentered(g, labelFont, "HOST", Color.white, new Color(142, 68, 173, 255),
+				drawLabelCentered(g, labelFont, "HOST", Color.white, new Color(85, 163, 217, 255),
 						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
 						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
 				
@@ -157,7 +147,7 @@ public class LobbyMode extends TableMode {
 						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
 			}
 			else {
-				Animation waitingAnimation = waitingAnimations[i%3];
+				Animation waitingAnimation = waitingAnimations[i%NUM_ANIMATIONS];
 				waitingAnimation.draw(playerPanelPositions[i][0]+playerPanelCenterOffset[0]-waitingAnimation.getWidth()/2,
 						playerPanelPositions[i][1]+playerPanelCenterOffset[1]-waitingAnimation.getHeight()/2);
 			}

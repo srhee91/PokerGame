@@ -2,12 +2,14 @@ package GUI;
 
 import java.awt.Font;
 
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
@@ -36,6 +38,7 @@ public class StartMode extends BasicGameState
 	private final String invalidPortErrorString = "No game exists with that port number.";
 	private final String namePromptString = "Enter player name:";
 	private final String areYouSureExitString = "Are you sure you want to exit to desktop?";
+	private final String loadingString = "Loading... (TEST! press 'f' to finish)";
 	
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont portTextFieldFont;
@@ -56,9 +59,10 @@ public class StartMode extends BasicGameState
 	private TrueTypeFont popupPromptTextFieldFont;
 	
 	
-	private PopupMessage popupOneButtonMessage;
-	private PopupMessage2Buttons popupTwoButtonMessage;
-	private PopupPrompt popupTwoButtonPrompt;
+	private PopupMessageAnimation popupMessageAnimation;
+	private PopupMessageOneButton popupMessageOneButton;
+	private PopupMessageTwoButtons popupMessageTwoButtons;
+	private PopupPromptTwoButtons popupPromptTwoButtons;
 	
 	
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -83,22 +87,30 @@ public class StartMode extends BasicGameState
 		
 		
 		
+		Animation waitingAnimation = new Animation();
+		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"loading2.png", 32, 32);
+		for (int i=0; i<8; ++i) {
+			waitingAnimation.addFrame(sheet.getSprite(i, 0), 64);
+		}
+		popupMessageAnimation = new PopupMessageAnimation(container, popupPosition, popupSize, popupMessageFont,
+				waitingAnimation);
 		
 		
-		popupOneButtonMessage = new PopupMessage(container, popupPosition, popupSize, popupMessageFont, buttonFont,
+		popupMessageOneButton = new PopupMessageOneButton(container, popupPosition, popupSize, popupMessageFont, buttonFont,
 				new ComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent source) {	// OK (exit) action
+					public void componentActivated(AbstractComponent source) {	// OK action
 						setMenuEnable(true);
 					}
 				});
 		
-		popupTwoButtonMessage = new PopupMessage2Buttons(container, popupPosition, popupSize,
+		popupMessageTwoButtons = new PopupMessageTwoButtons(container, popupPosition, popupSize,
 				popupMessageFont, buttonFont,
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {	// OK action
 						setMenuEnable(true);
+						
 						if (source==(AbstractComponent)exitButton) {
 							System.exit(0);
 						}
@@ -114,23 +126,24 @@ public class StartMode extends BasicGameState
 					}
 				});
 		
-		popupTwoButtonPrompt = new PopupPrompt(container, popupPosition, popupSize, popupMessageFont, buttonFont,
+		popupPromptTwoButtons = new PopupPromptTwoButtons(container, popupPosition, popupSize, popupMessageFont, buttonFont,
 				popupPromptTextFieldFont,
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {	// OK action
+						setMenuEnable(true);
 						
 						if (source==(AbstractComponent)hostGameButton) {
-							System.out.println("Player "+popupTwoButtonPrompt.getText()+" will host");
+							System.out.println("Player "+popupPromptTwoButtons.getText()+" will host");
+							showPopupMessageAnimation(source, loadingString);
 						}
 						else if (source==(AbstractComponent)joinGameButton){
-							System.out.println("Player "+popupTwoButtonPrompt.getText()+" will join");
+							System.out.println("Player "+popupPromptTwoButtons.getText()+" will join");
+							showPopupMessageAnimation(source, loadingString);
 						}
 						else {
 							System.out.println("SOMETHING'S WRONG");
 						}
-						
-						setMenuEnable(true);
 					}
 				},
 				new ComponentListener() {
@@ -139,7 +152,7 @@ public class StartMode extends BasicGameState
 						setMenuEnable(true);
 					}
 				});
-		popupTwoButtonPrompt.setMaxLength(20);
+		popupPromptTwoButtons.setMaxLength(10);
 		
 		
 		
@@ -159,16 +172,16 @@ public class StartMode extends BasicGameState
 						
 						String portString = portTextField.getText();
 						if (portString.isEmpty()) {
-							showOneButtonMessagePopup(source, emptyPortErrorString);
+							showPopupMessageOneButton(source, emptyPortErrorString);
 						}
 						else {
 							int port = Integer.parseInt(portString);
 							System.out.println("	creating new game on port "+port);
-							showPromptPopup(source, namePromptString);
+							showPopupPromptTwoButtons(source, namePromptString);
 						}
 					}
 				});
-		hostGameButton.setAlphaWhileDisabled(1.0f);
+		//hostGameButton.setAlphaWhileDisabled(1.0f);
 		
 		joinGameButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue_down.png",
@@ -183,22 +196,22 @@ public class StartMode extends BasicGameState
 						
 						String portString = portTextField.getText();
 						if (portString.isEmpty()) {
-							showOneButtonMessagePopup(source, emptyPortErrorString);
+							showPopupMessageOneButton(source, emptyPortErrorString);
 						}
 						else {
 							int port = Integer.parseInt(portString);
 							if (port>9) {
-								showOneButtonMessagePopup(source, invalidPortErrorString);
+								showPopupMessageOneButton(source, invalidPortErrorString);
 							}
 							else {
 								System.out.println("	joining game on port "+port);
-								showPromptPopup(source, "Enter player name:");
+								showPopupPromptTwoButtons(source, "Enter player name:");
 							}
 						}
 						
 					}
 				});
-		joinGameButton.setAlphaWhileDisabled(1.0f);
+		//joinGameButton.setAlphaWhileDisabled(1.0f);
 		
 		spectateGameButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue_down.png",
@@ -213,12 +226,12 @@ public class StartMode extends BasicGameState
 						
 						String portString = portTextField.getText();
 						if (portString.isEmpty()) {
-							showOneButtonMessagePopup(source, emptyPortErrorString);
+							showPopupMessageOneButton(source, emptyPortErrorString);
 						}
 						else {
 							int port = Integer.parseInt(portString);
 							if (port>9) {
-								showOneButtonMessagePopup(source, invalidPortErrorString);
+								showPopupMessageOneButton(source, invalidPortErrorString);
 							}
 							else {
 								System.out.println("	spectating game on port "+port);
@@ -226,7 +239,7 @@ public class StartMode extends BasicGameState
 						}
 					}
 				});
-		spectateGameButton.setAlphaWhileDisabled(1.0f);
+		//spectateGameButton.setAlphaWhileDisabled(1.0f);
 		
 		exitButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_darkred.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_darkred_down.png",
@@ -238,10 +251,10 @@ public class StartMode extends BasicGameState
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("exit button pressed!");
-						showMessageTwoButtonPopup(source, areYouSureExitString);
+						showPopupMessageTwoButtons(source, areYouSureExitString);
 					}
 				});
-		exitButton.setAlphaWhileDisabled(1.0f);
+		//exitButton.setAlphaWhileDisabled(1.0f);
 
 	}
 	
@@ -253,22 +266,25 @@ public class StartMode extends BasicGameState
 		portTextField.setAcceptingInput(enable);
 	}
 	
-	private void showOneButtonMessagePopup(AbstractComponent source, String msg) {
+	private void showPopupMessageAnimation(AbstractComponent source, String msg) {
 		setMenuEnable(false);
-		popupOneButtonMessage.setMessageString(msg);
-		popupOneButtonMessage.makeVisible(source);
+		popupMessageAnimation.setMessageString(msg);
+		popupMessageAnimation.makeVisible(source);
 	}
-	
-	private void showPromptPopup(AbstractComponent source, String msg) {
+	private void showPopupMessageOneButton(AbstractComponent source, String msg) {
 		setMenuEnable(false);
-		popupTwoButtonPrompt.setMessageString(msg);
-		popupTwoButtonPrompt.makeVisible(source);
+		popupMessageOneButton.setMessageString(msg);
+		popupMessageOneButton.makeVisible(source);
 	}
-	
-	private void showMessageTwoButtonPopup(AbstractComponent source, String msg) {
+	private void showPopupPromptTwoButtons(AbstractComponent source, String msg) {
 		setMenuEnable(false);
-		popupTwoButtonMessage.setMessageString(msg);
-		popupTwoButtonMessage.makeVisible(source);
+		popupPromptTwoButtons.setMessageString(msg);
+		popupPromptTwoButtons.makeVisible(source);
+	}
+	private void showPopupMessageTwoButtons(AbstractComponent source, String msg) {
+		setMenuEnable(false);
+		popupMessageTwoButtons.setMessageString(msg);
+		popupMessageTwoButtons.makeVisible(source);
 	}
 	
 	
@@ -282,6 +298,14 @@ public class StartMode extends BasicGameState
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
 
+		
+		// temporary method for stopping the loading screen
+		if (container.getInput().isKeyPressed(Input.KEY_F)) {
+			if (popupMessageAnimation.isVisible()) {
+				popupMessageAnimation.makeInvisible();
+				setMenuEnable(true);
+			}
+		}
 	}
 	
 
@@ -302,9 +326,10 @@ public class StartMode extends BasicGameState
 		
 		
 		// call render on all popup msgs; only visible ones will render
-		popupOneButtonMessage.render(container, g);
-		popupTwoButtonMessage.render(container, g);
-		popupTwoButtonPrompt.render(container, g);
+		popupMessageAnimation.render(container, g);
+		popupMessageOneButton.render(container, g);
+		popupMessageTwoButtons.render(container, g);
+		popupPromptTwoButtons.render(container, g);
 	}
 	
 	private void drawMenuPanel(Graphics g) {

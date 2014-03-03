@@ -68,7 +68,8 @@ public class test {
 	public void test1(PlayerInfo player[], Card cards[], Pot pot){
 		int tempbet=100;
 		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo(cards);
+			player[i] = new PlayerInfo();
+			player[i].hands = cards;
 			player[i].totalChip = tempbet;
 		}
 		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
@@ -87,7 +88,8 @@ public class test {
 	public void test2(PlayerInfo player[], Card cards[], Pot pot){
 		int tempbet=100;
 		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo(cards);
+			player[i] = new PlayerInfo();
+			player[i].hands = cards;
 			player[i].totalChip = tempbet;
 			tempbet+=50;
 		}
@@ -108,7 +110,8 @@ public class test {
 	public void test3(PlayerInfo player[], Card cards[], Pot pot){
 		int tempbet=100;
 		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo(cards);
+			player[i] = new PlayerInfo();
+			player[i].hands = cards;
 			player[i].totalChip = tempbet;
 			tempbet+=50;
 		}
@@ -128,7 +131,8 @@ public class test {
 	public void test4(PlayerInfo player[], Card cards[], Pot pot){
 		int tempbet=100;
 		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo(cards);
+			player[i] = new PlayerInfo();
+			player[i].hands = cards;
 			player[i].totalChip = tempbet;
 			tempbet+=50;
 		}

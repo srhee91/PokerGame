@@ -135,7 +135,13 @@ public class StartMode extends BasicGameState
 						
 						if (source==(AbstractComponent)hostGameButton) {
 							System.out.println("Player "+popupPromptTwoButtons.getText()+" will host");
+							
+							
 							showPopupMessageAnimation(source, loadingString);
+							
+							// start host process
+							
+							
 						}
 						else if (source==(AbstractComponent)joinGameButton){
 							System.out.println("Player "+popupPromptTwoButtons.getText()+" will join");

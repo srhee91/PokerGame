@@ -35,7 +35,7 @@ public class HostMessageHandler {
 		
 		new SendThread().start();
 		
-		while(true){
+		while(clientIndex<=20){
 			try{
 				socket=server.accept();
 				clientIndex++;

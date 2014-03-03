@@ -39,7 +39,7 @@ public class HostMessageHandler {
 			try{
 				socket=server.accept();
 				clientIndex++;
-				System.out.println(socket.getInetAddress().getHostAddress()+" is connected\n");
+				System.out.println(socket.getInetAddress().getHostAddress()+" is connected as client "+clientIndex);
 				oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
 				ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
 				new ReceivingThread(clientIndex).start();
@@ -49,27 +49,6 @@ public class HostMessageHandler {
 			}
 		}
 	}
-	
-/*	public void startReceiving(){
-		Message message;
-		while(true){
-			try{
-				message=(Message)ois.readObject();
-				System.out.println(message);
-				Thread.sleep(20);
-			}catch(IOException e){
-				System.out.println("Session End");
-				e.printStackTrace();
-				break;
-			}catch(ClassNotFoundException e){
-				System.out.println("ClassNotFound");
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
-		}
-	}*/
 	
 	public synchronized void send(int index,String str){
 		Message message=new Message("qwe","asd",str);
@@ -84,15 +63,18 @@ public class HostMessageHandler {
 	
 	class ReceivingThread extends Thread{
 		ObjectInputStream myois=null;
+		int clientIndex;
 		public ReceivingThread(int index) {
 			myois=ois.get(index);
+			clientIndex=index;
 		}
 		public void run(){
 			Message message;
 			while(true){
 				try{
 					message=(Message)myois.readObject();
-					System.out.println(message);
+					System.out.println("Received Message from client "+clientIndex+"\n");
+					System.out.println(message+"\n");
 					Thread.sleep(20);
 				}catch(IOException e){
 					System.out.println("Session End");

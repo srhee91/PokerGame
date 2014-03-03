@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class ClientMessageHandler {
 	ObjectOutputStream oos=null;
 	ObjectInputStream ois=null;
+	boolean disconnect=false;
 	public ClientMessageHandler(InetAddress IP,int port){
 		Socket socket=null;
 		try {
@@ -31,7 +32,8 @@ public class ClientMessageHandler {
 	
 	public void startReceiving(){
 		Message message;
-		while(true){
+		disconnect=false;
+		while(!disconnect){
 			try{
 				message=(Message)ois.readObject();
 				System.out.println(message);
@@ -51,6 +53,10 @@ public class ClientMessageHandler {
 	}
 	
 	public synchronized void send(String str){
+		if (disconnect==true){
+			System.out.println("Send Failed. Already disconnected!");
+			return;
+		}
 		Message message=new Message("qwe","asd",str);
 		try{
 			oos.writeObject(message);
@@ -59,6 +65,10 @@ public class ClientMessageHandler {
 			System.out.println("Cannot send object");
 			e.printStackTrace();
 		}
+	}
+	
+	public void disconnect(){
+		disconnect=true;
 	}
 	
 	public static void main(String args[]){

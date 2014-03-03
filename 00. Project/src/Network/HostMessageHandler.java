@@ -36,6 +36,7 @@ public class HostMessageHandler {
 		ois.add(0,null);
 		
 		new SendThread().start();
+<<<<<<< HEAD
 		new Listening().start();
 
 	}
@@ -54,6 +55,20 @@ public class HostMessageHandler {
 					e.printStackTrace();
 					break;
 				}
+=======
+		
+		while(clientIndex<=20){
+			try{
+				socket=server.accept();
+				clientIndex++;
+				System.out.println(socket.getInetAddress().getHostAddress()+" is connected as client "+clientIndex);
+				oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
+				ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
+				new ReceivingThread(clientIndex).start();
+			}catch(Exception e){
+				e.printStackTrace();
+				break;
+>>>>>>> refs/remotes/GitHub/master
 			}
 		}
 	}

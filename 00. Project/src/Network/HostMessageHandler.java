@@ -99,7 +99,7 @@ public class HostMessageHandler {
 					System.out.println(message+"\n");
 					Thread.sleep(20);
 				}catch(IOException e){
-					System.out.println("Session End");
+					System.out.println("Session End for client "+clientIndex);
 					e.printStackTrace();
 					break;
 				}catch(ClassNotFoundException e){

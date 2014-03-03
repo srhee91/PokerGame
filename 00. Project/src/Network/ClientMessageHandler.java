@@ -12,9 +12,8 @@ import java.util.Scanner;
 public class ClientMessageHandler {
 	ObjectOutputStream oos=null;
 	ObjectInputStream ois=null;
-	boolean disconnect=false;
+	Socket socket=null;
 	public ClientMessageHandler(InetAddress IP,int port){
-		Socket socket=null;
 		try {
 			socket = new Socket(IP, port);
 			oos=new ObjectOutputStream(socket.getOutputStream());
@@ -28,35 +27,15 @@ public class ClientMessageHandler {
 			e.printStackTrace();
 			System.exit(0);
 		}
-	}
-	
-	public void startReceiving(){
-		Message message;
-		disconnect=false;
-		while(!disconnect){
-			try{
-				message=(Message)ois.readObject();
-				System.out.println(message);
-				Thread.sleep(20);
-			}catch(IOException e){
-				System.out.println("Session End");
-				e.printStackTrace();
-				break;
-			}catch(ClassNotFoundException e){
-				System.out.println("ClassNotFound");
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
-		}
+		new ReceivingThread().start();
+		new SendThread().start();
 	}
 	
 	public synchronized void send(String str){
-		if (disconnect==true){
+		/*if (disconnect==true){
 			System.out.println("Send Failed. Already disconnected!");
 			return;
-		}
+		}*/
 		Message message=new Message("qwe","asd",str);
 		try{
 			oos.writeObject(message);
@@ -68,7 +47,34 @@ public class ClientMessageHandler {
 	}
 	
 	public void disconnect(){
-		disconnect=true;
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	class ReceivingThread extends Thread{
+		public void run(){
+			Message message;
+			while(true){
+				try{
+					message=(Message)ois.readObject();
+					System.out.println(message);
+					Thread.sleep(20);
+				}catch(IOException e){
+					System.out.println("Session End");
+					e.printStackTrace();
+					break;
+				}catch(ClassNotFoundException e){
+					System.out.println("ClassNotFound");
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					break;
+				}
+			}
+		}
 	}
 	
 	public static void main(String args[]){
@@ -80,9 +86,13 @@ public class ClientMessageHandler {
 		}
 		System.out.println("connect to "+serverIP.getHostAddress());
 		ClientMessageHandler client=new ClientMessageHandler(serverIP,4321);
-		Thread th=client.new SendThread();
-		th.start();
-		client.startReceiving();
+		try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		client.disconnect();
 	}
 	
 	public class SendThread extends Thread{

@@ -10,10 +10,9 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class ClientMessageHandler {
-	final static int port=4321;
 	ObjectOutputStream oos=null;
 	ObjectInputStream ois=null;
-	public ClientMessageHandler(InetAddress IP){
+	public ClientMessageHandler(InetAddress IP,int port){
 		Socket socket=null;
 		try {
 			socket = new Socket(IP, port);
@@ -36,6 +35,7 @@ public class ClientMessageHandler {
 			try{
 				message=(Message)ois.readObject();
 				System.out.println(message);
+				Thread.sleep(20);
 			}catch(IOException e){
 				System.out.println("Session End");
 				e.printStackTrace();
@@ -43,11 +43,14 @@ public class ClientMessageHandler {
 			}catch(ClassNotFoundException e){
 				System.out.println("ClassNotFound");
 				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				break;
 			}
 		}
 	}
 	
-	public void send(String str){
+	public synchronized void send(String str){
 		Message message=new Message("qwe","asd",str);
 		try{
 			oos.writeObject(message);
@@ -66,7 +69,7 @@ public class ClientMessageHandler {
 			e.printStackTrace();
 		}
 		System.out.println("connect to "+serverIP.getHostAddress());
-		ClientMessageHandler client=new ClientMessageHandler(serverIP);
+		ClientMessageHandler client=new ClientMessageHandler(serverIP,4321);
 		Thread th=client.new SendThread();
 		th.start();
 		client.startReceiving();

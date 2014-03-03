@@ -42,10 +42,6 @@ public class ClientMessageHandler {
 			
 		}
 	}
-	
-	
-	
-	
 	public static void main(String args[]){
 		InetAddress serverIP=null;
 		try {

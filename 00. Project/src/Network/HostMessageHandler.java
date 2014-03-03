@@ -11,7 +11,6 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 
 
@@ -73,30 +72,9 @@ class ServerThread{
 			}
 		}
 	}
-	
-	/*send from host to client*/
 	class SendThread extends Thread{
-		
-		public void run(){
-			ObjectOutputStream oos=null;
-			Scanner input=new Scanner(System.in);
-			Message message;
-			while(true){
-				message=new Message("qwe","asd",input.nextLine());
-				try{
-					//System.out.println("Send: \n"+message.toString());
-					oos.writeObject(message);
-					oos.flush();
-				}catch(IOException e){
-					System.out.println("Cannot send object");
-					e.printStackTrace();
-					break;
-				}
 
-			}
-		}
 	}
-	
 	public ServerThread(Socket socket){
 		this.socket=socket;
 		Thread receive=new ReceiveThread();

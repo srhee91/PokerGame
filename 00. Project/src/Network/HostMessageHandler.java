@@ -8,11 +8,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class HostMessageHandler {
-	ObjectOutputStream oos=null;
-	ObjectInputStream ois=null;
+	int clientIndex;
+	ArrayList<ObjectOutputStream> oos=null;
+	ArrayList<ObjectInputStream> ois=null;
 	public HostMessageHandler(int port){
 		Socket socket=null;
 		ServerSocket server=null;
@@ -24,20 +27,30 @@ public class HostMessageHandler {
 			e.printStackTrace();
 		}
 		
+		clientIndex=0;
+		oos=new ArrayList<ObjectOutputStream>(20);
+		ois=new ArrayList<ObjectInputStream>(20);
+		oos.add(0,null);
+		ois.add(0,null);
+		
+		new SendThread().start();
+		
 		while(true){
 			try{
 				socket=server.accept();
+				clientIndex++;
 				System.out.println(socket.getInetAddress().getHostAddress()+" is connected\n");
-				oos=new ObjectOutputStream(socket.getOutputStream());
-				ois=new ObjectInputStream(socket.getInputStream());
-				break;
+				oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
+				ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
+				new ReceivingThread(clientIndex).start();
 			}catch(Exception e){
 				e.printStackTrace();
+				break;
 			}
 		}
 	}
 	
-	public void startReceiving(){
+/*	public void startReceiving(){
 		Message message;
 		while(true){
 			try{
@@ -56,33 +69,59 @@ public class HostMessageHandler {
 				break;
 			}
 		}
-	}
+	}*/
 	
-	public synchronized void send(String str){
+	public synchronized void send(int index,String str){
 		Message message=new Message("qwe","asd",str);
 		try{
-			oos.writeObject(message);
-			oos.flush();
+			oos.get(index).writeObject(message);
+			oos.get(index).flush();
 		}catch(IOException e){
 			System.out.println("Cannot send object");
 			e.printStackTrace();
 		}
 	}
 	
+	class ReceivingThread extends Thread{
+		ObjectInputStream myois=null;
+		public ReceivingThread(int index) {
+			myois=ois.get(index);
+		}
+		public void run(){
+			Message message;
+			while(true){
+				try{
+					message=(Message)myois.readObject();
+					System.out.println(message);
+					Thread.sleep(20);
+				}catch(IOException e){
+					System.out.println("Session End");
+					e.printStackTrace();
+					break;
+				}catch(ClassNotFoundException e){
+					System.out.println("ClassNotFound");
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					break;
+				}
+			}
+		}
+	}
+	
 	public static void main(String args[]){
 		HostMessageHandler host=new HostMessageHandler(4321);
-		Thread th=host.new SendThread();
-		th.start();
-		host.startReceiving();
 	}
+	
 	
 	public class SendThread extends Thread{
 		public void run(){
 			Scanner input=new Scanner(System.in);
 			System.out.println("Input your message:");
 			while(true){
+				int index=input.nextInt();
 				String str=input.nextLine();
-				send(str);
+				send(index,str);
 			}
 		}
 	}

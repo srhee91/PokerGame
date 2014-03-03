@@ -16,9 +16,11 @@ public class HostMessageHandler {
 	int clientIndex;
 	ArrayList<ObjectOutputStream> oos=null;
 	ArrayList<ObjectInputStream> ois=null;
+	Socket socket=null;
+	ServerSocket server=null;
+	
 	public HostMessageHandler(int port){
-		Socket socket=null;
-		ServerSocket server=null;
+
 		try{
 			server=new ServerSocket(port);
 			System.out.println("Listening on port for client");
@@ -34,18 +36,24 @@ public class HostMessageHandler {
 		ois.add(0,null);
 		
 		new SendThread().start();
-		
-		while(true){
-			try{
-				socket=server.accept();
-				clientIndex++;
-				System.out.println(socket.getInetAddress().getHostAddress()+" is connected as client "+clientIndex);
-				oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
-				ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
-				new ReceivingThread(clientIndex).start();
-			}catch(Exception e){
-				e.printStackTrace();
-				break;
+		new Listening().start();
+
+	}
+	
+	class Listening extends Thread{
+		public void run(){
+			while(true){
+				try{
+					socket=server.accept();
+					clientIndex++;
+					System.out.println(socket.getInetAddress().getHostAddress()+" is connected as client "+clientIndex);
+					oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
+					ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
+					new ReceivingThread(clientIndex).start();
+				}catch(Exception e){
+					e.printStackTrace();
+					break;
+				}
 			}
 		}
 	}
@@ -58,6 +66,20 @@ public class HostMessageHandler {
 		}catch(IOException e){
 			System.out.println("Cannot send object");
 			e.printStackTrace();
+		}
+	}
+	
+	
+	public synchronized void sendAll(String str){
+		Message message=new Message("from ","to",str);
+		for(int i=1;i<=clientIndex;i++){
+			try{
+				oos.get(i).writeObject(message);
+				oos.get(i).flush();
+			}catch(IOException e){
+				System.out.println("Cannot send object to client "+i);
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -93,6 +115,7 @@ public class HostMessageHandler {
 	
 	public static void main(String args[]){
 		HostMessageHandler host=new HostMessageHandler(4321);
+		System.out.println("finish main");
 	}
 	
 	
@@ -103,7 +126,10 @@ public class HostMessageHandler {
 			while(true){
 				int index=input.nextInt();
 				String str=input.nextLine();
-				send(index,str);
+				if (index==0) 
+					sendAll(str);
+				else
+					send(index,str);
 			}
 		}
 	}

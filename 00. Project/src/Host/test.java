@@ -18,43 +18,7 @@ public class test {
 		Card cards[] = new Card[2];
 		Pot pot = new Pot();
 		TableInfo current = new TableInfo();
-/*
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
-		{
-			player[i] = new PlayerInfo(cards);
-		}
-		
-		//Test 1
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
-		{
-			player[i] = new PlayerInfo(cards);
-			player[i].bet(1000);
-			//System.out.println("Player "+ i + " : " + player[i].totalChip + "chips and " + player[i].betAmount + "bet");
-		}
-		pot = new Pot();
-		pot.gatherPots(player, 300);
-		//pot.printPot();
-		
-		//Test 2
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
-		{
-			player[i] = new PlayerInfo(cards);
-			player[i].totalChip = 200;
-			player[i].bet(200);
-		}
-		player[3].totalChip += 200;
-		player[4].totalChip += 300;
-		player[3].bet(200);
-		player[4].bet(250);
 
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
-		{
-			//System.out.println("Player "+ i + " : " + player[i].totalChip + "chips and " + player[i].betAmount + "bet");
-		}
-		//pot = new Pot();
-		//pot.gatherPots(player, 500);
-		//pot.printPot();
-		*/
 		//Test 1 ( Every player has equal amount of chip and All-in case )
 		test1(player,cards,pot);
 		//Test 2 ( One on One all-in case with one player has more chip than other player ). 

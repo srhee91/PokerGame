@@ -2,7 +2,6 @@ package Host;
 
 import java.util.*;
 
-import GameState.PlayerInfo;
 
 //For debugging Goto Deck.java
 public class CalculateRank {
@@ -207,7 +206,6 @@ public class CalculateRank {
 			}
 		}	
 		//for debugging goto Deck.java
-		//System.out.println("clover:"+clover_num+" "+"heart:"+heart_num+" "+"diamond:"+diamond_num+" "+"spade"+spade_num); 	
 		if(clover_num>=5){
 			isFlush=1;
 		}else if(heart_num>=5){
@@ -220,13 +218,11 @@ public class CalculateRank {
 		return isFlush; 
 	}
 	
-	public int[] isStraight(Card[]cards){
-		 int isStraight=0;		
+	public int[] isStraight(Card[]cards){		
 		    int temp[];			//temporary array that will hold 1 set of 7 cards
 		    int count=0;
 		        
 		   temp=sort_toIntArray(cards);
-		//  System.out.println(Arrays.toString(temp)); //for debugging
 
 		    for(int i=2; i>=0;i--){
 		        count=0;
@@ -243,7 +239,6 @@ public class CalculateRank {
 		            if (k < 0) break;
 		        }
 		        if(count==5){
-		        	//System.out.println(Arrays.toString(straight)); 
 		        	return straight;
 		        }
 		    }
@@ -254,8 +249,6 @@ public class CalculateRank {
 	public int[] isThreeOfKind(Card cards[]){
 		 int temp[];
 		 int pop_num;
-		 int high_num1;
-		 int high_num2;
 		 int cardcount = 0;
 		 int best_set[]=new int[5];
 		 temp=sort_toIntArray(cards);
@@ -282,7 +275,6 @@ public class CalculateRank {
 			for(int j=0;j<3;j++){
 				best_set[j]=pop_num;
 			}
-				Arrays.sort(best_set);
 				return best_set;
 		}
 		return null;
@@ -330,28 +322,6 @@ public class CalculateRank {
 			}
 			best_set1[4]=high_num;
 			return best_set1;
-			//return best_set1;
-			//Arrays.sort(best_set);
-		   // return best_set;
-			//Old algorithm
-			/*if(pop_num2!=0){
-				int i;
-				high_num=temp[6];
-				for(i=6;(temp[i]==pop_num1||temp[i]==pop_num2);i--){
-					high_num=temp[i];
-				}
-				
-				for(int j=0;j<2;j++){
-					best_set[j]=pop_num2;
-				}
-				for(int j=2;j<4;j++){
-					best_set[j]=pop_num1;
-				}
-				best_set[4]=high_num;
-				//System.out.println(best_set[4]);
-				Arrays.sort(best_set);
-				return best_set;
-			}*/
 		}
 		else{
 			return null;
@@ -366,16 +336,6 @@ public class CalculateRank {
 			 int best_set[]=new int[5];
 			 temp=sort_toIntArray(cards);
 			 pop_num=getMostPopularElement(temp);
-			//System.out.println("inside");
-			/*int i;
-			for(i=6;temp[i]==pop_num;i--){}
-			high_num1=temp[i];
-			for(;temp[i]==pop_num;i--){}
-			high_num2=temp[i];
-			//System.out.println(temp[i]);
-			for(;temp[i]==pop_num;i--){}
-			high_num3=temp[i];
-			 */
 			int i,set_track=2;
 			for(i=6;temp[i]>pop_num;i--){
 				cardcount++;
@@ -402,12 +362,6 @@ public class CalculateRank {
 			for(int j=0;j<2;j++){
 				best_set[j]=pop_num;
 			}
-			/*
-			best_set[2]=high_num1;
-			best_set[3]=high_num2;
-			best_set[4]=high_num3;
-			*/
-			Arrays.sort(best_set);
 			return best_set;
 		}
 		return null;
@@ -420,7 +374,6 @@ public class CalculateRank {
 			 for(int i=6,j=0;j<5;i--,j++){
 				 best_set[j]=temp[i];
 			 }
-			 Arrays.sort(best_set);
 			 return best_set;
 		 }
 		 else{
@@ -430,7 +383,7 @@ public class CalculateRank {
 
 	
 	private static int findPair(Card[]cards){
-		int temp[];//new int[]{1,1,6,7,7,7,7};
+		int temp[];
 		int max_pair=0;
 		int pair_helper=0;
 	

@@ -35,7 +35,7 @@ public class HostMessageHandler {
 		oos.add(0,null);
 		ois.add(0,null);
 		
-		new SendThread().start();
+	//	new SendThread().start();
 		new Listening().start();
 
 	}
@@ -113,16 +113,19 @@ public class HostMessageHandler {
 		}
 	}
 	
-	public static void main(String args[]){
+/*	public static void main(String args[]){
 		HostMessageHandler host=new HostMessageHandler(4321);
 		System.out.println("finish main");
-	}
+	}*/
 	
+	public void sending(){
+		new SendThread().start();
+	}
 	
 	public class SendThread extends Thread{
 		public void run(){
 			Scanner input=new Scanner(System.in);
-			System.out.println("Input your message:");
+			System.out.println("Input client number and message: (0 means send to all)");
 			while(true){
 				int index=input.nextInt();
 				String str=input.nextLine();

@@ -28,7 +28,7 @@ public class ClientMessageHandler {
 			System.exit(0);
 		}
 		new ReceivingThread().start();
-		new SendThread().start();
+		
 	}
 	
 	public synchronized void send(String str){
@@ -77,7 +77,7 @@ public class ClientMessageHandler {
 		}
 	}
 	
-	public static void main(String args[]){
+/*	public static void main(String args[]){
 		InetAddress serverIP=null;
 		try {
 			serverIP=InetAddress.getByName("127.0.0.1");
@@ -93,6 +93,9 @@ public class ClientMessageHandler {
 			e.printStackTrace();
 		}
 		client.disconnect();
+	}*/
+	public void sending(){
+		new SendThread().start();
 	}
 	
 	public class SendThread extends Thread{

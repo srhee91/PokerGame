@@ -4,9 +4,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-public class TestNet {
-	
+public class TestHostMH {
 	static HostMessageHandler host;
+	static ClientMessageHandler[] client=new ClientMessageHandler[20];
 	
 	public static void main(String args[]){
 		
@@ -27,27 +27,16 @@ public class TestNet {
 		}
 	
 		
-		ClientMessageHandler client=new ClientMessageHandler(serverIP,4321);
-		System.out.println(" Client"+i+"connect to "+serverIP.getHostAddress());		
+		client[i]=new ClientMessageHandler(serverIP,4321);
+		System.out.println(" Client"+(i+1)+"connect to "+serverIP.getHostAddress());		
 		}
 		System.out.println("Finished...");
+		
 		
 		
 		System.out.println("Testing host sending message ...");
 		host.sending();
 		
 		
-		
-		
-/*		try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		client.disconnect();*/
 	}
-	
-	
-	
 }

@@ -31,14 +31,13 @@ public class ClientMessageHandler {
 		
 	}
 	
-	public synchronized void send(String str){
+	public synchronized void send(UserAction ua){
 		/*if (disconnect==true){
 			System.out.println("Send Failed. Already disconnected!");
 			return;
 		}*/
-		Message message=new Message("qwe","asd",str);
 		try{
-			oos.writeObject(message);
+			oos.writeObject(ua);
 			oos.flush();
 		}catch(IOException e){
 			System.out.println("Cannot send object");
@@ -56,11 +55,11 @@ public class ClientMessageHandler {
 	
 	class ReceivingThread extends Thread{
 		public void run(){
-			Message message;
+			Gamestate gs;
 			while(true){
 				try{
-					message=(Message)ois.readObject();
-					System.out.println(message);
+					gs=(Gamestate)ois.readObject();
+					System.out.println("Receive a game state from host\n\t: "+gs);
 					Thread.sleep(20);
 				}catch(IOException e){
 					System.out.println("Session End");
@@ -99,12 +98,18 @@ public class ClientMessageHandler {
 	}
 	
 	public class SendThread extends Thread{
+		UserAction ua;
 		public void run(){
 			Scanner input=new Scanner(System.in);
-			System.out.println("Input your message:");
+			System.out.println("Input your message continously:");
 			while(true){
 				String str=input.nextLine();
-				send(str);
+				//if(str.equalsIgnoreCase("0")){
+				//	disconnect();
+				//}else{
+				ua = new UserAction(str);
+				send(ua);
+				//}
 			}
 		}
 	}

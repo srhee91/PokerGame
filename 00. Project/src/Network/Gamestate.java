@@ -29,7 +29,7 @@ public class Gamestate implements Serializable{
 	
 	public String toString(){
 		StringBuffer s=new StringBuffer();
-		s.append("\tClient "+index+"'s game state is: ["+getMsg()+" ] !");
+		s.append("\tYour client number is "+index+", Your game state is: ["+getMsg()+" ] !");
 		return s.toString();
 	}
 }

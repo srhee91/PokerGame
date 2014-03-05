@@ -31,7 +31,7 @@ public class TestClientMH {
 		}
 		System.out.println("Finished.\n");
 		
-		System.out.println("Testing: make one client send user action(sending message) for host to receive continuously...");
+		System.out.println("Testing: make one client send user action(sending message) to host who receives it continuously...");
 		System.out.println("Input client number(1 to 20) to log in:");
 		Scanner input=new Scanner(System.in);
 		int ic=input.nextInt();

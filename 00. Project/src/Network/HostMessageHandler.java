@@ -21,7 +21,13 @@ public class HostMessageHandler {
 	int port;
 	
 	
-	
+	/*
+	 * Constructor 
+	 * Used to create HostMessageHandler
+	 * Implement socket server
+	 * listen on specific port
+	 * create arrays to store multiple streams.
+	 * */
 	public HostMessageHandler(int port){
 		this.port=port;
 		try{
@@ -43,6 +49,12 @@ public class HostMessageHandler {
 
 	}
 	
+	/*
+	 * Inner class
+	 * when new client is connected to server.
+	 * return socket and create new streams in arrays
+	 * start receiving thread
+	 * */
 	class Listening extends Thread{
 		public void run(){
 			while(true){
@@ -61,6 +73,12 @@ public class HostMessageHandler {
 		}
 	}
 	
+	/*
+	 * Inner class 
+	 * receiving thread
+	 * continuously receive UserAction through socket stream
+	 * show action when there is one
+	 * */
 	class ReceivingThread extends Thread{
 		ObjectInputStream myois=null;
 		int clientIndex;
@@ -91,6 +109,8 @@ public class HostMessageHandler {
 		}
 	}
 	
+	/*call this function will send game state to specific client,
+	 * which are arguments*/
 	public synchronized void send(int index,Gamestate gs){
 		gs.setIndex(index);
 		try{
@@ -102,7 +122,7 @@ public class HostMessageHandler {
 		}
 	}
 	
-	
+	/*call this function will send game state to all clients*/
 	public synchronized void sendAll(Gamestate gs){
 
 		for(int i=1;i<=clientIndex;i++){
@@ -117,10 +137,14 @@ public class HostMessageHandler {
 		System.out.println("finish main");
 	}*/
 	
+	/*call this function will start SendThread */
 	public void sending(){
 		new SendThread().start();
 	}
 	
+	/*
+	 * Get user input and call send(input);
+	 * */
 	public class SendThread extends Thread{
 		Gamestate gs;
 		public void run(){

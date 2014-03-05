@@ -10,9 +10,18 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class ClientMessageHandler {
+	
 	ObjectOutputStream oos=null;
 	ObjectInputStream ois=null;
 	Socket socket=null;
+	
+	/* 
+	 * Constructor 
+	 * Used to create ClientMessageHandler
+	 * Implement socket 
+	 * Connect to a specific port listened by HostMessageHandler
+	 * Get a pair of streams in socket
+	 **/
 	public ClientMessageHandler(InetAddress IP,int port){
 		try {
 			socket = new Socket(IP, port);
@@ -31,6 +40,11 @@ public class ClientMessageHandler {
 		
 	}
 	
+	/*
+	 * Call this function will
+	 * send UserAction object 
+	 * through oos stream to host message handler
+	 * */
 	public synchronized void send(UserAction ua){
 		/*if (disconnect==true){
 			System.out.println("Send Failed. Already disconnected!");
@@ -45,6 +59,10 @@ public class ClientMessageHandler {
 		}
 	}
 	
+	/*
+	 * Call this function will make
+	 * current socket close
+	 * */
 	public void disconnect(){
 		try {
 			socket.close();
@@ -53,6 +71,13 @@ public class ClientMessageHandler {
 		}
 	}
 	
+	
+	/*
+	 * Inner class thread
+	 * continuously receive game state through socket stream
+	 * show game state when there is one
+	 * run when client message handler is created
+	 * */
 	class ReceivingThread extends Thread{
 		public void run(){
 			Gamestate gs;
@@ -76,6 +101,9 @@ public class ClientMessageHandler {
 		}
 	}
 	
+	
+	
+	
 /*	public static void main(String args[]){
 		InetAddress serverIP=null;
 		try {
@@ -93,10 +121,15 @@ public class ClientMessageHandler {
 		}
 		client.disconnect();
 	}*/
+	
+	/*call this function will start SendThread*/
 	public void sending(){
 		new SendThread().start();
 	}
 	
+	/*
+	 * Get user input and call send(input);
+	 * */
 	public class SendThread extends Thread{
 		UserAction ua;
 		public void run(){

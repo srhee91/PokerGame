@@ -26,13 +26,13 @@ public class TestHostMH {
 			e.printStackTrace();
 		}		
 		for (int i=0;i<NumClient;i++){	
-		System.out.println(" Client "+(i+1)+" is connectting to "+serverIP.getHostAddress());		
-		client[i]=new ClientMessageHandler(serverIP,4321);
+			System.out.println(" creating client "+(i+1)+" to connect "+serverIP.getHostAddress());		
+			client[i]=new ClientMessageHandler(serverIP,4321);
 		}
 		System.out.println("Finished.\n");
 		
 		
-		System.out.println("Testing: Make host send game state for one or all clients to receive continously...");
+		System.out.println("Testing: Make host send game state to one or all clients who receive it continously...");
 		host.sending();
 		
 		

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -24,7 +25,8 @@ public class ClientMessageHandler {
 	 **/
 	public ClientMessageHandler(InetAddress IP,int port){
 		try {
-			socket = new Socket(IP, port);
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(IP, port), 20);
 			oos=new ObjectOutputStream(socket.getOutputStream());
 			ois=new ObjectInputStream(socket.getInputStream());
 		} catch (UnknownHostException e) {
@@ -107,7 +109,7 @@ public class ClientMessageHandler {
 	public static void main(String args[]){
 		InetAddress serverIP=null;
 		try {
-			serverIP=InetAddress.getByName("10.184.129.178");
+			serverIP=InetAddress.getByName("127.0.0.1");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

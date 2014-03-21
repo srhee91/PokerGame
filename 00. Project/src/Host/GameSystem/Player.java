@@ -1,12 +1,6 @@
-package GameState;
+package Host.GameSystem;
 
-import Host.*;
-import Host.GameSystem.Card;
-import Host.GameSystem.PokerInfo;
-
-
-
-public class PlayerInfo {
+public class Player {
 
 	public Card hands[];
 	public int totalChip;
@@ -15,8 +9,8 @@ public class PlayerInfo {
 	public boolean hasFolded, hasLeft;
 
 	//Constructor
-	public PlayerInfo() {
-		totalChip = PokerInfo.INIT_CHIP;
+	public Player() {
+		totalChip = GameSystem.INIT_CHIP;
 		hasLeft = false;
 		betAmount = 0;
 	}
@@ -32,7 +26,11 @@ public class PlayerInfo {
 	//If the bet is higher than players totalChip, return false;
 	//If successfully bet, return true;
 	public boolean bet(int betAmount) {
-		if(betAmount > totalChip)	return false;
+		if(betAmount > totalChip){
+			this.betAmount += totalChip;
+			totalChip = 0;
+			return false;
+		}
 		
 		this.betAmount += betAmount;
 		totalChip -= betAmount;
@@ -46,8 +44,5 @@ public class PlayerInfo {
 	}
 	
 	//setter
-	public void left()
-	{	hasLeft = true;	}
-	public void folded()
-	{	hasFolded = true; }
+	public void fold(){ hasFolded = true; }
 }

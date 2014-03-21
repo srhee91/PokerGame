@@ -1,14 +1,14 @@
-package Host;
+package Host.GameSystem;
 
 import java.util.*;
 
 
 //For debugging Goto Deck.java
-public class CalculateRank {
+public class Rank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
 	
-	public CalculateRank(){
+	public Rank(){
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
 	}
 	
@@ -436,5 +436,17 @@ public class CalculateRank {
 	    Arrays.sort(temp);
 	    return temp;
     }
-	
+
+    
+	public static final int ROYAL_STRAIGHT_FLUSH = 9;
+	public static final int STRAIGHT_FLUSH = 8;
+	public static final int FOURCARD = 7;
+	public static final int FULLHOUSE = 6;
+	public static final int FLUSH = 5;
+	public static final int STRAIGHT = 4;
+	public static final int THREEPAIR = 3;
+	public static final int TWOPAIR = 2;
+	public static final int ONEPAIR = 1;
+	public static final int NOPAIR = 0;
+    
 }

@@ -1,6 +1,8 @@
 package GameState;
 
 import Host.*;
+import Host.GameSystem.Card;
+import Host.GameSystem.Pot;
 
 
 public class TableInfo {

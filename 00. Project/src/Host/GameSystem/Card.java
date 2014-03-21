@@ -1,4 +1,4 @@
-package Host;
+package Host.GameSystem;
 
 public class Card {
 	private int kind;

@@ -14,7 +14,7 @@ Gamestate
 			TableInfo - dealer, bigBlinder, smallBlinder
 			
 	
-	Flop
+	Round
 		resets :
 			TableInfo - whoseTurn, highestBet=0
 			PlayerInfo - betAmount=0

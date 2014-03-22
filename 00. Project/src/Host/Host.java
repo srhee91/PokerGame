@@ -71,7 +71,7 @@ public class Host{
 	}
 	public void updateAction(){
 		//bet/fold/call/raise...
-		if(action)
+		if(action)?
 		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
 		game.highestBet = betAmount;
 		game.player[game.whoseTurn].fold();

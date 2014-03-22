@@ -1,4 +1,7 @@
-package Host;
+package Host.Test;
+
+import Host.GameSystem.Card;
+import Host.GameSystem.GameSystem.CalculateRank;
 
 public class TestRank {
 	public TestRank(){

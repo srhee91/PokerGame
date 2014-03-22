@@ -1,7 +1,10 @@
-package Host;
+package Host.Test;
 
 import GameState.PlayerInfo;
 import GameState.TableInfo;
+import Host.GameSystem.Card;
+import Host.GameSystem.PokerInfo;
+import Host.GameSystem.Pot;
 
 public class test {
 

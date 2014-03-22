@@ -12,6 +12,15 @@ public class Deck {
 	Random generator = new Random();
 	public static Card[] flop = new Card[5];
 	public static Card[] player;
+	public static Card[] player_1 = new Card[7];
+	public static Card[] player_2 = new Card[7];
+	public static Card[] player_3 = new Card[7];
+	public static Card[] player_4 = new Card[7];
+	public static Card[] player_5 = new Card[7];
+	public static Card[] player_6 = new Card[7];
+	public static Card[] player_7 = new Card[7];
+	public static Card[] player_8 = new Card[7];
+	
 	
 	private static int deckcount=0,burncount=0,flopcount=0;
 	
@@ -43,6 +52,39 @@ public class Deck {
         player = new Card[2*PLAYER_MAX]; 
 		while(i<PLAYER_MAX*2){
 			player[i]=deck[deckcount];
+			int j=0;
+			if(i==2){
+				player_1[j]=player[i-1];
+				player_1[j+1]=player[i];
+			}
+			if(i==4){
+				player_2[j]=player[i-1];
+				player_2[j+1]=player[i];
+			}
+			if(i==6){
+				player_3[j]=player[i-1];
+				player_3[j+1]=player[i];
+			}
+			if(i==8){
+				player_4[j]=player[i-1];
+				player_4[j+1]=player[i];
+			}
+			if(i==10){
+				player_5[j]=player[i-1];
+				player_5[j+1]=player[i];
+			}
+			if(i==12){
+				player_6[j]=player[i-1];
+				player_6[j+1]=player[i];
+			}
+			if(i==14){
+				player_7[j]=player[i-1];
+				player_7[j+1]=player[i];
+			}
+			if(i==16){
+				player_8[j]=player[i-1];
+				player_8[j+1]=player[i];
+			}
 			deckcount++;
 			i++;
 		}
@@ -73,13 +115,47 @@ public class Deck {
 	}
 
 	public static void main(String[] args){
-		/*Deck obj=new Deck();
+		Deck obj=new Deck();
 		obj.shuffle();
-		obj.drawcardsToPlayer(3);
+		obj.drawcardsToPlayer(8);
 		CalculateRank obj1=new CalculateRank();
 		obj1.merge();
-		int test[];
-		obj1.printMerge();*/
+		CalculateRank calrank=new CalculateRank();
+		for(int i=0; i<5;i++){
+			System.out.println(flop[i]);
+			player_1[i+2]=flop[i];
+			player_2[i+2]=flop[i];
+			player_3[i+2]=flop[i];
+			player_4[i+2]=flop[i];
+			player_5[i+2]=flop[i];
+			player_6[i+2]=flop[i];
+			player_7[i+2]=flop[i];
+			player_8[i+2]=flop[i];
+		}
+		for(int i=0;i<7;i++){
+			System.out.println("Player 1" + player_1[i]);
+		}
+		for(int i=0;i<7;i++){
+			System.out.println("Player 2" + player_2[i]);
+		}
+		for(int i=0;i<7;i++){
+			System.out.println("Player 3" + player_3[i]);
+		}
+		for(int i=0;i<7;i++){
+			System.out.println("Player 4" + player_4[i]);
+		}
+		calrank.findBestHand(player_1);
+		calrank.findBestHand(player_2);
+		calrank.findBestHand(player_3);
+		calrank.findBestHand(player_4);
+	
+		//for(int i=0;i<16;i+=2){
+			//System.out.println("player "+ j + " = " +Deck.player[i].toString());
+			//System.out.println("player "+ j + " = " +Deck.player[i+1].toString());
+			
+			//calrank.findBestHand(Deck.player);
+		//	j++;
+	//	}
 		/*
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,1);

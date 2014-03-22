@@ -7,6 +7,7 @@ import java.util.*;
 public class CalculateRank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
+	public static final int final_rank = 0; 
 	
 	public CalculateRank(){
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
@@ -33,8 +34,8 @@ public class CalculateRank {
 	}
 
 	//finds the best hand out of all players
-	public void findWinner(){
-			
+	public void findWinner(Card[] card_player1, Card[] card_player2){
+		
 	}
 	//compare hands between two players?
 	public int compareHands(Card[]card){
@@ -314,13 +315,11 @@ public class CalculateRank {
 					best_set1[j]=pop_num1;
 				}		
 			}
-			for(int i=0;i<=6;i++){
-			    if(temp[i+1]==pop_num1 || temp[i+1]==pop_num2){ // this is highest possible number of card except two pairs.
-			    	high_num = temp[i];
-			    	break;
+			for(int i=6;i>=0;i--){
+			    if(temp[i]!=pop_num1 && temp[i]!=pop_num2){
+			    	best_set1[4]=temp[i];
 			    }
 			}
-			best_set1[4]=high_num;
 			return best_set1;
 		}
 		else{
@@ -353,7 +352,7 @@ public class CalculateRank {
 				}
 			}
 			else if(cardcount==2){
-				best_set[4]=temp[i-1];
+				best_set[4]=temp[2];
 			}
 			else if(cardcount==1){
 				best_set[3]=temp[i-2];

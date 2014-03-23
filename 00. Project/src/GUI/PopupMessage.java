@@ -72,7 +72,7 @@ public class PopupMessage {
 			g.setColor(new Color(0.0f, 0.0f, 0.0f, 0.85f));
 			g.fillRect(popupPosition[0], popupPosition[1], popupSize[0], popupSize[1]);
 			
-			GUI.drawStringCentered(g, messageFont, Color.white, messageString,
+			GUI.drawStringCenter(g, messageFont, Color.white, messageString,
 					popupPosition[0]+messageStringOffset[0], popupPosition[1]+messageStringOffset[1]);
 		}
 	}

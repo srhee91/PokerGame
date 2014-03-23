@@ -137,6 +137,7 @@ public class HostMessageHandler {
 	
 	public static void main(String args[]){
 		HostMessageHandler host=new HostMessageHandler(4321);
+		System.out.println("finish main");
 		host.sending();
 	}
 	

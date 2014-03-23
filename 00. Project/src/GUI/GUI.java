@@ -23,13 +23,22 @@ public class GUI extends StateBasedGame
 	public void initStatesList(GameContainer container) throws SlickException
 	{
 		this.addState(new StartMode());
+		this.addState(new JoinMode());
 		this.addState(new LobbyMode());
 		this.addState(new OngoingMode());
-		this.addState(new OverMode());
+		//this.addState(new OverMode());
 	}
 	
 	
-	protected static void drawStringCentered(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
+	protected static void drawStringCenter(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
 		font.drawString(x-font.getWidth(s)/2, y-font.getHeight(s)/2, s, c);
+	}
+	
+	protected static void drawStringLeftCenter(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
+		font.drawString(x, y-font.getHeight(s)/2, s, c);
+	}
+	
+	protected static void drawStringRightCenter(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
+		font.drawString(x-font.getWidth(s), y-font.getHeight(s)/2, s, c);
 	}
 }

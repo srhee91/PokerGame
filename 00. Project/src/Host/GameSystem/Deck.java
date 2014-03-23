@@ -1,4 +1,4 @@
-package Host;
+package Host.GameSystem;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -6,6 +6,7 @@ import java.util.Random;
 
 
 public class Deck {
+	
 	final int CARD_NUM = 52;
 	Card[] deck = new Card[CARD_NUM];
 	Card[] burn = new Card[3];
@@ -27,8 +28,8 @@ public class Deck {
 	
 	public Deck(){					//initialize card 
 		int i = 0;
-		for(int j = 1; j < Card.KIND_MAX + 1; j++) {
-			for(int k = 1; k < Card.NUM_MAX + 1; k++) {
+		for(int j = 1; j <= Card.KIND_MAX; j++) {
+			for(int k = 1; k <= Card.NUM_MAX; k++) {
 				deck[i++] = new Card(j, k);
 			}
 		}
@@ -39,8 +40,8 @@ public class Deck {
 		Card temp1;
         for (int i=0; i<1000; i++)
         {
-            ran1 = generator.nextInt(deck.length-1);
-            ran2 = generator.nextInt(deck.length-1);
+            ran1 = generator.nextInt(deck.length);
+            ran2 = generator.nextInt(deck.length);
             temp1 = deck[ran2];
             deck[ran2]=deck[ran1];
             deck[ran1]=temp1;
@@ -115,6 +116,7 @@ public class Deck {
 	}
 
 	public static void main(String[] args){
+<<<<<<< HEAD:00. Project/src/Host/Deck.java
 		Deck obj=new Deck();
 		obj.shuffle();
 		obj.drawcardsToPlayer(8);
@@ -157,6 +159,26 @@ public class Deck {
 		//	j++;
 	//	}
 		/*
+=======
+		
+		Deck obj=new Deck();
+		obj.shuffle();
+		
+		Deck obj2 = new Deck();
+		obj2.shuffle();
+		
+		for(int i=0; i<52; i++)
+		{
+			System.out.printf("%2d : " + obj.deck[i] + "\t\t " + obj2.deck[i] + "\n", (i+1));
+		}
+		
+		obj.drawcardsToPlayer(3);
+		Rank obj1=new Rank();
+		obj1.merge();
+		int test[];
+		obj1.printMerge();
+		
+>>>>>>> FETCH_HEAD:00. Project/src/Host/GameSystem/Deck.java
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,1);
 		temp[1]=new Card(2,1);
@@ -164,14 +186,14 @@ public class Deck {
 		temp[3]=new Card(4,3);
 		temp[4]=new Card(1,9);
 		temp[5]=new Card(1,2);
-		temp[6]=new Card(1,10);*/
-	/*	for(int i=0;i<CalculateRank.PLAYER_MAX;i++){
+		temp[6]=new Card(1,10);
+		for(int i=0;i<Rank.PLAYER_MAX;i++){
 		
 			
-			obj1.findBestHand(CalculateRank.merge_arr[i]);
-		}*/
+			obj1.findBestHand(Rank.merge_arr[i]);
+		}
 	
-		/*
+		
 		for(int i=0;i<3;i++){
 			 System.out.println("burn" + obj.burn[i].toString());
 			}
@@ -184,14 +206,13 @@ public class Deck {
 		}
 		for(int i=0;i<52;i++){
 		 System.out.println(obj.deck[i].toString());
-		}*/
-		/*
-		int j=1;
+		}
+				int j=1;
 		for(int i=0;i<6;i+=2){
 			System.out.println("player "+ j + " = " +Deck.player[i].toString());
 			System.out.println("player "+ j + " = " +Deck.player[i+1].toString());
 			j++;
-		}*/
+		}
 		
 	}
 }

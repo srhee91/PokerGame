@@ -1,6 +1,4 @@
-package Host;
-
-import GameState.PlayerInfo;
+package Host.GameSystem;
 
 public class Pot {
 
@@ -13,20 +11,20 @@ public class Pot {
 		totalPot = 0;
 		splitPot = null;
 		
-		playerInvolved = new boolean[PokerInfo.MAXPLAYER];
-		for(int i=0; i< PokerInfo.MAXPLAYER; i++){	playerInvolved[i] = true;	}
+		playerInvolved = new boolean[GameSystem.MAXPLAYER];
+		for(int i=0; i< GameSystem.MAXPLAYER; i++){	playerInvolved[i] = true;	}
 	}
 	public Pot(int leftover) {
 		totalPot = leftover;
 		splitPot = null;
 		
-		playerInvolved = new boolean[PokerInfo.MAXPLAYER];
-		for(int i=0; i< PokerInfo.MAXPLAYER; i++){	playerInvolved[i] = true;	}
+		playerInvolved = new boolean[GameSystem.MAXPLAYER];
+		for(int i=0; i< GameSystem.MAXPLAYER; i++){	playerInvolved[i] = true;	}
 	}
 	
 	//gathersPots at the end of each round
 	//parameter player[] is the array of players. 
-	public void gatherPots(PlayerInfo player[], int highestBet) {
+	public void gatherPots(Player player[], int highestBet) {
 		
 		if(splitPot != null)	splitPot.gatherPots(player, highestBet);
 		
@@ -42,7 +40,7 @@ public class Pot {
 			}			
 			
 			//check if someone went all in, and find the lowest all in
-			int lowestBet = PokerInfo.INIT_CHIP*8 + 1; 
+			int lowestBet = GameSystem.INIT_CHIP*8 + 1; 
 			for(int i=0; i<player.length; i++)
 			{
 				if(player[i].betAmount > 0 && highestBet > player[i].betAmount){
@@ -50,7 +48,7 @@ public class Pot {
 				}
 			}
 			//if someone went all in.....
-			if(lowestBet != (PokerInfo.INIT_CHIP*8 + 1))
+			if(lowestBet != (GameSystem.INIT_CHIP*8 + 1))
 			{
 				//subtract the all in amount and add it to this totalPot; Then, splitPot the rest;
 				for(int i=0; i<player.length; i++)
@@ -83,7 +81,7 @@ public class Pot {
 		
 		System.out.println("totalPot : " + totalPot);
 		System.out.print("Splitted to : Player ");
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
 			if(playerInvolved[i])	System.out.print(i + " ");
 		}
 		System.out.println("\n");

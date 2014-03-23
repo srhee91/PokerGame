@@ -81,8 +81,8 @@ public class LobbyMode extends TableMode {
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
 			game.enterState(1);
-		else if (container.getInput().isKeyPressed(Input.KEY_3))
-			game.enterState(3);
+		else if (container.getInput().isKeyPressed(Input.KEY_2))
+			game.enterState(2);
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
 	}
@@ -99,7 +99,7 @@ public class LobbyMode extends TableMode {
 
 	private void drawPortNumber(Graphics g) {
 		g.setColor(Color.white);
-		GUI.drawStringCentered(g, portNumberFont, Color.white, "Port: 80", portNumberPosition[0], portNumberPosition[1]);
+		GUI.drawStringCenter(g, portNumberFont, Color.white, "Port: 80", portNumberPosition[0], portNumberPosition[1]);
 	}
 	
 	
@@ -114,7 +114,7 @@ public class LobbyMode extends TableMode {
 		boolean enoughPlayers = true;
 		
 		g.setColor(Color.white);
-		GUI.drawStringCentered(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCenter(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
@@ -122,7 +122,7 @@ public class LobbyMode extends TableMode {
 			if (i==hostIndex) {
 				
 				g.setColor(Color.white);
-				GUI.drawStringCentered(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 				
 				
@@ -134,7 +134,7 @@ public class LobbyMode extends TableMode {
 			else if (playerJoined[i]) {
 				
 				g.setColor(Color.white);
-				GUI.drawStringCentered(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 						
 				/*
@@ -142,7 +142,7 @@ public class LobbyMode extends TableMode {
 						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
 						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
 				*/
-				GUI.drawStringCentered(g, labelFont, Color.white, "JOINED",
+				GUI.drawStringCenter(g, labelFont, Color.white, "JOINED",
 						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
 						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
 			}
@@ -155,13 +155,13 @@ public class LobbyMode extends TableMode {
 		
 		g.setColor(Color.white);
 		if (!enoughPlayers) {
-			GUI.drawStringCentered(g, mainStatusFont, Color.white, "Waiting for more players ...", 
+			GUI.drawStringCenter(g, mainStatusFont, Color.white, "Waiting for more players ...", 
 					mainPanelPosition[0]+mainTextOffset[0],
 					mainPanelPosition[1]+mainTextOffset[1]);
 		}
 		else {
 			if (!isHost) {
-				GUI.drawStringCentered(g, mainStatusFont, Color.white, "Waiting for host to start game ...", 
+				GUI.drawStringCenter(g, mainStatusFont, Color.white, "Waiting for host to start game ...", 
 						mainPanelPosition[0]+mainTextOffset[0],
 						mainPanelPosition[1]+mainTextOffset[1]);
 			}
@@ -193,7 +193,7 @@ public class LobbyMode extends TableMode {
 	@Override
 	public int getID() {
 		
-		return 2;
+		return 3;
 	}
 }
 

@@ -35,7 +35,8 @@ public class HostMessageHandler {
 			System.out.println("Host is Listening on port ["+port+"] Waiting for client to connect...");
 		}catch(IOException e){
 			System.out.println("Cannot listen on port");
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.exit(0);
 		}
 		
 		clientIndex=0;
@@ -44,7 +45,6 @@ public class HostMessageHandler {
 		oos.add(0,null);
 		ois.add(0,null);
 		
-	//	new SendThread().start();
 		new Listening().start();
 
 	}
@@ -65,6 +65,9 @@ public class HostMessageHandler {
 					oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
 					ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
 					new ReceivingThread(clientIndex).start();
+				}catch(NullPointerException e){
+					System.out.println("Cannot listen on port");
+					break;
 				}catch(Exception e){
 					e.printStackTrace();
 					break;
@@ -95,8 +98,8 @@ public class HostMessageHandler {
 					System.out.println("\t"+ac+"\n");
 					Thread.sleep(20);
 				}catch(IOException e){
-					System.out.println("Session End for client "+clientIndex);
-					e.printStackTrace();
+					System.out.println("Session end for client "+clientIndex);
+					//e.printStackTrace();
 					break;
 				}catch(ClassNotFoundException e){
 					System.out.println("ClassNotFound");

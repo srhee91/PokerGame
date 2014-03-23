@@ -19,16 +19,26 @@ public class Button extends MyMouseOverArea{
 				String normalImagePath, String pressedImagePath, int x, int y,
 				ComponentListener listener) throws SlickException {
 		
-		super(container, new Image(normalImagePath), x, y, listener);
-
-		setMouseDownImage(new Image(pressedImagePath));
-		setNormalColor(new Color(0.9f, 0.9f, 0.9f, 1.0f));
-		setMouseOverColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
-		setMouseDownColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
-		setAcceptingInput(true);
-
-		alphaWhileDisabled = 0.5f;
+		this(container, new Image(normalImagePath), new Image(pressedImagePath),
+				x, y, listener);
 	}
+	
+	public Button(GUIContext container, 
+			Image normalImage, Image pressedImage, int x, int y,
+			ComponentListener listener) throws SlickException {
+	
+	super(container, normalImage, x, y, listener);
+
+	setMouseDownImage(pressedImage);
+	setNormalColor(new Color(0.9f, 0.9f, 0.9f, 1.0f));
+	setMouseOverColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+	setMouseDownColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+	setAcceptingInput(true);
+
+	alphaWhileDisabled = 0.5f;
+}
+	
+	
 	
 	/*
 	public void setOnlyListener(ComponentListener listener) {

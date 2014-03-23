@@ -176,7 +176,16 @@ public class OngoingMode extends TableMode {
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		
 		super.update(container, game, delta);
+		
+		// temporary method for transitioning between modes
+		if (container.getInput().isKeyPressed(Input.KEY_1))
+			game.enterState(1);
+		else if (container.getInput().isKeyPressed(Input.KEY_2))
+			game.enterState(2);
+		else if (container.getInput().isKeyPressed(Input.KEY_3))
+			game.enterState(3);
 
+		
 		// update all cards
 		for (int i=0; i<5; ++i) {
 			centerCards[i].update(delta);
@@ -185,16 +194,6 @@ public class OngoingMode extends TableMode {
 			playerCards[i][0].update(delta);
 			playerCards[i][1].update(delta);
 		}
-		
-		
-		
-		// temporary method for transitioning between modes
-		if (container.getInput().isKeyPressed(Input.KEY_1))
-			game.enterState(1);
-		else if (container.getInput().isKeyPressed(Input.KEY_2))
-			game.enterState(2);
-		else if (container.getInput().isKeyPressed(Input.KEY_4))
-			game.enterState(4);
 		
 		// TEST!!!
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
@@ -257,11 +256,11 @@ public class OngoingMode extends TableMode {
 	private void drawPlayerNames(Graphics g) {
 		g.setColor(Color.white);
 
-		GUI.drawStringCentered(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCenter(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
-			GUI.drawStringCentered(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+			GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 					playerPanelPositions[i][1]+playerNameOffset[1]);
 		}
 	}
@@ -304,7 +303,7 @@ public class OngoingMode extends TableMode {
 	
 
 	public int getID() {
-		return 3;
+		return 4;
 	}
 }
 

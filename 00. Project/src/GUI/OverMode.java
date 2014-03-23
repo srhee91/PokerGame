@@ -72,13 +72,7 @@ public class OverMode extends BasicGameState
 	
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 
-		// temporary method for transitioning between modes
-		if (container.getInput().isKeyPressed(Input.KEY_1))
-			game.enterState(1);
-		else if (container.getInput().isKeyPressed(Input.KEY_2))
-			game.enterState(2);
-		else if (container.getInput().isKeyPressed(Input.KEY_3))
-			game.enterState(3);
+		
 	}
 	
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
@@ -86,13 +80,13 @@ public class OverMode extends BasicGameState
 		// draw background
 		background.draw(0, 0, container.getWidth(), container.getHeight());
 		
-		GUI.drawStringCentered(g, msgFont, Color.white, gameOverLoseString, msgOffset[0], msgOffset[1]);
+		GUI.drawStringCenter(g, msgFont, Color.white, gameOverLoseString, msgOffset[0], msgOffset[1]);
 		
 		backToMenuButton.render(container, g, buttonFont, Color.white, "Back to Main Menu");
 		spectateButton.render(container, g, buttonFont, Color.white, "Spectate This Game");
 	}
 
 	public int getID() {
-		return 4;
+		return 5;
 	}
 }

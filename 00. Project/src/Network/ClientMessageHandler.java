@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import sun.awt.event.IgnorePaintEvent;
+
 public class ClientMessageHandler {
 	
 	ObjectOutputStream oos=null;
@@ -26,7 +28,7 @@ public class ClientMessageHandler {
 	public ClientMessageHandler(InetAddress IP,int port){
 		try {
 			socket = new Socket();
-			socket.connect(new InetSocketAddress(IP, port), 20);
+			socket.connect(new InetSocketAddress(IP, port), 1000);
 			oos=new ObjectOutputStream(socket.getOutputStream());
 			ois=new ObjectInputStream(socket.getInputStream());
 		} catch (UnknownHostException e) {
@@ -73,7 +75,6 @@ public class ClientMessageHandler {
 		}
 	}
 	
-	
 	/*
 	 * Inner class thread
 	 * continuously receive game state through socket stream
@@ -103,33 +104,6 @@ public class ClientMessageHandler {
 		}
 	}
 	
-	
-	
-	
-	public static void main(String args[]){
-		InetAddress serverIP=null;
-		try {
-			serverIP=InetAddress.getByName("127.0.0.1");
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		System.out.println("connect to "+serverIP.getHostAddress());
-		ClientMessageHandler client=new ClientMessageHandler(serverIP,4321);
-		client.sending();
-		/*try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		/*client.disconnect();*/
-	}
-	
-	/*call this function will start SendThread*/
-	public void sending(){
-		new SendThread().start();
-	}
-	
 	/*
 	 * Get user input and call send(input);
 	 * */
@@ -140,13 +114,49 @@ public class ClientMessageHandler {
 			System.out.println("Input your message continously:");
 			while(true){
 				String str=input.nextLine();
-				//if(str.equalsIgnoreCase("0")){
-				//	disconnect();
-				//}else{
 				ua = new UserAction(str);
 				send(ua);
-				//}
 			}
+		}
+	}
+	
+	public static void searchHost(){
+		int i;
+		for (i=1;i<255;i++){
+			new SearchThread(i).start();;
+		}
+	}
+	
+	public static void main(String args[]){
+		searchHost();
+		/*InetAddress serverIP=null;
+		try {
+			serverIP=InetAddress.getByName("192.168.1.2");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		System.out.println("connect to "+serverIP.getHostAddress());
+		ClientMessageHandler client=new ClientMessageHandler(serverIP,4321);
+		client.sending();*/
+	}
+	
+	/*call this function will start SendThread*/
+	public void sending(){
+		new SendThread().start();
+	}
+}
+
+class SearchThread extends Thread{
+	int i;
+	public SearchThread(int i){
+		this.i=i;
+	}
+	public void run(){
+		Socket socket = new Socket();
+		try {
+			socket.connect(new InetSocketAddress(InetAddress.getByName("192.168.1."+i), 4321), 1000);
+			System.out.println("Connecting successfully: 192.168.1."+i);
+		} catch (IOException e) {
 		}
 	}
 }

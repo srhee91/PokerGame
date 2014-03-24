@@ -69,8 +69,7 @@ public class HostMessageHandler {
 					System.out.println("Cannot listen on port");
 					break;
 				}catch(Exception e){
-					e.printStackTrace();
-					break;
+					System.out.println("Fail to establish connection with "+socket.getInetAddress().getHostAddress());
 				}
 			}
 		}
@@ -137,7 +136,6 @@ public class HostMessageHandler {
 	
 	public static void main(String args[]){
 		HostMessageHandler host=new HostMessageHandler(4321);
-		System.out.println("finish main");
 		host.sending();
 	}
 	

@@ -43,18 +43,45 @@ public class Host{
 		//each game
 		game = new GameSystem(playerCount);
 		
+		//TEST TEST TEST//
+		System.out.println("before the game start");
+		for(int i=0; i<GameSystem.MAXPLAYER; i++)
+			if(game.player[i] != null)	System.out.println("Player "+i+":\n" + game.player[i]);
+			else						System.out.println("Player "+i+" Does not exist.");
+		//TEST TEST TEST//
+		
 		//each hand
 		while(game.playerCount() > 1){
 			game.newHand();
+
+			//TEST TEST TEST//
+			System.out.println("\nwhen the hand is dealt");
+			for(int i=0; i<GameSystem.MAXPLAYER; i++)
+				if(game.player[i] != null)	System.out.println("Player "+i+":\n" + game.player[i]);
+				else						System.out.println("Player "+i+" Does not exist.");
+			System.out.println("Flops : ");
+			for(int i=0; i<5; i++)	System.out.println(game.flops[i]);
+			//TEST TEST TEST//
 			
 			//each round
 			for(int i=0; i<4; i++){
 				game.flopState = i;
 				
+				//TEST TEST TEST//
+				System.out.println("Flop state : " + game.flopState);
+				//TEST TEST TEST//
+
 				//each turn
 				while(game.nextTurn() != -1){
 					sendGameState();
 					updateAction();
+					
+					//TEST TEST TEST//
+					System.out.println("It's " + game.whoseTurn +"'s turn!");
+					System.out.println("Fold=0 Call=1 Bet=2");
+					Scanner s = new Scanner();
+					//TEST TEST TEST//
+
 				}
 				
 				game.updateRound();
@@ -71,17 +98,21 @@ public class Host{
 	}
 	public void updateAction(){
 		//bet/fold/call/raise...
-		if(action)?
-		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
-		game.highestBet = betAmount;
-		game.player[game.whoseTurn].fold();
+//		if(action)?
+//		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
+//		game.highestBet = betAmount;
+//		game.player[game.whoseTurn].fold();
 	}
 	
 	
 	//main method - a process created by Poker.java or GUI
-	public static void main(){
+	public static void main(String args[]){
 
 		Host host = new Host();
+		
+		//TEST TEST TEST//
+		host.playerCount = 4;
+		//TEST TEST TEST//
 		
 		host.createHost();
 		host.waitToStart();

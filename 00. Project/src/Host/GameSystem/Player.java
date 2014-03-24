@@ -2,7 +2,7 @@ package Host.GameSystem;
 
 public class Player {
 
-	public Card hands[];
+	public Card hand[];
 	public int totalChip;
 	public int betAmount;
 	
@@ -38,11 +38,27 @@ public class Player {
 		return true;
 	}
 	
-	public void dealHands(Card hands[]){
-		this.hands = hands;
+	public void dealHands(Card hand[]){
+		this.hand = hand;
 		hasFolded = false;
 	}
 	
 	//setter
 	public void fold(){ hasFolded = true; }
+	
+	public String toString()
+	{
+		String str = new String();
+		
+		if(hand == null) str += "No hand is dealt yet\n";
+		else str += (hand[0] + "\n" + hand[1] + "\n");
+		
+		str += "Total Chip : " + totalChip;
+		str += "\nBet Amount : " + betAmount + "\n";
+		
+		if(hasFolded)	str += "Has Folded\n";
+		if(hasLeft)		str += "Has Left\n\n";
+		
+		return str;
+	}
 }

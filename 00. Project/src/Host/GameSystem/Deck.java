@@ -48,6 +48,22 @@ public class Deck {
         }
 	}
 	
+	public Card[] drawHands(){
+		Card[] hands = new Card[2];
+		hands[0] = deck[deckcount++];
+		hands[1] = deck[deckcount++];
+		return hands;
+	}
+	
+	public Card[] drawFlops(){
+		for(int i=0; i<5; i++)
+		{
+			flop[i] = deck[deckcount++];
+		}
+		
+		return flop;
+	}
+	
 	public void drawcardsToPlayer(final int PLAYER_MAX){
 		int i=0;
         player = new Card[2*PLAYER_MAX]; 
@@ -116,13 +132,13 @@ public class Deck {
 	}
 
 	public static void main(String[] args){
-<<<<<<< HEAD:00. Project/src/Host/Deck.java
+//<<<<<<< HEAD:00. Project/src/Host/Deck.java
 		Deck obj=new Deck();
 		obj.shuffle();
 		obj.drawcardsToPlayer(8);
-		CalculateRank obj1=new CalculateRank();
+		Rank obj1=new Rank();
 		obj1.merge();
-		CalculateRank calrank=new CalculateRank();
+		Rank calrank=new Rank();
 		for(int i=0; i<5;i++){
 			System.out.println(flop[i]);
 			player_1[i+2]=flop[i];
@@ -212,7 +228,7 @@ public class Deck {
 			System.out.println("player "+ j + " = " +Deck.player[i].toString());
 			System.out.println("player "+ j + " = " +Deck.player[i+1].toString());
 			j++;
-		}
+		}*/
 		
 	}
 }

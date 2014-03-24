@@ -3,8 +3,11 @@ package Network;
 import java.io.Serializable;
 
 public class UserAction implements Serializable{
+	
+	public enum Action{FOLD, CHECK_CALL, RAISE_BET, START_GAME };
+	int raiseAmount;
 
-	private String msg;
+	//private String msg;
 	public UserAction( String msg){
 		this.msg=msg;
 	}

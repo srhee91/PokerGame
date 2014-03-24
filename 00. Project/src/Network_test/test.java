@@ -9,41 +9,74 @@ import Network.*;
 
 public class test {
 
-	private static final int timeout = 1000;
-	private static Socket[] sockets = new Socket[255];
+	private static final int timeout = 15;
 	private static boolean[] connected = new boolean[255];
 	private static SearchThread[] threads = new SearchThread[255];
 	private static boolean foundAHost;
 	
-	public static void main(String[] args) {
-		searchHost();
+	public static void main(String[] args) throws Exception {
+		
+		int numWorked = 0;
+		
+		for (int T=0; T<100; ++T) {
+			searchHost();
+			boolean worked = true;
+			for (int i=2; i<4; ++i) {
+				if (!connected[i]) {
+					worked = false;
+					break;
+				}
+			}
+			
+			if (worked) {
+				numWorked++;
+			}
+			
+		}
+		
+		System.out.println("worked: "+numWorked);
 	}
 	
-	public static void searchHost(){
+	public static void searchHost() throws Exception {
 		
-		for (int i=1; i<255; ++i) {
-			sockets[i] =  new Socket();
+		for (int i=0; i<255; ++i) {
 			connected[i] = false;
 		}
 		
-		do {
-			foundAHost = false;
-			
-			for (int i=1;i<255;i++){
+		foundAHost = false;
+		
+		for (int i=2; i<5; ++i) {
+			for (int t=0; t<2; ++t) {
 				threads[i] = new SearchThread(i);
 				threads[i].start();
+				threads[i].join();
 			}
-			try {
-				for (int i=1; i<255; ++i) {
-					threads[i].join();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-		} while (foundAHost);
+		}
+		
+		/*
+		for (int i=0; i<255; ++i) {
+			if (connected[i])
+				System.out.println(i+" connected.");
+		}*/
 	}
 
+	
+	private static void connect(int i) {
+		if (!connected[i]) {
+			//System.out.println("trying "+i+"...");
+			Socket socket = new Socket();
+			try{
+				socket.connect(new InetSocketAddress(
+					InetAddress.getByName("192.168.1."+i), 4321), timeout);
+				socket.close();
+				connected[i] = true;
+				foundAHost = true;
+				//System.out.println("Connecting successfully: 192.168.1."+i);
+			}catch(Exception e) {
+				//System.out.println(e.getMessage());
+			};
+		}
+	}
 	
 	
 	private static class SearchThread extends Thread{
@@ -52,16 +85,7 @@ public class test {
 			this.i=i;
 		}
 		public void run(){
-			try {
-				if (!connected[i]) {
-					sockets[i].connect(new InetSocketAddress(
-							InetAddress.getByName("192.168.1."+i), 4321), timeout);
-					connected[i] = true;
-					foundAHost = true;
-					System.out.println("Connecting successfully: 192.168.1."+i);
-				}
-			} catch (IOException e) {
-			}
+			connect(i);
 		}
 	}
 }

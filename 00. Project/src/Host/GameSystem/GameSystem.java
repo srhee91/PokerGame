@@ -18,7 +18,8 @@ public class GameSystem{
 	public int flopState;
 	
 	public Pot potTotal;
-	public int highestBet;	
+	public int highestBet;
+	//public int highestBetter; its currently in Host.java
 	
 	public Deck deck;
 	
@@ -67,6 +68,7 @@ public class GameSystem{
 	public void updateRound(){
 		potTotal.gatherPots(player, highestBet);
 		
+		highestBet = 0;
 		whoseTurn = dealer;
 	}
 	public void updateHand(){
@@ -96,8 +98,7 @@ public class GameSystem{
 		if(nextP == MAXPLAYER)	nextP = 0;
 		
 		while(true){
-			if(player[nextP] != null && !player[nextP].hasFolded && !player[nextP].isAllIn()
-					&& player[nextP].betAmount < highestBet)	break;
+			if(player[nextP] != null && !player[nextP].hasFolded && !player[nextP].isAllIn())	break;
 	
 			nextP++;
 			if(nextP == MAXPLAYER)	nextP = 0;

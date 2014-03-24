@@ -1,5 +1,7 @@
 package Host;
 
+import java.util.Scanner;
+
 import GameState.*;
 import Host.GameSystem.GameSystem;
 
@@ -66,23 +68,38 @@ public class Host{
 			//each round
 			for(int i=0; i<4; i++){
 				game.flopState = i;
+				int highestBetter = game.nextTurn();
 				
 				//TEST TEST TEST//
 				System.out.println("Flop state : " + game.flopState);
 				//TEST TEST TEST//
 
 				//each turn
-				while(game.nextTurn() != -1){
+				do{
 					sendGameState();
 					updateAction();
 					
 					//TEST TEST TEST//
-					System.out.println("It's " + game.whoseTurn +"'s turn!");
-					System.out.println("Fold=0 Call=1 Bet=2");
-					Scanner s = new Scanner();
+					System.out.println("It's player " + game.whoseTurn +"'s turn!");
+					System.out.print("Fold=0 Call=1 Bet=2\n:");
+					Scanner s = new Scanner(System.in);
+					int input = s.nextInt();
+					if(input == 0)		game.player[game.whoseTurn].fold();
+					else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
+					else {
+						System.out.print("How much you want to bet? :");
+						input = s.nextInt();
+						game.player[game.whoseTurn].bet(input);
+						highestBetter = game.whoseTurn;
+						game.highestBet = input;
+					}
+					
+					for(int k=0; k<GameSystem.MAXPLAYER; k++)
+						if(game.player[k] != null)	System.out.println("Player "+k+":\n" + game.player[k]);
+						else						System.out.println("Player "+k+" Does not exist.");
 					//TEST TEST TEST//
 
-				}
+				}while(game.nextTurn() != highestBetter);
 				
 				game.updateRound();
 			}

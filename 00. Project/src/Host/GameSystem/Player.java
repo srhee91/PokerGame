@@ -22,10 +22,13 @@ public class Player {
 	}	 
 	
 	//the player bets the betAmount.
-	//**parameter betAmount is NOT Cumulative** 
+	//**parameter betAmount IS Cumulative** 
 	//If the bet is higher than players totalChip, return false;
 	//If successfully bet, return true;
 	public boolean bet(int betAmount) {
+		
+		betAmount -= this.betAmount;
+		
 		if(betAmount > totalChip){
 			this.betAmount += totalChip;
 			totalChip = 0;

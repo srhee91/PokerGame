@@ -32,20 +32,22 @@ public class Pot {
 			
 			//check for someone who folded/left OR didn't bet
 			for(int i=0; i<player.length; i++) {
+				if(player[i] != null){
 				if(player[i].hasFolded || player[i].hasLeft || player[i].betAmount == 0) {
 					totalPot += player[i].betAmount;
 					player[i].betAmount = 0;
 					playerInvolved[i] = false;
-				}
+				}}
 			}			
 			
 			//check if someone went all in, and find the lowest all in
 			int lowestBet = GameSystem.INIT_CHIP*8 + 1; 
 			for(int i=0; i<player.length; i++)
 			{
+				if(player[i] != null){
 				if(player[i].betAmount > 0 && highestBet > player[i].betAmount){
 					if(lowestBet > player[i].betAmount) lowestBet = player[i].betAmount;
-				}
+				}}
 			}
 			//if someone went all in.....
 			if(lowestBet != (GameSystem.INIT_CHIP*8 + 1))
@@ -53,10 +55,11 @@ public class Pot {
 				//subtract the all in amount and add it to this totalPot; Then, splitPot the rest;
 				for(int i=0; i<player.length; i++)
 				{
+					if(player[i] != null){
 					if(player[i].betAmount > 0){
 						totalPot += lowestBet;
 						player[i].betAmount -= lowestBet;
-					}
+					}}
 				}
 				//splitPot the rest;
 				splitPot = new Pot();
@@ -68,8 +71,10 @@ public class Pot {
 			//save the total pot
 			for(int i=0; i<player.length; i++)
 			{
-				totalPot += player[i].betAmount;
-				player[i].betAmount = 0;
+				if(player[i] != null){
+					totalPot += player[i].betAmount;
+					player[i].betAmount = 0;
+				}
 			}
 			
 		}

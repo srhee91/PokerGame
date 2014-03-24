@@ -18,6 +18,7 @@ public abstract class HostSearcher {
 	
 	public static void start(int port){
 		String myIP;
+		HostSearcher.port=port;
 		try {
 			myIP=InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
@@ -70,7 +71,6 @@ class SearchThread extends Thread{
 		Socket socket = new Socket();
 		try {
 			socket.connect(new InetSocketAddress(InetAddress.getByName(""+HostSearcher.IP1+"."+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 500);
-			System.out.println("Connecting : 192.168.1."+i);
 			synchronized(this){
 				System.out.println("Connecting successfully: 192.168.1."+i);
 				ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());
@@ -81,11 +81,6 @@ class SearchThread extends Thread{
 		} catch( ClassNotFoundException e){
 			e.printStackTrace();
 		} catch (IOException e) {
-		} finally {
-			try {
-				socket.close();
-			} catch (Exception e) {
-			}
 		}
 	}
 }

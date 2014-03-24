@@ -32,9 +32,6 @@ public class HostBroacaster {
 			System.out.println("Cannot listen on port");
 			System.exit(0);
 		}
-		
-		new Listening().start();
-
 	}
 	
 	class Listening extends Thread{
@@ -51,6 +48,7 @@ public class HostBroacaster {
 					System.out.println("Cannot listen on port");
 					break;
 				}catch(Exception e){
+					e.printStackTrace();
 				}
 			}
 		}
@@ -58,5 +56,6 @@ public class HostBroacaster {
 	public static void main(String args[]){
 		HostBroacaster hb=new HostBroacaster(4320);
 		hb.lobbyState=new LobbyState("shit");
+		hb.new Listening().start();
 	}
 }

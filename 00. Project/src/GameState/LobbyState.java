@@ -1,6 +1,8 @@
 package GameState;
 
-public class LobbyState {
+import java.io.Serializable;
+
+public class LobbyState implements Serializable{
 	public int numOfPlayer;
 	public String nickNames[];
 	

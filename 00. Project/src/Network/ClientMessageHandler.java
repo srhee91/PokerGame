@@ -44,23 +44,39 @@ public class ClientMessageHandler {
 		
 	}
 	
+	
+	public ClientMessageHandler() {
+		
+	}
+	
+	
+	public boolean connect(String IPAdress) {
+		
+	}
+	
+	
+	public GameState getUpdatedGameState() {
+		
+		if (no new gamestate)
+			return null;
+		
+		return gamestate;
+	}
+	
+	
 	/*
 	 * Call this function will
 	 * send UserAction object 
 	 * through oos stream to host message handler
 	 * */
-	public synchronized void send(UserAction ua){
+	public synchronized void send(UserAction ua) throws IOException{
 		/*if (disconnect==true){
 			System.out.println("Send Failed. Already disconnected!");
 			return;
 		}*/
-		try{
 			oos.writeObject(ua);
 			oos.flush();
-		}catch(IOException e){
-			System.out.println("Cannot send object");
-			e.printStackTrace();
-		}
+
 	}
 	
 	/*

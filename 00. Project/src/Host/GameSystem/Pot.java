@@ -38,6 +38,9 @@ public class Pot {
 					player[i].betAmount = 0;
 					playerInvolved[i] = false;
 				}}
+				else{
+					playerInvolved[i] = false;
+				}
 			}			
 			
 			//check if someone went all in, and find the lowest all in

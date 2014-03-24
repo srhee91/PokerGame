@@ -54,7 +54,7 @@ public class Player {
 		String str = new String();
 		
 		if(hand == null) str += "No hand is dealt yet\n";
-		else str += (hand[0] + "\n" + hand[1] + "\n");
+		else str += (hand[0] + "\t" + hand[1] + "\n");
 		
 		str += "Total Chip : " + totalChip;
 		str += "\nBet Amount : " + betAmount + "\n";

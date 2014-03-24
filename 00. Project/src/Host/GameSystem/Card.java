@@ -40,7 +40,7 @@ public class Card {
 			kind = "HEART";
 			break;
 		case 3:
-			kind = "DIAMOND";
+			kind = "DIA"; //"DIAMOND";
 			break;
 		case 4:
 			kind = "SPADE";
@@ -62,7 +62,8 @@ public class Card {
 		default:
 			number = this.number + "";
 		}
-		return "kind:" +kind+ ", num:" +number;
+		//return "kind:" +kind+ ", num:" +number;
+		return number + " " + kind;
 	}
 	
 	

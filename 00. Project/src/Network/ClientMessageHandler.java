@@ -123,7 +123,7 @@ public class ClientMessageHandler {
 	public static void searchHost(){
 		int i;
 		for (i=1;i<255;i++){
-			new SearchThread(i).start();;
+			new SearchThread(i).start();
 		}
 	}
 	
@@ -146,7 +146,7 @@ public class ClientMessageHandler {
 	}
 }
 
-class SearchThread extends Thread{
+/*class SearchThread extends Thread{
 	int i;
 	public SearchThread(int i){
 		this.i=i;
@@ -157,6 +157,11 @@ class SearchThread extends Thread{
 			socket.connect(new InetSocketAddress(InetAddress.getByName("192.168.1."+i), 4321), 1000);
 			System.out.println("Connecting successfully: 192.168.1."+i);
 		} catch (IOException e) {
+		} finally {
+			try {
+				socket.close();
+			} catch (Exception e) {
+			}
 		}
 	}
-}
+}*/

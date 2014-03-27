@@ -26,8 +26,8 @@ public class OngoingMode extends TableMode {
 	private Card[] centerCards;
 	private Card[][] playerCards;
 	
-	private final int[][] centerCardPositions = {{283, 230}, {373, 230}, {463, 230}, {553, 230}, {643, 230}};
-	private final int[] centerChipAmount = {485, 340};
+	private final int[][] centerCardPositions = {{283, 230}, {373, 230}, 
+			{463, 230}, {553, 230}, {643, 230}};
 	
 	private final int[][] mainCardOffsets = {{172, 35}, {254, 35}};
 	private final int[] mainCheckButtonOffset = {10, 35};
@@ -43,9 +43,7 @@ public class OngoingMode extends TableMode {
 	private final int[] playerDealerChipOffset = {42, 145};
 	
 
-	
-	private Image chip;
-	private Image chipBig;
+	private ChipAmounts chipAmounts;
 	private Image dealerChip;
 
 	private TrueTypeFont infoFontBig;
@@ -67,19 +65,14 @@ public class OngoingMode extends TableMode {
 	public void init(GameContainer container, StateBasedGame game)throws SlickException {
 		
 		super.init(container, game);
-
-
-		// load images of chips
-		chip = new Image(GUI.RESOURCES_PATH + "chip25.png");
-		chipBig = new Image(GUI.RESOURCES_PATH + "chip30.png");
+		
+		// load images of chip
 		dealerChip = new Image(GUI.RESOURCES_PATH + "dchip25.png");
 		
 		// load UI fonts
 		infoFontBig = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 26), true);
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
-		
-		
 		
 		// load 52 cards
 		cardFaces = new Image[4][14];	// extra column so card values match index
@@ -95,7 +88,18 @@ public class OngoingMode extends TableMode {
 		cardBack = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"BackBlue.png");
 		
 		
-				
+		// initialize chip amounts
+		int[][] playerAmountPositions = new int[8][2];
+		playerAmountPositions[0][0] = mainPanelPosition[0]+mainChipAmountOffset[0];
+		playerAmountPositions[0][1] = mainPanelPosition[1]+mainChipAmountOffset[1];
+		for (int i=1; i<8; ++i) {
+			playerAmountPositions[i][0] = playerPanelPositions[i][0]+playerChipAmountOffset[0];
+			playerAmountPositions[i][1] = playerPanelPositions[i][1]+playerChipAmountOffset[1];
+		}
+		chipAmounts = new ChipAmounts(infoFont, infoFontBig, 200, playerAmountPositions);
+		
+		
+		// load cards
 		centerCards = new Card[5];
 		for (int i=0; i<5; ++i) {
 			centerCards[i] = new Card(cardBack, cardFaces[i%4][13-i], centerCardPositions[i][0], centerCardPositions[i][1], true);
@@ -109,12 +113,12 @@ public class OngoingMode extends TableMode {
 		}
 
 		
+		// load buttons and textfield
+		
 		raiseTextField = new RaiseTextField(container,
 				mainPanelPosition[0] + mainRaiseTextFieldOffset[0],
 				mainPanelPosition[1] + mainRaiseTextFieldOffset[1]);
-		
-		
-		
+				
 		checkButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_blue.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_blue_down.png",
 				mainPanelPosition[0] + mainCheckButtonOffset[0], mainPanelPosition[1] + mainCheckButtonOffset[1],
@@ -195,26 +199,39 @@ public class OngoingMode extends TableMode {
 			playerCards[i][1].update(delta);
 		}
 		
+		// update all chip amounts
+		chipAmounts.update(delta);
+		
+		
 		// TEST!!!
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
 			for (int i=0; i<5; ++i) {
 				centerCards[i].flip();
 			}
 		}
-		// TEST!!
-		if (container.getInput().isKeyPressed(Input.KEY_G)) {
+		else if (container.getInput().isKeyPressed(Input.KEY_G)) {
 			checkButton.setEnable(!checkButton.getEnable());
 			foldButton.setEnable(!foldButton.getEnable());
 			raiseButton.setEnable(!raiseButton.getEnable());
 			allInButton.setEnable(!allInButton.getEnable());
 			raiseTextField.setEnable(!raiseTextField.getEnable());
 		}
-		if (container.getInput().isKeyPressed(Input.KEY_H)) {
+		/*
+		else if (container.getInput().isKeyPressed(Input.KEY_H)) {
 			checkButton.setAlphaWhileDisabled(1.5f-checkButton.getAlphaWhileDisabled());
 			foldButton.setAlphaWhileDisabled(1.5f-foldButton.getAlphaWhileDisabled());
 			raiseButton.setAlphaWhileDisabled(1.5f-raiseButton.getAlphaWhileDisabled());
 			allInButton.setAlphaWhileDisabled(1.5f-allInButton.getAlphaWhileDisabled());
 			raiseTextField.setAlphaWhileDisabled(1.5f-raiseTextField.getAlphaWhileDisabled());
+		}*/
+		else if (container.getInput().isKeyPressed(Input.KEY_H)) {
+			boolean srcIsPlayer = Math.random()<0.5;
+			boolean destIsPlayer = Math.random()<0.5;
+			int srcIndex = (int)Math.floor(Math.random()*8.0);
+			int destIndex = (int)Math.floor(Math.random()*8.0);
+			int amount = (int)Math.floor(Math.random()*11.0);
+			chipAmounts.addSendToQueue(amount, srcIsPlayer, srcIndex,
+					destIsPlayer, destIndex, 500.0, true);
 		}
 	}
 	
@@ -222,12 +239,7 @@ public class OngoingMode extends TableMode {
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		
 		super.render(container, game, g);
-		
-		drawPlayerNames(g);		// draw player names
-		drawChipAmounts(g);
-		drawInteractiveElements(container, g);
-		
-		drawDealerChip(g, 0);
+		drawPlayerNames(g);
 		
 		// draw cards
 		for (int i=0; i<5; ++i) {
@@ -237,6 +249,11 @@ public class OngoingMode extends TableMode {
 			playerCards[i][0].draw();
 			playerCards[i][1].draw();
 		}
+		
+		drawDealerChip(g, 0);
+		chipAmounts.draw(g);
+		
+		drawInteractiveElements(container, g);
 	}
 
 	
@@ -264,19 +281,7 @@ public class OngoingMode extends TableMode {
 					playerPanelPositions[i][1]+playerNameOffset[1]);
 		}
 	}
-	
-	private void drawChipAmounts(Graphics g) {
-		drawChipAmountBig(g, 200, centerChipAmount[0], centerChipAmount[1]);
-			
-		drawChipAmount(g, 100, mainPanelPosition[0]+mainChipAmountOffset[0],
-				mainPanelPosition[1]+mainChipAmountOffset[1]);	// mainplayer
 		
-		for (int i=1; i<8; ++i) {
-			drawChipAmount(g, 25, playerPanelPositions[i][0]+playerChipAmountOffset[0],
-					playerPanelPositions[i][1]+playerChipAmountOffset[1]);
-		}
-	}
-	
 	private void drawDealerChip(Graphics g, int player) {
 		if (player==0) {
 			dealerChip.draw(mainPanelPosition[0]+mainDealerChipOffset[0],
@@ -288,20 +293,6 @@ public class OngoingMode extends TableMode {
 		}
 	}
 	
-	private void drawChipAmount(Graphics g, int amount, int x, int y) {
-		chip.draw(x, y);
-		g.setColor(Color.white);
-		infoFont.drawString(x+30, y+12-infoFont.getHeight()/2, "$"+amount);
-	}
-	private void drawChipAmountBig(Graphics g, int amount, int x, int y) {
-		chipBig.draw(x, y);
-		g.setColor(Color.white);
-		infoFontBig.drawString(x+40, y+15-infoFontBig.getHeight()/2, "$"+amount);
-	}
-	
-	
-	
-
 	public int getID() {
 		return 4;
 	}

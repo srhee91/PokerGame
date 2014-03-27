@@ -87,14 +87,14 @@ public class Card {
 	
 	
 	// updates current screen position of card if it's not yet at its destination
-	public void update(int delta) throws SlickException {
+	public void update(double delta) throws SlickException {
 		
 		// update screen position
 		if (currX != destX || currY != destY) {
 			double dX = destX - currX;
 			double dY = destY - currY;
 			double distToDest = java.lang.Math.sqrt(dX*dX+dY*dY);
-			double dDist = (double)delta * moveSpeed;
+			double dDist = delta * moveSpeed;
 			
 			if (dDist >= distToDest) {
 				currX = destX;
@@ -108,7 +108,7 @@ public class Card {
 		
 		// update card visibility
 		if (currAlpha < destAlpha) {
-			double dAlpha = (double)delta * alphaSpeed;
+			double dAlpha = delta * alphaSpeed;
 			if (dAlpha >= destAlpha-currAlpha) {
 				currAlpha = destAlpha;
 			}
@@ -117,7 +117,7 @@ public class Card {
 			}
 		}
 		else if (currAlpha > destAlpha) {
-			double dAlpha = (double)delta * alphaSpeed;
+			double dAlpha = delta * alphaSpeed;
 			if (dAlpha >= currAlpha-destAlpha) {
 				currAlpha = destAlpha;
 			}
@@ -128,7 +128,7 @@ public class Card {
 		
 		// update card theta
 		if (currFaceUp != destFaceUp) {
-			double dTheta = (double)delta * thetaSpeed;
+			double dTheta = delta * thetaSpeed;
 			if (dTheta >= 180.0-theta) {
 				theta = 0.0;
 				currFaceUp = destFaceUp;

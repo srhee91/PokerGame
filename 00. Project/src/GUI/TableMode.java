@@ -20,7 +20,7 @@ public class TableMode extends BasicGameState {
 	protected final int mainPanelSize[] = {500, 150};
 	protected final int mainNameOffset[] = {250, 15};
 	
-	protected final int playerPanelPositions[][] = {{-1, -1},
+	protected final int playerPanelPositions[][] = {{-1, -1},	// 0th entry not used
 											{25, 290},
 											{25, 100},
 											{215, 10},
@@ -64,11 +64,11 @@ public class TableMode extends BasicGameState {
 		g.setColor(new Color(32, 32, 32, 128));
 		
 		g.fillRoundRect(mainPanelPosition[0], mainPanelPosition[1],
-				mainPanelSize[0], mainPanelSize[1], 10);	// mainplayer rect
+				mainPanelSize[0], mainPanelSize[1], 0);	// mainplayer rect
 		
 		for (int i=1; i<8; ++i) {
 			g.fillRoundRect(playerPanelPositions[i][0], playerPanelPositions[i][1],
-					playerPanelSize[0], playerPanelSize[1], 10);
+					playerPanelSize[0], playerPanelSize[1], 0);
 		}
 	}
 

@@ -23,14 +23,16 @@ public class ChipAmounts {
 			this.big = big;
 		}
 		private void draw(Graphics g) {
-			if (!big) {
-				chip.draw(x, y);
-				font.drawString(x+30, y+12-font.getHeight()/2,
-						"$"+amount, Color.white);
-			} else  {
-				chipBig.draw(x, y);
-				fontBig.drawString(x+36, y+15-fontBig.getHeight()/2,
-						"$"+amount, Color.white);
+			if (amount != 0) {
+				if (!big) {
+					chip.draw(x, y);
+					font.drawString(x+30, y+12-font.getHeight()/2,
+							"$"+amount, Color.white);
+				} else  {
+					chipBig.draw(x, y);
+					fontBig.drawString(x+36, y+15-fontBig.getHeight()/2,
+							"$"+amount, Color.white);
+				}
 			}
 		}
 	}
@@ -42,7 +44,7 @@ public class ChipAmounts {
 		
 		private double currX, currY;
 		private boolean started, completed;
-		private final double moveSpeed = 0.4;	// pixels per ms
+		private final double moveSpeed = 1.0;	// pixels per ms
 		
 		private SendAmount(StaticAmount source, StaticAmount destination, int amount) {
 			this.source = source;
@@ -85,18 +87,34 @@ public class ChipAmounts {
 	
 	
 	private class QueuedSend {
+		
 		private double waitTime;
-		private boolean removeFromQueueWhenComplete;
+		private boolean letFinish;
 		private SendAmount send;
+		
 		private QueuedSend(int amount, boolean srcIsPlayer, int srcIndex,
 				boolean destIsPlayer, int destIndex,
-				double waitTime, boolean removeFromQueueWhenComplete) {
+				double waitTime, boolean leftFinish) {
 			this.waitTime = waitTime;
-			this.removeFromQueueWhenComplete = removeFromQueueWhenComplete;
+			this.letFinish = leftFinish;
 			this.send = new SendAmount(
 					srcIsPlayer ? playerAmounts[srcIndex] : potAmounts[srcIndex],
 					destIsPlayer ? playerAmounts[destIndex] : potAmounts[destIndex],
 					amount);
+		}
+		private void countDown(double delta) {
+			waitTime -= delta;
+			if (waitTime<=0.0 && !send.started) {	// execute
+				send.start();
+				amountsInTransit.add(send);
+			}
+		}
+		private boolean canRemoveFromQueue() {
+			if (!letFinish) {
+				return send.started;
+			} else {
+				return send.completed;
+			}
 		}
 	}
 	
@@ -140,6 +158,9 @@ public class ChipAmounts {
 		sendQueue = new ArrayDeque<QueuedSend>();
 	}
 	
+	public boolean sendOngoing() {
+		return !amountsInTransit.isEmpty();
+	}
 	
 	public void addSendToQueue(int amount, boolean srcIsPlayer, int srcIndex,
 			boolean destIsPlayer, int destIndex,
@@ -154,17 +175,9 @@ public class ChipAmounts {
 		// remove after starting/completing when appropriate
 		QueuedSend qs = sendQueue.peek();
 		if (qs != null) {
-			qs.waitTime -= delta;
-			if (qs.waitTime <= 0.0) {
-				if (!qs.send.started) {
-					qs.send.start();
-					amountsInTransit.add(qs.send);
-					if (!qs.removeFromQueueWhenComplete)
-						sendQueue.remove();
-				} else if (qs.send.completed) {
-					sendQueue.remove();
-				}
-			}
+			qs.countDown(delta);
+			if (qs.canRemoveFromQueue())
+				sendQueue.remove();
 		}
 		
 		// update SendAmount positions, remove ones that have completed

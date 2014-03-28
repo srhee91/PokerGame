@@ -2,10 +2,12 @@ package GUI;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 
 public class Card {
 	
+	private Image backImage;
+	private Image faceImage;
+		
 	// screen position
 	private double currX;
 	private double currY;
@@ -24,9 +26,7 @@ public class Card {
 	private double destAlpha;
 	private final double alphaSpeed = 0.005;	// alpha per ms
 	
-	private Image backImage;
-	private Image faceImage;
-
+	
 	
 	public Card(Image backImage, Image faceImage, int initialX, int initialY, boolean initialVisible) {
 		
@@ -69,6 +69,11 @@ public class Card {
 		}
 	}
 	
+	public void reveal(Image faceImage) {
+		this.faceImage = faceImage;
+		setFaceUp(true);
+	}
+	
 	public void flip() {
 		setFaceUp(!currFaceUp);
 	}
@@ -76,7 +81,8 @@ public class Card {
 	
 	// poll card state
 	public boolean isMoving() {
-		return ((currX!=destX || currY!=destY) || (currAlpha!=destAlpha || currFaceUp!=destFaceUp));
+		return ((currX!=destX || currY!=destY) ||
+				(currAlpha!=destAlpha || currFaceUp!=destFaceUp));
 	}
 	public boolean isVisible() {
 		return currAlpha >= 0.5;
@@ -87,7 +93,7 @@ public class Card {
 	
 	
 	// updates current screen position of card if it's not yet at its destination
-	public void update(double delta) throws SlickException {
+	public void update(double delta) {
 		
 		// update screen position
 		if (currX != destX || currY != destY) {

@@ -19,16 +19,6 @@ import Poker.Poker;
 
 public class OngoingMode extends TableMode {
 	
-	
-	private Image[][] cardFaces;
-	private Image cardBack;
-	
-	private Card[] centerCards;
-	private Card[][] playerCards;
-	
-	private final int[][] centerCardPositions = {{283, 230}, {373, 230}, 
-			{463, 230}, {553, 230}, {643, 230}};
-	
 	private final int[][] mainCardOffsets = {{172, 35}, {254, 35}};
 	private final int[] mainCheckButtonOffset = {10, 35};
 	private final int[] mainFoldButtonOffset = {10, 90};
@@ -42,9 +32,10 @@ public class OngoingMode extends TableMode {
 	private final int[] playerChipAmountOffset = {72, 145};
 	private final int[] playerDealerChipOffset = {42, 145};
 	
-
+	
+	private Cards cards;
 	private ChipAmounts chipAmounts;
-	private Image dealerChip;
+	private DealerChip dealerChip;
 
 	private TrueTypeFont infoFontBig;
 	
@@ -66,26 +57,25 @@ public class OngoingMode extends TableMode {
 		
 		super.init(container, game);
 		
-		// load images of chip
-		dealerChip = new Image(GUI.RESOURCES_PATH + "dchip25.png");
-		
 		// load UI fonts
 		infoFontBig = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 26), true);
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
 		
-		// load 52 cards
-		cardFaces = new Image[4][14];	// extra column so card values match index
-		String indexStr;
-		for (int i=1; i<=13; ++i) {
-			indexStr = String.format("%02d", i);
-			cardFaces[0][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"c"+indexStr+".png");
-			cardFaces[1][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"d"+indexStr+".png");
-			cardFaces[2][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"h"+indexStr+".png");
-			cardFaces[3][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"s"+indexStr+".png");
+		
+		// initialize cards
+		int[][][] playerCardPositions = new int[8][2][2];
+		playerCardPositions[0][0][0] = mainPanelPosition[0]+mainCardOffsets[0][0];
+		playerCardPositions[0][0][1] = mainPanelPosition[1]+mainCardOffsets[0][1];
+		playerCardPositions[0][1][0] = mainPanelPosition[0]+mainCardOffsets[1][0];
+		playerCardPositions[0][1][1] = mainPanelPosition[1]+mainCardOffsets[1][1];
+		for (int i=1; i<8; ++i) {
+			playerCardPositions[i][0][0] = playerPanelPositions[i][0]+playerCardOffsets[0][0];
+			playerCardPositions[i][0][1] = playerPanelPositions[i][1]+playerCardOffsets[0][1];
+			playerCardPositions[i][1][0] = playerPanelPositions[i][0]+playerCardOffsets[1][0];
+			playerCardPositions[i][1][1] = playerPanelPositions[i][1]+playerCardOffsets[1][1];
 		}
-		// load card back
-		cardBack = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"BackBlue.png");
+		cards = new Cards(playerCardPositions);
 		
 		
 		// initialize chip amounts
@@ -98,19 +88,18 @@ public class OngoingMode extends TableMode {
 		}
 		chipAmounts = new ChipAmounts(infoFont, infoFontBig, 200, playerAmountPositions);
 		
+		// initialize dealer chip
+		int[][] dealerChipPositions = new int[8][2];
+		dealerChipPositions[0][0] = mainPanelPosition[0]+mainDealerChipOffset[0];
+		dealerChipPositions[0][1] = mainPanelPosition[1]+mainDealerChipOffset[1];
+		for (int i=1; i<8; ++i) {
+			dealerChipPositions[i][0] = playerPanelPositions[i][0]+playerDealerChipOffset[0];
+			dealerChipPositions[i][1] = playerPanelPositions[i][1]+playerDealerChipOffset[1];
+		}
+		dealerChip = new DealerChip(dealerChipPositions, 0);
 		
-		// load cards
-		centerCards = new Card[5];
-		for (int i=0; i<5; ++i) {
-			centerCards[i] = new Card(cardBack, cardFaces[i%4][13-i], centerCardPositions[i][0], centerCardPositions[i][1], true);
-		}
-		playerCards = new Card[8][2];
-		for (int i=0; i<8; ++i) {
-			int[] cardPosition = getPlayerCardPosition(i, 0);
-			playerCards[i][0] = new Card(cardBack, cardFaces[3][1], cardPosition[0], cardPosition[1], true);
-			cardPosition = getPlayerCardPosition(i, 1);
-			playerCards[i][1] = new Card(cardBack, cardFaces[3][1], cardPosition[0], cardPosition[1], true);
-		}
+		
+		
 
 		
 		// load buttons and textfield
@@ -160,19 +149,6 @@ public class OngoingMode extends TableMode {
 		});
 	
 	}
-	private int[] getPlayerCardPosition(int playerIndex, int cardIndex) {
-		int[] ret = new int[2];
-		if (playerIndex==0) {
-			ret[0] = mainPanelPosition[0] + mainCardOffsets[cardIndex][0];
-			ret[1] = mainPanelPosition[1] + mainCardOffsets[cardIndex][1];
-		}
-		else {
-			ret[0] = playerPanelPositions[playerIndex][0] + playerCardOffsets[cardIndex][0];
-			ret[1] = playerPanelPositions[playerIndex][1] + playerCardOffsets[cardIndex][1];
-		}
-		return ret;
-	}
-	
 	
 	
 	
@@ -191,23 +167,17 @@ public class OngoingMode extends TableMode {
 
 		
 		// update all cards
-		for (int i=0; i<5; ++i) {
-			centerCards[i].update(delta);
-		}
-		for (int i=0; i<8; ++i) {
-			playerCards[i][0].update(delta);
-			playerCards[i][1].update(delta);
-		}
+		cards.update(delta);
 		
 		// update all chip amounts
 		chipAmounts.update(delta);
 		
+		// update dealer chip
+		dealerChip.update(delta);
 		
 		// TEST!!!
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
-			for (int i=0; i<5; ++i) {
-				centerCards[i].flip();
-			}
+			cards.dealCards();
 		}
 		else if (container.getInput().isKeyPressed(Input.KEY_G)) {
 			checkButton.setEnable(!checkButton.getEnable());
@@ -231,7 +201,11 @@ public class OngoingMode extends TableMode {
 			int destIndex = (int)Math.floor(Math.random()*8.0);
 			int amount = (int)Math.floor(Math.random()*11.0);
 			chipAmounts.addSendToQueue(amount, srcIsPlayer, srcIndex,
-					destIsPlayer, destIndex, 500.0, true);
+					destIsPlayer, destIndex, 0.0, true);
+		}
+		else if (container.getInput().isKeyPressed(Input.KEY_J)) {
+			int dealer = (int)Math.floor(Math.random()*8.0);
+			dealerChip.moveTo(dealer);
 		}
 	}
 	
@@ -241,17 +215,22 @@ public class OngoingMode extends TableMode {
 		super.render(container, game, g);
 		drawPlayerNames(g);
 		
-		// draw cards
-		for (int i=0; i<5; ++i) {
-			centerCards[i].draw();
-		}
-		for (int i=0; i<8; ++i) {
-			playerCards[i][0].draw();
-			playerCards[i][1].draw();
-		}
 		
-		drawDealerChip(g, 0);
-		chipAmounts.draw(g);
+		// draw cards, chip amounts, and dealer chip
+		// try to draw moving elements on top
+		if (dealerChip.isMoving()) {
+			chipAmounts.draw(g);
+			cards.draw();
+			dealerChip.draw();
+		} else if (chipAmounts.sendOngoing()) {
+			dealerChip.draw();
+			cards.draw();
+			chipAmounts.draw(g);
+		} else {
+			chipAmounts.draw(g);
+			dealerChip.draw();
+			cards.draw();
+		}
 		
 		drawInteractiveElements(container, g);
 	}
@@ -282,16 +261,6 @@ public class OngoingMode extends TableMode {
 		}
 	}
 		
-	private void drawDealerChip(Graphics g, int player) {
-		if (player==0) {
-			dealerChip.draw(mainPanelPosition[0]+mainDealerChipOffset[0],
-					mainPanelPosition[1]+mainDealerChipOffset[1]);
-		}
-		else {
-			dealerChip.draw(playerPanelPositions[player][0]+playerDealerChipOffset[0],
-					playerPanelPositions[player][1]+playerDealerChipOffset[1]);
-		}
-	}
 	
 	public int getID() {
 		return 4;

@@ -25,6 +25,11 @@ public class LobbyMode extends TableMode {
 	private final int[] mainTextOffset = {250, 75};
 	private final int[] mainStartButtonOffset = {150, 50};
 	
+	private final Color hostLabelColor = new Color(85, 163, 217, 242);
+	private final Color joinedLabelColor = new Color(128, 128, 128, 242);
+
+	
+	
 	private Animation[] waitingAnimations;
 	private final int NUM_ANIMATIONS = 4;
 	
@@ -115,10 +120,7 @@ public class LobbyMode extends TableMode {
 				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 				
-				
-				drawLabelCentered(g, labelFont, "HOST", Color.white, new Color(85, 163, 217, 255),
-						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
-						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
+				drawPlayerLabel(g, i, "Host", Color.white, hostLabelColor);
 				
 			}
 			else if (playerJoined[i]) {
@@ -127,14 +129,7 @@ public class LobbyMode extends TableMode {
 				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 						
-				/*
-				drawLabelCentered(g, labelFont, "JOINED", Color.white, new Color(52, 152, 219, 255),
-						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
-						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
-				*/
-				GUI.drawStringCenter(g, labelFont, Color.white, "JOINED",
-						playerPanelPositions[i][0]+playerPanelLabelOffset[0], 
-						playerPanelPositions[i][1]+playerPanelLabelOffset[1]);
+				drawPlayerLabel(g, i, "Joined", Color.white, joinedLabelColor);
 			}
 			else {
 				Animation waitingAnimation = waitingAnimations[i%NUM_ANIMATIONS];
@@ -164,21 +159,6 @@ public class LobbyMode extends TableMode {
 		}
 	}
 
-
-	protected void drawLabelCentered(Graphics g, TrueTypeFont font, String s,
-			Color textColor, Color labelColor, int x, int y) {
-		
-		int textWidth = font.getWidth(s);
-		int textHeight = font.getHeight(s);
-		int labelWidth = textWidth+20;
-		int labelHeight = textHeight+2;
-		
-		g.setColor(labelColor);
-		g.fillRoundRect(x-labelWidth/2, y-labelHeight/2, labelWidth, labelHeight, 0);
-		
-		g.setColor(textColor);
-		font.drawString(x-textWidth/2, y-textHeight/2, s);
-	}
 	
 	
 	@Override

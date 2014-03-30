@@ -152,7 +152,7 @@ public class ChipAmounts {
 		potAmounts = new StaticAmount[8];
 		for (int i=0; i<8; ++i) {
 			potAmounts[i] = new StaticAmount(potAmountPositions[i][0],
-					potAmountPositions[i][1], 0, i==0);
+					potAmountPositions[i][1], 9998, i==0);
 		}
 		amountsInTransit = new ArrayList<SendAmount>();
 		sendQueue = new ArrayDeque<QueuedSend>();

@@ -16,14 +16,14 @@ import GameState.LobbyState;
 import sun.net.ConnectionResetException;
 
 
-public class HostBroacaster {
+public class HostBroadcaster {
 	ObjectOutputStream oos=null;
 	Socket socket=null;
 	ServerSocket server=null;
 	int port;
 	LobbyState lobbyState;
 	
-	public HostBroacaster(int port){
+	public HostBroadcaster(int port){
 		this.port=port;
 		try{
 			server=new ServerSocket(port);
@@ -54,8 +54,8 @@ public class HostBroacaster {
 		}
 	}
 	public static void main(String args[]){
-		HostBroacaster hb=new HostBroacaster(4320);
-		hb.lobbyState=new LobbyState("shit");
+		HostBroadcaster hb=new HostBroadcaster(4320);
+		hb.lobbyState=new LobbyState("PerfectFelina");
 		hb.new Listening().start();
 	}
 }

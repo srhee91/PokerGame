@@ -17,6 +17,7 @@ public class ClientMessageHandler {
 	ObjectOutputStream oos=null;
 	ObjectInputStream ois=null;
 	Socket socket=null;
+	Gamestate gamestate=null;
 	
 	/* 
 	 * Constructor 
@@ -41,26 +42,16 @@ public class ClientMessageHandler {
 			System.exit(0);
 		}
 		new ReceivingThread().start();
-		
-	}
+	}	
 	
-	
-	public ClientMessageHandler() {
-		
-	}
-	
-	
-	public boolean connect(String IPAdress) {
-		
-	}
-	
-	
-	public GameState getUpdatedGameState() {
-		
-		if (no new gamestate)
+	public Gamestate getUpdatedGameState() {
+		if (gamestate==null)
 			return null;
-		
-		return gamestate;
+		else{
+			Gamestate temp=gamestate;
+			gamestate=null;
+			return temp;
+		}
 	}
 	
 	
@@ -70,13 +61,10 @@ public class ClientMessageHandler {
 	 * through oos stream to host message handler
 	 * */
 	public synchronized void send(UserAction ua) throws IOException{
-		/*if (disconnect==true){
-			System.out.println("Send Failed. Already disconnected!");
-			return;
-		}*/
+			long a=System.currentTimeMillis();
 			oos.writeObject(ua);
 			oos.flush();
-
+			System.out.println(System.currentTimeMillis()-a);
 	}
 	
 	/*
@@ -99,11 +87,10 @@ public class ClientMessageHandler {
 	 * */
 	class ReceivingThread extends Thread{
 		public void run(){
-			Gamestate gs;
 			while(true){
 				try{
-					gs=(Gamestate)ois.readObject();
-					System.out.println("Receive a game state from host\n\t: "+gs);
+					gamestate=(Gamestate)ois.readObject();
+					System.out.println("Receive a game state from host\n\t: "+gamestate);
 					Thread.sleep(20);
 				}catch(IOException e){
 					System.out.println("Session End");
@@ -131,29 +118,26 @@ public class ClientMessageHandler {
 			while(true){
 				String str=input.nextLine();
 				ua = new UserAction(str);
-				send(ua);
+				try {
+					send(ua);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 	
-	public static void searchHost(){
-		int i;
-		for (i=1;i<255;i++){
-			new SearchThread(i).start();
-		}
-	}
-	
 	public static void main(String args[]){
-		searchHost();
-		/*InetAddress serverIP=null;
+		InetAddress serverIP=null;
 		try {
-			serverIP=InetAddress.getByName("192.168.1.2");
+			serverIP=InetAddress.getByName("192.168.1.20");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 		System.out.println("connect to "+serverIP.getHostAddress());
 		ClientMessageHandler client=new ClientMessageHandler(serverIP,4321);
-		client.sending();*/
+		client.sending();
 	}
 	
 	/*call this function will start SendThread*/
@@ -161,23 +145,3 @@ public class ClientMessageHandler {
 		new SendThread().start();
 	}
 }
-
-/*class SearchThread extends Thread{
-	int i;
-	public SearchThread(int i){
-		this.i=i;
-	}
-	public void run(){
-		Socket socket = new Socket();
-		try {
-			socket.connect(new InetSocketAddress(InetAddress.getByName("192.168.1."+i), 4321), 1000);
-			System.out.println("Connecting successfully: 192.168.1."+i);
-		} catch (IOException e) {
-		} finally {
-			try {
-				socket.close();
-			} catch (Exception e) {
-			}
-		}
-	}
-}*/

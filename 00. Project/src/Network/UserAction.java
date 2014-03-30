@@ -3,7 +3,7 @@ package Network;
 import java.io.Serializable;
 
 public class UserAction implements Serializable{
-	
+	public String msg=null;
 	public enum Action{FOLD, CHECK_CALL, RAISE_BET, START_GAME };
 	int raiseAmount;
 

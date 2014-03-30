@@ -19,6 +19,7 @@ public class TableMode extends BasicGameState {
 	protected final int mainPanelPosition[] = {250, 430};
 	protected final int mainPanelSize[] = {500, 150};
 	protected final int mainNameOffset[] = {250, 15};
+	protected final int[] mainPanelLabelOffset = {250, 80};
 	
 	protected final int playerPanelPositions[][] = {{-1, -1},	// 0th entry not used
 											{25, 290},
@@ -30,7 +31,7 @@ public class TableMode extends BasicGameState {
 											{805, 290}};
 	protected final int playerPanelSize[] = {170, 140};
 	protected final int playerNameOffset[] = {85, 15};
-	
+	protected final int[] playerPanelLabelOffset = {85, 75};
 	
 	
 	
@@ -71,7 +72,6 @@ public class TableMode extends BasicGameState {
 					playerPanelSize[0], playerPanelSize[1], 0);
 		}
 	}
-
 	
 	@Override
 	public int getID() {

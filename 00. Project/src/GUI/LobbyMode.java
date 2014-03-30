@@ -17,15 +17,12 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class LobbyMode extends TableMode {
 
-	private TrueTypeFont portNumberFont;
 	private TrueTypeFont mainStatusFont;
 	private TrueTypeFont labelFont;
 	private TrueTypeFont startButtonFont;
 
-	private final int[] playerPanelCenterOffset = {85, 70};
-	private final int[] playerPanelLabelOffset = {85, 75};
+	private final int[] playerPanelAnimationOffset = {69, 54};
 	private final int[] mainTextOffset = {250, 75};
-	private final int[] portNumberPosition = {500, 290};
 	private final int[] mainStartButtonOffset = {150, 50};
 	
 	private Animation[] waitingAnimations;
@@ -40,8 +37,7 @@ public class LobbyMode extends TableMode {
 		super.init(container, game);
 		
 		mainStatusFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 32), true);
-		portNumberFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 48), true);
-		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 19), true);
+		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
 		startButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		
 		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig.png", 
@@ -93,13 +89,7 @@ public class LobbyMode extends TableMode {
 		
 		super.render(container, game, g);
 		
-		drawPortNumber(g);
 		drawPlayerNamesAndStatuses(container, g);
-	}
-
-	private void drawPortNumber(Graphics g) {
-		g.setColor(Color.white);
-		GUI.drawStringCenter(g, portNumberFont, Color.white, "Port: 80", portNumberPosition[0], portNumberPosition[1]);
 	}
 	
 	
@@ -148,8 +138,8 @@ public class LobbyMode extends TableMode {
 			}
 			else {
 				Animation waitingAnimation = waitingAnimations[i%NUM_ANIMATIONS];
-				waitingAnimation.draw(playerPanelPositions[i][0]+playerPanelCenterOffset[0]-waitingAnimation.getWidth()/2,
-						playerPanelPositions[i][1]+playerPanelCenterOffset[1]-waitingAnimation.getHeight()/2);
+				waitingAnimation.draw(playerPanelPositions[i][0]+playerPanelAnimationOffset[0],
+						playerPanelPositions[i][1]+playerPanelAnimationOffset[1]);
 			}
 		}
 		
@@ -174,7 +164,9 @@ public class LobbyMode extends TableMode {
 		}
 	}
 
-	private void drawLabelCentered(Graphics g, TrueTypeFont font, String s, Color textColor, Color labelColor, int x, int y) {
+
+	protected void drawLabelCentered(Graphics g, TrueTypeFont font, String s,
+			Color textColor, Color labelColor, int x, int y) {
 		
 		int textWidth = font.getWidth(s);
 		int textHeight = font.getHeight(s);
@@ -182,13 +174,12 @@ public class LobbyMode extends TableMode {
 		int labelHeight = textHeight+2;
 		
 		g.setColor(labelColor);
-		g.fillRoundRect(x-labelWidth/2, y-labelHeight/2, labelWidth, labelHeight, 4);
+		g.fillRoundRect(x-labelWidth/2, y-labelHeight/2, labelWidth, labelHeight, 0);
 		
 		g.setColor(textColor);
 		font.drawString(x-textWidth/2, y-textHeight/2, s);
 	}
 	
-
 	
 	@Override
 	public int getID() {

@@ -19,8 +19,8 @@ public class JoinMode extends BasicGameState {
 
 	private final int[] joinListPosition = {0, 50};
 	private final int[] joinListSize = {1000, 500};
-	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS", "STATUS", "PLAYERS"};
-	private final int[] joinListColumnWidths = {220, 180, 130, 120};
+	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS", "PLAYERS"};
+	private final int[] joinListColumnWidths = {220, 180, 120};
 	
 	private TrueTypeFont joinListHeaderFont;
 	private TrueTypeFont joinListListFont;
@@ -73,7 +73,7 @@ public class JoinMode extends BasicGameState {
 		
 		gamesInfo = new ArrayList<String[]>();
 		gamesJoinable = new ArrayList<Boolean>();
-		String[] data = {"host_name", "192.128.234.122", "Ongoing", "3/8"};
+		String[] data = {"host_name", "192.128.234.122", "3/8"};
 		for (int i=0; i<20; ++i) {
 			gamesInfo.add(data);
 			gamesJoinable.add(7854%(i+1)==0);

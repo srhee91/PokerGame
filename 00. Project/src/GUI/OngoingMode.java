@@ -32,6 +32,11 @@ public class OngoingMode extends TableMode {
 	private final int[] playerChipAmountOffset = {72, 145};
 	private final int[] playerDealerChipOffset = {42, 145};
 	
+	//private final Color foldLabelColor = new Color(231, 76, 60, 230);
+	private final Color foldLabelColor = new Color(206, 0, 0, 242);
+	private final Color raiseLabelColor = new Color(92, 184, 17, 24);
+	//private final Color checkLabelColor = new Color();
+	//...
 	
 	private Cards cards;
 	private ChipAmounts chipAmounts;
@@ -42,7 +47,7 @@ public class OngoingMode extends TableMode {
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont allInButtonFont;
 	
-
+	private TrueTypeFont labelFont;
 	
 	Button foldButton;
 	Button checkButton;
@@ -61,7 +66,7 @@ public class OngoingMode extends TableMode {
 		infoFontBig = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 26), true);
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
-		
+		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 22), true);
 		
 		// initialize cards
 		int[][][] playerCardPositions = new int[8][2][2];
@@ -166,18 +171,30 @@ public class OngoingMode extends TableMode {
 			game.enterState(3);
 
 		
-		// update all cards
-		cards.update(delta);
-		
-		// update all chip amounts
-		chipAmounts.update(delta);
-		
-		// update dealer chip
-		dealerChip.update(delta);
-		
 		// TEST!!!
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
-			cards.dealCards();
+			
+			cards.resetCards();
+			
+			boolean[] existPlayer = new boolean[8];
+			for (int i=0; i<8; ++i) {
+				existPlayer[i] = Math.random() < 0.75;
+			}
+			
+			cards.dealCards((int)(Math.random()*8.0), existPlayer);
+			cards.showPlayerCards(0);
+			
+			cards.dealFlop();
+			cards.fold((int)(Math.random()*8.0));
+			
+			cards.dealTurn();
+			cards.fold((int)(Math.random()*8.0));
+			
+			cards.dealRiver();
+			cards.showPlayerCards((int)(Math.random()*8.0));
+			cards.showPlayerCards((int)(Math.random()*8.0));
+			cards.fold((int)(Math.random()*8.0));
+			cards.fold(0);
 		}
 		else if (container.getInput().isKeyPressed(Input.KEY_G)) {
 			checkButton.setEnable(!checkButton.getEnable());
@@ -207,6 +224,17 @@ public class OngoingMode extends TableMode {
 			int dealer = (int)Math.floor(Math.random()*8.0);
 			dealerChip.moveTo(dealer);
 		}
+		
+		
+		
+		// update all cards
+		cards.update(delta);
+		
+		// update all chip amounts
+		chipAmounts.update(delta);
+		
+		// update dealer chip
+		dealerChip.update(delta);
 	}
 	
 	@Override
@@ -232,9 +260,33 @@ public class OngoingMode extends TableMode {
 			cards.draw();
 		}
 		
+		drawLabels(g);
 		drawInteractiveElements(container, g);
 	}
 
+	private void drawLabels(Graphics g) {
+		for (int i=0; i<8; ++i) {
+			if (i%2==0)
+				drawPlayerLabel(g, i, labelFont, "Folded", Color.white, foldLabelColor);
+			else
+				drawPlayerLabel(g, i, labelFont, "Folded", Color.white, raiseLabelColor);
+		}
+	}
+	
+	
+	private void drawPlayerLabel(Graphics g, int player, TrueTypeFont font, String s,
+			Color textColor, Color labelColor) {
+		if (player==0) {
+			
+		} else {
+			g.setColor(labelColor);
+			g.fillRoundRect(playerPanelPositions[player][0],
+					playerPanelPositions[player][1]+62, 170, 40, 0);
+			GUI.drawStringCenter(g, labelFont, textColor, s,
+					playerPanelPositions[player][0]+82,
+					playerPanelPositions[player][1]+82);
+		}
+	}
 	
 	
 	private void drawInteractiveElements(GUIContext container, Graphics g) {

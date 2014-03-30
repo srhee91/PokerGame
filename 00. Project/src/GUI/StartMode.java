@@ -21,28 +21,20 @@ public class StartMode extends BasicGameState
 {
 	private Image background;
 
-	private final int[] menuPanelPosition = {40, 250};
-	private final int[] menuPanelSize = {220, 230};
+	private final int[] menuPanelPosition = {40, 300};
+	private final int[] menuPanelSize = {220, 180};
 	
-	private final int[] hostGameButtonOffset = {10, 65};
-	private final int[] joinGameButtonOffset = {10, 120};
-	private final int[] spectateGameButtonOffset = {10, 175};
-	private final int[] exitButtonOffset = {10, 270};
+	private final int[] hostGameButtonOffset = {10, 15};
+	private final int[] joinGameButtonOffset = {10, 70};
+	private final int[] spectateGameButtonOffset = {10, 125};
+	private final int[] exitButtonOffset = {10, 220};
 	
-	private final int[] portTextFieldOffset = {160, 10};
-	private final int[] portTextFieldSize = {50, 40};
-	
-	private final int[] portLabelOffset = {90, 10};
 
-	private final String emptyPortErrorString = "Please enter the port number of the game you want to host/join/spectate.";
-	private final String invalidPortErrorString = "No game exists with that port number.";
 	private final String namePromptString = "Enter player name:";
 	private final String areYouSureExitString = "Are you sure you want to exit to desktop?";
 	private final String loadingString = "Loading... (TEST! press 'f' to finish)";
 	
 	private TrueTypeFont buttonFont;
-	private TrueTypeFont portTextFieldFont;
-	private TrueTypeFont portLabelFont;
 	private TrueTypeFont popupMessageFont;
 	
 	private Button hostGameButton;
@@ -50,7 +42,6 @@ public class StartMode extends BasicGameState
 	private Button spectateGameButton;
 	private Button exitButton;
 	
-	private MyTextField portTextField;
 
 	// popup message stuff
 	private int[] popupPosition = {0, 150};
@@ -60,7 +51,6 @@ public class StartMode extends BasicGameState
 	
 	
 	private PopupMessageAnimation popupMessageAnimation;
-	private PopupMessageOneButton popupMessageOneButton;
 	private PopupMessageTwoButtons popupMessageTwoButtons;
 	private PopupPromptTwoButtons popupPromptTwoButtons;
 	
@@ -70,12 +60,10 @@ public class StartMode extends BasicGameState
 		background = new Image(GUI.RESOURCES_PATH+"background.png");
 		
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
-		portTextFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
-		portLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
 		popupMessageFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		popupPromptTextFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
 		
-		
+		/*
 		portTextField = new MyTextField(container, portTextFieldFont, menuPanelPosition[0]+portTextFieldOffset[0],
 				menuPanelPosition[1]+portTextFieldOffset[1], portTextFieldSize[0], portTextFieldSize[1]);
 		portTextField.setBackgroundColor(new Color(255, 255, 255, 32));
@@ -84,7 +72,7 @@ public class StartMode extends BasicGameState
 		portTextField.setMaxLength(2);
 		portTextField.setNumeralsOnly(true);
 		portTextField.setAcceptingInput(true);
-		
+		*/
 		
 		
 		Animation waitingAnimation = new Animation();
@@ -95,14 +83,6 @@ public class StartMode extends BasicGameState
 		popupMessageAnimation = new PopupMessageAnimation(container, popupPosition, popupSize, popupMessageFont,
 				waitingAnimation);
 		
-		
-		popupMessageOneButton = new PopupMessageOneButton(container, popupPosition, popupSize, popupMessageFont, buttonFont,
-				new ComponentListener() {
-					@Override
-					public void componentActivated(AbstractComponent source) {	// OK action
-						setMenuEnable(true);
-					}
-				});
 		
 		popupMessageTwoButtons = new PopupMessageTwoButtons(container, popupPosition, popupSize,
 				popupMessageFont, buttonFont,
@@ -173,18 +153,8 @@ public class StartMode extends BasicGameState
 					
 					@Override
 					public void componentActivated(AbstractComponent source) {
-						
 						System.out.println("host game button pressed!");
-						
-						String portString = portTextField.getText();
-						if (portString.isEmpty()) {
-							showPopupMessageOneButton(source, emptyPortErrorString);
-						}
-						else {
-							int port = Integer.parseInt(portString);
-							System.out.println("	creating new game on port "+port);
-							showPopupPromptTwoButtons(source, namePromptString);
-						}
+						showPopupPromptTwoButtons(source, namePromptString);
 					}
 				});
 		//hostGameButton.setAlphaWhileDisabled(1.0f);
@@ -199,22 +169,7 @@ public class StartMode extends BasicGameState
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("join game button pressed!");
-						
-						String portString = portTextField.getText();
-						if (portString.isEmpty()) {
-							showPopupMessageOneButton(source, emptyPortErrorString);
-						}
-						else {
-							int port = Integer.parseInt(portString);
-							if (port>9) {
-								showPopupMessageOneButton(source, invalidPortErrorString);
-							}
-							else {
-								System.out.println("	joining game on port "+port);
-								showPopupPromptTwoButtons(source, "Enter player name:");
-							}
-						}
-						
+						showPopupPromptTwoButtons(source, namePromptString);
 					}
 				});
 		//joinGameButton.setAlphaWhileDisabled(1.0f);
@@ -229,20 +184,7 @@ public class StartMode extends BasicGameState
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("spectate game button pressed!");
-						
-						String portString = portTextField.getText();
-						if (portString.isEmpty()) {
-							showPopupMessageOneButton(source, emptyPortErrorString);
-						}
-						else {
-							int port = Integer.parseInt(portString);
-							if (port>9) {
-								showPopupMessageOneButton(source, invalidPortErrorString);
-							}
-							else {
-								System.out.println("	spectating game on port "+port);
-							}
-						}
+						showPopupMessageAnimation(source, loadingString);
 					}
 				});
 		//spectateGameButton.setAlphaWhileDisabled(1.0f);
@@ -269,18 +211,12 @@ public class StartMode extends BasicGameState
 		joinGameButton.setEnable(enable);
 		spectateGameButton.setEnable(enable);
 		exitButton.setEnable(enable);
-		portTextField.setAcceptingInput(enable);
 	}
 	
 	private void showPopupMessageAnimation(AbstractComponent source, String msg) {
 		setMenuEnable(false);
 		popupMessageAnimation.setMessageString(msg);
 		popupMessageAnimation.makeVisible(source);
-	}
-	private void showPopupMessageOneButton(AbstractComponent source, String msg) {
-		setMenuEnable(false);
-		popupMessageOneButton.setMessageString(msg);
-		popupMessageOneButton.makeVisible(source);
 	}
 	private void showPopupPromptTwoButtons(AbstractComponent source, String msg) {
 		setMenuEnable(false);
@@ -325,15 +261,9 @@ public class StartMode extends BasicGameState
 		drawMenuPanel(g);
 		
 		drawMenuButtons(container, g);
-		
-		portLabelFont.drawString(menuPanelPosition[0]+portLabelOffset[0],
-				menuPanelPosition[1]+portLabelOffset[1], "Port:");
-		portTextField.render(container, g);
-		
-		
+
 		// call render on all popup msgs; only visible ones will render
 		popupMessageAnimation.render(container, g);
-		popupMessageOneButton.render(container, g);
 		popupMessageTwoButtons.render(container, g);
 		popupPromptTwoButtons.render(container, g);
 	}

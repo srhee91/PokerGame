@@ -1,9 +1,12 @@
 package GUI;
 
+import java.util.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 
 public class Card {
+	
+	private static Set<Card> movingCards = new HashSet<Card>();
 	
 	private Image backImage;
 	private Image faceImage;
@@ -24,11 +27,16 @@ public class Card {
 	// visibility
 	private double currAlpha;
 	private double destAlpha;
-	private final double alphaSpeed = 0.005;	// alpha per ms
+	private final double alphaSpeed = 0.003;	// alpha per ms
+	
+	private boolean isMoving;
 	
 	
+	public Card(Image backImage, Image faceImage, int[] initialPosition, boolean initialVisible) {
+		this(backImage, faceImage, initialPosition[0], initialPosition[1], initialVisible);
+	}
 	
-	public Card(Image backImage, Image faceImage, int initialX, int initialY, boolean initialVisible) {
+	private Card(Image backImage, Image faceImage, int initialX, int initialY, boolean initialVisible) {
 		
 		this.faceImage = faceImage;
 		this.backImage = backImage;
@@ -44,45 +52,53 @@ public class Card {
 		
 		currAlpha = initialVisible ? 1.0 : 0.0;	// card initially not visible
 		destAlpha = currAlpha;
+		
+		isMoving = false;
 	}
+	
 	
 	public void setFaceImage(Image faceImage) {
 		this.faceImage = faceImage;
 	}
 	
 	
-	// to move card
-	public void moveTo(double destX, double destY) {
-		this.destX = destX;
-		this.destY = destY;
-	}
-	
-	public void setVisible(boolean visible) {	// won't do anything if called during a flip
-		if (theta==0.0) {
-			destAlpha = visible ? 1.0 : 0.0;
+	// to animate card
+	public void setState(int[] destPosition, Boolean visible, Boolean faceUp,
+			boolean instant) {
+		if (destPosition!=null && !(destPosition[0]==currX && destPosition[1]==currY)) {
+			destX = destPosition[0];
+			destY = destPosition[1];
+			isMoving = true;
 		}
-	}
-	
-	public void setFaceUp(boolean faceUp) {		// won't do anything if called during a flip or if not fully visible
-		if (theta==0.0 && (currAlpha==1.0 && destAlpha==1.0)) {
+		if (faceUp!=null && faceUp!=currFaceUp) {
 			destFaceUp = faceUp;
+			isMoving = true;
 		}
-	}
-	
-	public void reveal(Image faceImage) {
-		this.faceImage = faceImage;
-		setFaceUp(true);
-	}
-	
-	public void flip() {
-		setFaceUp(!currFaceUp);
+		if (visible!=null) {
+			double alpha = visible.booleanValue() ? 1.0 : 0.0;
+			if (alpha!=currAlpha) {
+				destAlpha = alpha;
+				isMoving = true;
+			}
+		}
+		if (instant) {
+			currX = destX;
+			currY = destY;
+			currFaceUp = destFaceUp;
+			currAlpha = destAlpha;
+			isMoving = false;
+		}
+		
+		if (isMoving)
+			movingCards.add(this);
+		else
+			movingCards.remove(this);
 	}
 	
 	
 	// poll card state
 	public boolean isMoving() {
-		return ((currX!=destX || currY!=destY) ||
-				(currAlpha!=destAlpha || currFaceUp!=destFaceUp));
+		return isMoving;
 	}
 	public boolean isVisible() {
 		return currAlpha >= 0.5;
@@ -90,57 +106,74 @@ public class Card {
 	public boolean isFaceUp() {
 		return currFaceUp;
 	}
-	
+	public static boolean areAnyMoving() {
+		return !movingCards.isEmpty();
+	}
 	
 	// updates current screen position of card if it's not yet at its destination
 	public void update(double delta) {
-		
-		// update screen position
-		if (currX != destX || currY != destY) {
-			double dX = destX - currX;
-			double dY = destY - currY;
-			double distToDest = java.lang.Math.sqrt(dX*dX+dY*dY);
-			double dDist = delta * moveSpeed;
+		if (isMoving) {
 			
-			if (dDist >= distToDest) {
-				currX = destX;
-				currY = destY;
+			// update screen position
+			boolean positionChanging = false;
+			if (currX != destX || currY != destY) {
+				double dX = destX - currX;
+				double dY = destY - currY;
+				double distToDest = java.lang.Math.sqrt(dX*dX+dY*dY);
+				double dDist = delta * moveSpeed;
+				
+				if (dDist >= distToDest) {
+					currX = destX;
+					currY = destY;
+				}
+				else {
+					currX += dX / distToDest * dDist;
+					currY += dY / distToDest * dDist;
+					positionChanging = true;
+				}
 			}
-			else {
-				currX += dX / distToDest * dDist;
-				currY += dY / distToDest * dDist;
+			
+			// update card visibility
+			boolean alphaChanging = false;
+			if (currAlpha < destAlpha) {
+				double dAlpha = delta * alphaSpeed;
+				if (dAlpha >= destAlpha-currAlpha) {
+					currAlpha = destAlpha;
+				}
+				else {
+					currAlpha += dAlpha;
+					alphaChanging = true;
+				}
 			}
-		}
-		
-		// update card visibility
-		if (currAlpha < destAlpha) {
-			double dAlpha = delta * alphaSpeed;
-			if (dAlpha >= destAlpha-currAlpha) {
-				currAlpha = destAlpha;
+			else if (currAlpha > destAlpha) {
+				double dAlpha = delta * alphaSpeed;
+				if (dAlpha >= currAlpha-destAlpha) {
+					currAlpha = destAlpha;
+				}
+				else {
+					currAlpha -= dAlpha;
+					alphaChanging = true;
+				}
 			}
-			else {
-				currAlpha += dAlpha;
+			
+			// update card theta
+			boolean thetaChanging = false;
+			if (currFaceUp != destFaceUp) {
+				double dTheta = delta * thetaSpeed;
+				if (dTheta >= 180.0-theta) {
+					theta = 0.0;
+					currFaceUp = destFaceUp;
+				}
+				else {
+					theta += dTheta;
+					thetaChanging = true;
+				}
 			}
-		}
-		else if (currAlpha > destAlpha) {
-			double dAlpha = delta * alphaSpeed;
-			if (dAlpha >= currAlpha-destAlpha) {
-				currAlpha = destAlpha;
-			}
-			else {
-				currAlpha -= dAlpha;
-			}
-		}
-		
-		// update card theta
-		if (currFaceUp != destFaceUp) {
-			double dTheta = delta * thetaSpeed;
-			if (dTheta >= 180.0-theta) {
-				theta = 0.0;
-				currFaceUp = destFaceUp;
-			}
-			else {
-				theta += dTheta;
+			
+			if (!positionChanging && !alphaChanging && !thetaChanging) {
+				if (isMoving)
+					movingCards.remove(this);
+				isMoving = false;
 			}
 		}
 	}
@@ -157,7 +190,7 @@ public class Card {
 		Image visible = (currFaceUp==(theta<=90.0)) ? faceImage : backImage;
 				
 		if (theta == 0.0) {
-			visible.draw((int)currX, (int)currY, new Color(1.0f, 1.0f, 1.0f,(float)currAlpha));
+			visible.draw((int)currX, (int)currY, new Color(1.0f, 1.0f, 1.0f, (float)currAlpha));
 		}
 		else {
 			double s = java.lang.Math.sin(java.lang.Math.toRadians(theta));
@@ -166,7 +199,7 @@ public class Card {
 			
 			// calculate card center and image half-dimensions
 			double leftNdcX, leftNdcY, rightNdcX, rightNdcY;
-			/*
+			
 			if (theta <= 90.0) {
 				// left edge up, right edge sliding leftward
 				leftNdcX = perspectiveScale;
@@ -180,7 +213,8 @@ public class Card {
 				leftNdcY = 1.0;
 				rightNdcX = (2.0*c-1.0)*perspectiveScale;
 				rightNdcY = perspectiveScale;
-			}*/
+			}
+			/*
 			if (theta <= 90.0) {
 				// left edge up, both edges slide inward
 				leftNdcX = c*perspectiveScale;
@@ -194,7 +228,7 @@ public class Card {
 				leftNdcY = 1.0;
 				rightNdcX = c*perspectiveScale;
 				rightNdcY = perspectiveScale;
-			}
+			}*/
 			double halfWidth = (double)visible.getWidth() / 2.0;
 			double halfHeight = (double)visible.getHeight() / 2.0;
 			double centerX = currX + halfWidth;

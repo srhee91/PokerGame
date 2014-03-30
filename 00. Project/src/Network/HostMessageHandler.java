@@ -23,12 +23,6 @@ public class HostMessageHandler {
 	ServerSocket server=null;
 	int port;
 	
-	
-	
-	UserAction ac;
-	
-	
-	
 	/*
 	 * Constructor 
 	 * Used to create HostMessageHandler
@@ -99,6 +93,7 @@ public class HostMessageHandler {
 			
 			while(true){
 				try{
+					UserAction ac;
 					ac=(UserAction)myois.readObject();
 					System.out.println("Host receives an action from Client "+clientIndex+": \n");
 					System.out.println("\t"+ac+"\n");

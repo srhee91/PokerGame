@@ -61,10 +61,8 @@ public class ClientMessageHandler {
 	 * through oos stream to host message handler
 	 * */
 	public synchronized void send(UserAction ua) throws IOException{
-			long a=System.currentTimeMillis();
 			oos.writeObject(ua);
 			oos.flush();
-			System.out.println(System.currentTimeMillis()-a);
 	}
 	
 	/*

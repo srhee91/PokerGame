@@ -8,6 +8,7 @@ public class Rank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
 	public static int final_rank = 0; 
+	public static boolean Ace;
 	
 	public Rank(){
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
@@ -50,55 +51,57 @@ public class Rank {
 		
 		//find the best hand
 		int highHand[] = null;
+		int highHand_flush = 0;
 		if(isRoyalStraightFlush(cards)!=null){
 			System.out.println("RoyalStraightFlush");
 			highHand = isRoyalStraightFlush(cards);
-			final_rank = 9;
+			final_rank = ROYAL_STRAIGHT_FLUSH;
 		}
 		else if(isStraightFlush(cards)!=null){
 			System.out.println("StraightFlush");
 			highHand = isStraightFlush(cards);
-			final_rank = 8;
+			final_rank = STRAIGHT_FLUSH;
 		}
 		else if(isFourCard(cards)!=null){
 			System.out.println("FourCard");
 			highHand = isFourCard(cards);
-			final_rank = 7;
+			final_rank = FOURCARD;
 		}
 		else if(isFullHouse(cards)!=null){
 			System.out.println("FullHouse");
 			highHand = isFullHouse(cards);
-			final_rank = 6;
+			final_rank = FULLHOUSE;
 		}
 		else if(isFlush(cards)!=0){
 			System.out.println("Flush");
-			//highHand = isFlush(cards);
-			final_rank = 5;
+			highHand_flush = isFlush(cards);
+			System.out.println(highHand_flush);
+			final_rank = FLUSH;
 		}
 		else if(isStraight(cards)!=null){
 			System.out.println("Straight");
 			highHand = isStraight(cards);
-			final_rank = 4;
+			final_rank = STRAIGHT;
 		}
 		else if(isThreeOfKind(cards)!=null){
 			System.out.println("ThreeOfKind");
 			highHand = isThreeOfKind(cards);
-			final_rank = 3;
+			final_rank = THREEPAIR;
 		}
 		else if(isTwoPair(cards)!=null){
 			System.out.println("TwoPair");
 			highHand = isTwoPair(cards);
-			final_rank = 2;
+			final_rank = TWOPAIR;
 		}
 		else if(isOnePair(cards)!=null){
 			System.out.println("OnePair");
 			highHand = isOnePair(cards);
-			final_rank = 1;
+			final_rank = ONEPAIR;
 		}
 		else{	//No Pair
 			System.out.println("noPair");
 			highHand=noPair(cards);
-			final_rank = 0;
+			final_rank = NOPAIR;
 		}
 		System.out.println(Arrays.toString(highHand));
 	}
@@ -296,7 +299,6 @@ public class Rank {
 		int temp[];
 		 int pop_num1;
 		 int pop_num2=0;
-		 int high_num=0;
 		 int best_set1[]=new int[5];
 		 temp=sort_toIntArray(cards);
 		 pop_num1=getMostPopularElement(temp);
@@ -380,9 +382,23 @@ public class Rank {
 			 int temp[];
 			 int best_set[]=new int[5];
 			 temp=sort_toIntArray(cards);
-			 for(int i=6,j=0;j<5;i--,j++){
-				 best_set[j]=temp[i];
+			 for(int i=6;i>=0;i--){
+				 if(temp[i]==1){
+					 Ace = true;
+					 best_set[0]=temp[i];
+				 }
 			 }
+			 if(Ace != true){
+				 for(int i=6,j=0;j<5;i--,j++){
+					 best_set[j]=temp[i];
+				 }
+			 }
+			 else{
+				 for(int i=6,j=1;j<5;i--,j++){
+					 best_set[j]=temp[i];
+				 }
+			 }
+				 
 			 return best_set;
 		 }
 		 else{

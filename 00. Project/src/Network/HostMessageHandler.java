@@ -1,9 +1,11 @@
 package Network;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -64,6 +66,8 @@ public class HostMessageHandler {
 					socket=server.accept();
 					clientIndex++;
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["+port+"] as client "+clientIndex);
+					DataOutputStream dos=new DataOutputStream(socket.getOutputStream());
+					dos.writeInt(clientIndex);
 					oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
 					ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
 					new ReceivingThread(clientIndex).start();

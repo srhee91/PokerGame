@@ -1,4 +1,5 @@
 package Network;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class ClientMessageHandler {
 	ObjectInputStream ois=null;
 	Socket socket=null;
 	Gamestate gamestate=null;
+	int ChildIndex=-1;
 	
 	/* 
 	 * Constructor 
@@ -30,6 +32,9 @@ public class ClientMessageHandler {
 		try {
 			socket = new Socket();
 			socket.connect(new InetSocketAddress(IP, port), 1000);
+			DataInputStream dis=new DataInputStream(socket.getInputStream());
+			ChildIndex=dis.readInt();
+			System.out.println("I am client "+ChildIndex);
 			oos=new ObjectOutputStream(socket.getOutputStream());
 			ois=new ObjectInputStream(socket.getInputStream());
 		} catch (UnknownHostException e) {
@@ -129,7 +134,7 @@ public class ClientMessageHandler {
 	public static void main(String args[]){
 		InetAddress serverIP=null;
 		try {
-			serverIP=InetAddress.getByName("192.168.1.20");
+			serverIP=InetAddress.getByName("192.168.1.2");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

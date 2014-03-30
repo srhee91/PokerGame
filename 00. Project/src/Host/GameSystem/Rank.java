@@ -7,7 +7,7 @@ import java.util.*;
 public class Rank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
-	public static final int final_rank = 0; 
+	public static int final_rank = 0; 
 	
 	public Rank(){
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
@@ -34,8 +34,8 @@ public class Rank {
 	}
 
 	//finds the best hand out of all players
-	public void findWinner(Card[] card_player1, Card[] card_player2){
-		
+	public int findWinner(Card[] card_player1){
+		return 0;
 	}
 	//compare hands between two players?
 	public int compareHands(Card[]card){
@@ -53,42 +53,52 @@ public class Rank {
 		if(isRoyalStraightFlush(cards)!=null){
 			System.out.println("RoyalStraightFlush");
 			highHand = isRoyalStraightFlush(cards);
+			final_rank = 9;
 		}
 		else if(isStraightFlush(cards)!=null){
 			System.out.println("StraightFlush");
 			highHand = isStraightFlush(cards);
+			final_rank = 8;
 		}
 		else if(isFourCard(cards)!=null){
 			System.out.println("FourCard");
 			highHand = isFourCard(cards);
+			final_rank = 7;
 		}
 		else if(isFullHouse(cards)!=null){
 			System.out.println("FullHouse");
 			highHand = isFullHouse(cards);
+			final_rank = 6;
 		}
 		else if(isFlush(cards)!=0){
 			System.out.println("Flush");
 			//highHand = isFlush(cards);
+			final_rank = 5;
 		}
 		else if(isStraight(cards)!=null){
 			System.out.println("Straight");
 			highHand = isStraight(cards);
+			final_rank = 4;
 		}
 		else if(isThreeOfKind(cards)!=null){
 			System.out.println("ThreeOfKind");
 			highHand = isThreeOfKind(cards);
+			final_rank = 3;
 		}
 		else if(isTwoPair(cards)!=null){
 			System.out.println("TwoPair");
 			highHand = isTwoPair(cards);
+			final_rank = 2;
 		}
 		else if(isOnePair(cards)!=null){
 			System.out.println("OnePair");
 			highHand = isOnePair(cards);
+			final_rank = 1;
 		}
 		else{	//No Pair
 			System.out.println("noPair");
 			highHand=noPair(cards);
+			final_rank = 0;
 		}
 		System.out.println(Arrays.toString(highHand));
 	}

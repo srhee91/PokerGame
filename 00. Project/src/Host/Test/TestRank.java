@@ -1,13 +1,13 @@
 package Host.Test;
 
 import Host.GameSystem.Card;
-import Host.GameSystem.GameSystem.CalculateRank;
+import Host.GameSystem.Rank;
 
 public class TestRank {
 	public TestRank(){
 	}
 	// fullhouse check
-	public static void fullhouse_check(CalculateRank calrank){
+	public static void fullhouse_check(Rank calrank){
 		System.out.println("Testing Fullhouse");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,1);
@@ -19,7 +19,7 @@ public class TestRank {
 		temp[6]=new Card(1,10);
 		calrank.findBestHand(temp);
 	}
-	public static void fourcard_check(CalculateRank calrank){
+	public static void fourcard_check(Rank calrank){
 		System.out.println("Testing FourCard");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,3);
@@ -33,7 +33,7 @@ public class TestRank {
 	}
 	
 	// straighflush check
-	public static void straightflush_check(CalculateRank calrank){
+	public static void straightflush_check(Rank calrank){
 		System.out.println("Testing StraightFlush");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,2);
@@ -46,7 +46,7 @@ public class TestRank {
 		calrank.findBestHand(temp);
 	}
 	// flush check
-	public static void flush_check(CalculateRank calrank){
+	public static void flush_check(Rank calrank){
 		System.out.println("Testing Flush");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,2);
@@ -59,7 +59,7 @@ public class TestRank {
 		calrank.findBestHand(temp);
 	}
 	// straight check
-	public static void straight_check(CalculateRank calrank){
+	public static void straight_check(Rank calrank){
 		System.out.println("Testing Straight");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,8);
@@ -72,7 +72,7 @@ public class TestRank {
 		calrank.findBestHand(temp);
 	}
 	// three of kinds
-	public static void threeofkind_check(CalculateRank calrank){
+	public static void threeofkind_check(Rank calrank){
 		System.out.println("Testing Three of Kinds");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,2);
@@ -85,7 +85,7 @@ public class TestRank {
 		calrank.findBestHand(temp);
 	}
 	// two pairs
-	public static void twopair_check(CalculateRank calrank){
+	public static void twopair_check(Rank calrank){
 		System.out.println("Testing Two Pair");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(4,4);
@@ -98,7 +98,7 @@ public class TestRank {
 		calrank.findBestHand(temp);
 	}
 	// one pair
-	public static void onepair_check(CalculateRank calrank){
+	public static void onepair_check(Rank calrank){
 		System.out.println("Testing OnePair");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,2);
@@ -111,7 +111,7 @@ public class TestRank {
 		calrank.findBestHand(temp);
 	}
 	// high card
-	public static void highcard_check(CalculateRank calrank){
+	public static void highcard_check(Rank calrank){
 		System.out.println("Testing HighCard");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,2);
@@ -124,7 +124,7 @@ public class TestRank {
 		calrank.findBestHand(temp);
 	}
 	public static void main(String[] args){
-		CalculateRank obj1=new CalculateRank();
+		Rank obj1=new Rank();
 		fullhouse_check(obj1); // fullhouse
 		fourcard_check(obj1); // four_card
 		straightflush_check(obj1); // straightflush		

@@ -1,8 +1,11 @@
-package Network;
+package Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+
+import Network.ClientMessageHandler;
+import Network.HostMessageHandler;
 
 public class TestClientMH {
 	

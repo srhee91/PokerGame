@@ -24,6 +24,11 @@ public class HostMessageHandler {
 	int port;
 	
 	
+	
+	UserAction ac;
+	
+	
+	
 	/*
 	 * Constructor 
 	 * Used to create HostMessageHandler
@@ -91,7 +96,7 @@ public class HostMessageHandler {
 			clientIndex=index;
 		}
 		public void run(){
-			UserAction ac;
+			
 			while(true){
 				try{
 					ac=(UserAction)myois.readObject();

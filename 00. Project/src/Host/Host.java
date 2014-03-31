@@ -77,6 +77,7 @@ public class Host{
 				//each turn
 				do{
 					sendGameState();
+					receiveAction();
 					updateAction();
 
 					//TEST V_02!!//
@@ -93,7 +94,12 @@ public class Host{
 					System.out.print("Fold=0 Call=1 Bet=2\n:");
 					Scanner s = new Scanner(System.in);
 					int input = s.nextInt();
-					if(input == 0)		game.player[game.whoseTurn].fold();
+					if(input == 0){
+						game.player[game.whoseTurn].fold();
+						
+						//if every1 folds the hand ends
+						//
+					}
 					else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
 					else {
 						System.out.print("How much you want to bet? :");
@@ -137,7 +143,12 @@ public class Host{
 	}
 	
 	public void sendGameState(){
-		
+		//send "game.gameState();"  <- this will be an object of "Gamestate"
+		//to every player "game.player[]" (you have to check if player!=null)
+	}
+	public void receiveAction(){
+		//request and receive user action from "game.whoseTurn"
+		//user action can be the enum we made last sunday
 	}
 	public void updateAction(){
 		//bet/fold/call/raise...

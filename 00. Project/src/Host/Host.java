@@ -216,7 +216,7 @@ public class Host{
 	public static void main(String args[]){
 
 		// start host, hostmessagehandler, hostbroadcaster
-		Host host = new Host(4321);
+		Host host = new Host(4321,"hostname");
 		host.createHost();
 		
 		System.out.println("********waiting to receive hostname...");

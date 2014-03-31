@@ -23,8 +23,10 @@ public class HostBroadcaster {
 	int port;
 	public LobbyState lobbyState;
 	
-	public HostBroadcaster(int port){
+	
+	public HostBroadcaster(int port, String hostname){
 		this.port=port;
+		lobbyState=new LobbyState(hostname);
 		try{
 			server=new ServerSocket(port);
 			System.out.println("Host Broadcaster is Listening on port ["+port+"] Waiting for client to connect...");
@@ -54,8 +56,8 @@ public class HostBroadcaster {
 		}
 	}
 	public static void main(String args[]){
-		HostBroadcaster hb=new HostBroadcaster(4320);
-		hb.lobbyState=new LobbyState("PerfectFelina");
+		HostBroadcaster hb=new HostBroadcaster(4320,"hostname");
+
 		hb.new Listening().start();
 	}
 }

@@ -12,9 +12,9 @@ public class TestRank {
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,1);
 		temp[1]=new Card(2,1);
-		temp[2]=new Card(3,1);
+		temp[2]=new Card(3,3);
 		temp[3]=new Card(4,3);
-		temp[4]=new Card(1,9);
+		temp[4]=new Card(1,10);
 		temp[5]=new Card(1,3);
 		temp[6]=new Card(1,10);
 		calrank.findBestHand(temp);

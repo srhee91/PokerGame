@@ -8,6 +8,9 @@ public class Rank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
 	public static int final_rank = 0; 
+	public static boolean Ace;
+	public static boolean Ace_Pair;
+	
 	
 	public Rank(){
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
@@ -136,9 +139,17 @@ public class Rank {
 		 int high_num;
 		 int pop_num;
 		 temp=sort_toIntArray(cards);
-	
-		if(findPair(cards)==4){
+		 
+		if(findPair(cards)>=4){
 			pop_num=getMostPopularElement(temp);
+			if(pop_num==1){
+				Ace_Pair=true;
+			}
+			for(int i=6;i>=0;i--){
+				 if(temp[i]==1&&Ace_Pair==false){
+					 Ace = true;
+				 }
+			 }
 			
 			int i;
 			for(i=6;temp[i]==pop_num;i--){}
@@ -147,13 +158,25 @@ public class Rank {
 			
 			if(high_num>pop_num){
 				for(int j=0;j<4;j++){
+					if(Ace_Pair==true){
+						best_set[j]=14;
+					}
 					best_set[j]=pop_num;
 				}
-				best_set[4]=high_num;
+				if(Ace==false){
+					best_set[4]=high_num;
+				}
+				else if(Ace==true){
+					best_set[4]=14;
+				}
 			}else{
 				best_set[0]=high_num;
 				for(int j=1;j<5;j++){
+					if(Ace_Pair==true){
+						best_set[j]=14;
+					}
 					best_set[j]=pop_num;
+					
 				}
 			}
 			return best_set;
@@ -164,30 +187,44 @@ public class Rank {
 		int temp[];
 		int best_set[]=new int[5];
 		int pop_num1;
-		int pop_num2=0;
+		int pop_num2=0,pop_num3=0;
 		temp=sort_toIntArray(cards);
 		if(findPair(cards)==3){
 			pop_num1=getMostPopularElement(temp);
 			for(int i=0;i<6;i++){
 				if((temp[i]==temp[i+1])&&(temp[i]!=pop_num1)){
 					pop_num2=temp[i];
+					if(temp[i+2]==temp[i+3]){
+						pop_num3=temp[i+2];
+					}
 					break;
 				}
 			}
+			if(pop_num2==1||pop_num3==1){
+				Ace_Pair = true;
+			}
 			if(pop_num2!=0){
-				if(pop_num1>pop_num2){
-					for(int j=0;j<2;j++){
-						best_set[j]=pop_num2;
-					}
-					for(int j=2;j<5;j++){
+				if(pop_num3>pop_num2&&Ace_Pair==false){
+					for(int j=0;j<3;j++){
 						best_set[j]=pop_num1;
 					}
-				}else{
+					for(int j=3;j<5;j++){
+						best_set[j]=pop_num3;
+					}
+				}else if(pop_num3<pop_num2&&Ace_Pair==false) {
 					for(int j=0;j<3;j++){
 						best_set[j]=pop_num1;
 					}
 					for(int j=3;j<5;j++){
 						best_set[j]=pop_num2;
+					}
+				}
+				else if(Ace_Pair==true){
+					for(int j=0;j<3;j++){
+						best_set[j]=pop_num1;
+					}
+					for(int j=3;j<5;j++){
+						best_set[j]=1;
 					}
 				}
 				return best_set;
@@ -373,31 +410,74 @@ public class Rank {
 			 int best_set[]=new int[5];
 			 temp=sort_toIntArray(cards);
 			 pop_num=getMostPopularElement(temp);
+			 if(pop_num == 1){
+				Ace_Pair = true;
+			 }
 			int i,set_track=2;
-			for(i=6;temp[i]>pop_num;i--){
-				cardcount++;
-				best_set[set_track]=temp[i];
-				set_track++;
-				if(cardcount==3){
-					break;
+			if(Ace_Pair==false){
+				for(i=6;i>=0;i--){
+					if(temp[i]==1){
+						Ace = true;
+					}
 				}
 			}
-			if(cardcount==0){
-				int setcount=2;
-				for(int m=2;m<5;m++ ){
-					best_set[setcount]=temp[i-m];
-					setcount++;
+			if(Ace==true){
+				for(i=6;temp[i]>pop_num;i--){
+					cardcount++;
+					best_set[set_track]=temp[i];
+					set_track++;
+					if(cardcount==3){
+						break;
+					}
+				}
+				if(cardcount==0){
+					int setcount=2;
+					for(int m=1;m<4;m++ ){
+						best_set[setcount]=temp[i-m];
+						setcount++;
+					}
+					best_set[2]=1;
+				}
+				else if(cardcount==2){
+					best_set[4]=temp[2];
+					best_set[2]=1;
+				}
+				else if(cardcount==1){
+					best_set[3]=temp[i-1];
+					best_set[4]=temp[i-2];
+					best_set[2]=1;
+				}
+				for(int j=0;j<2;j++){
+					best_set[j]=pop_num;
 				}
 			}
-			else if(cardcount==2){
-				best_set[4]=temp[2];
-			}
-			else if(cardcount==1){
-				best_set[3]=temp[i-2];
-				best_set[4]=temp[i-3];
-			}
-			for(int j=0;j<2;j++){
-				best_set[j]=pop_num;
+			else{
+				for(i=6;temp[i]>pop_num;i--){
+					cardcount++;
+					best_set[set_track]=temp[i];
+					set_track++;
+					if(cardcount==3){
+						break;
+					}
+				}
+				if(cardcount==0){
+					int setcount=2;
+					for(int m=2;m<5;m++ ){
+						best_set[setcount]=temp[i-m];
+						setcount++;
+					}
+				}
+				else if(cardcount==2){
+					best_set[4]=temp[2];
+				}
+				else if(cardcount==1){
+					best_set[3]=temp[i-2];
+					best_set[4]=temp[i-3];
+				}
+				for(int j=0;j<2;j++){
+					best_set[j]=pop_num;
+					
+				}
 			}
 			return best_set;
 		}
@@ -408,9 +488,23 @@ public class Rank {
 			 int temp[];
 			 int best_set[]=new int[5];
 			 temp=sort_toIntArray(cards);
-			 for(int i=6,j=0;j<5;i--,j++){
-				 best_set[j]=temp[i];
+			 for(int i=6;i>=0;i--){
+				 if(temp[i]==1){
+					 Ace = true;
+					 best_set[0]=temp[i];
+				 }
 			 }
+			 if(Ace != true){
+				 for(int i=6,j=0;j<5;i--,j++){
+					 best_set[j]=temp[i];
+				 }
+			 }
+			 else{
+				 for(int i=6,j=1;j<5;i--,j++){
+					 best_set[j]=temp[i];
+				 }
+			 }
+				 
 			 return best_set;
 		 }
 		 else{
@@ -473,16 +567,6 @@ public class Rank {
 	    Arrays.sort(temp);
 	    return temp;
     }
-    private static boolean isAce(int[]temp){
-    	boolean val=false;
-    	for(int i=0;i<temp.length;i++){
-    		if(1==temp[i]){
-    			val=true;
-    		}
-    	}
-    	return val;
-    }
-
     
 	public static final int ROYAL_STRAIGHT_FLUSH = 9;
 	public static final int STRAIGHT_FLUSH = 8;

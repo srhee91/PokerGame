@@ -73,7 +73,7 @@ public class Rank {
 			highHand = isFullHouse(cards);
 			final_rank = 6;
 		}
-		else if(isFlush(cards)!=0){
+		else if(isFlush(cards)!=null){
 			System.out.println("Flush");
 			//highHand = isFlush(cards);
 			final_rank = 5;
@@ -108,7 +108,7 @@ public class Rank {
 	public int[] isRoyalStraightFlush(Card cards[]){
 		int royal_flush_helper=0;
 		int[]best_set=new int[5];
-		int kind=isFlush(cards);
+		int kind=isSameKind(cards);
 		if(kind!=0){
 			for(int i=0;i<7;i++){			//checks for royal_flush
 				if(cards[i].getKind()==kind&&(cards[i].getNumber()==1
@@ -128,7 +128,7 @@ public class Rank {
 		return null;
 	}
 	public int[] isStraightFlush(Card cards[]){
-		if(isFlush(cards)!=0&&isStraight(cards)!=null){
+		if(isFlush(cards)!=null&&isStraight(cards)!=null){
 			return isStraight(cards);
 		}
 		return null;
@@ -232,15 +232,16 @@ public class Rank {
 		}
 		return null;
 	}
-	
-	public int isFlush(Card[]card){
+	public int[] isFlush(Card[]card){
+		return null;
+	}
+	public int isSameKind(Card[]card){
 		
-		int isFlush=0;					
+		int isSameKind=0;					
 		int clover_num=0;				//CLOVER = 1;
 		int heart_num=0;				//HEART = 2;
 		int diamond_num=0;				//DIAMOND = 3;
 		int spade_num=0;				//SPADE = 4;
-		int royal_flush_helper=0;		//helper variable
 		
 
 		for(int i=0;i<7;i++){
@@ -257,15 +258,15 @@ public class Rank {
 		}	
 		//for debugging goto Deck.java
 		if(clover_num>=5){
-			isFlush=1;
+			isSameKind=1;
 		}else if(heart_num>=5){
-			isFlush=2;
+			isSameKind=2;
 		}else if(diamond_num>=5){
-			isFlush=3;
+			isSameKind=3;
 		}else if(spade_num>=5){
-			isFlush=4;
+			isSameKind=4;
 		}
-		return isFlush; 
+		return isSameKind; 
 	}
 	
 	public int[] isStraight(Card[]cards){		

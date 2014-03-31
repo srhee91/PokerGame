@@ -62,12 +62,12 @@ public class TestRank {
 	public static void straight_check(Rank calrank){
 		System.out.println("Testing Straight");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(1,8);
-		temp[1]=new Card(1,3);
-		temp[2]=new Card(4,7);
-		temp[3]=new Card(2,3);
-		temp[4]=new Card(3,9);
-		temp[5]=new Card(3,5);
+		temp[0]=new Card(1,10);
+		temp[1]=new Card(1,11);
+		temp[2]=new Card(4,13);
+		temp[3]=new Card(2,12);
+		temp[4]=new Card(3,1);
+		temp[5]=new Card(3,8);
 		temp[6]=new Card(1,6);
 		calrank.findBestHand(temp);
 	}

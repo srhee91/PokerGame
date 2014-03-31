@@ -269,33 +269,60 @@ public class Rank {
 	}
 	
 	public int[] isStraight(Card[]cards){		
-		    int temp[];			//temporary array that will hold 1 set of 7 cards
-		    int count=0;
-		        
-		   temp=sort_toIntArray(cards);
-		   
-		   
-		    for(int i=2; i>=0;i--){
-		        count=0;
-		        int k=i;
-		        int straight[] = new int[5];
-		        straight[count++] = temp[i+4];
-		        for(int j=i+4;j>k;j--){
-		            if (temp[j-1] + 1 == temp[j]) {
-		                straight[count++] = temp[j-1];
-		            }else if (temp[j-1] == temp[j]) {
-		            	k--;
-		            }
-		            
-		            if (k < 0) break;
-		        }
-		        if(count==5){
-		        	return straight;
-		        }
-		    }
-		    
-		    return null;
-	}
+	    int temp[];			//temporary array that will hold 1 set of 7 cards
+	    int count=0;
+	     int best_set[]=new int[5];
+	   temp=sort_toIntArray(cards);
+	   
+	   int helper=0;
+	   for(int i=0;i<7;i++){
+		   if(temp[i]==1){
+					helper = 1;		
+			}
+		   if(temp[i]==10 && helper==1){
+					helper = 2;
+			}
+		   if(temp[i]==11 && helper==2){
+				helper = 3;
+		   }
+		   if(temp[i]==12 && helper==3){
+				helper = 4;
+		   }
+		   if(temp[i]==13 && helper==4){
+			   helper = 5;
+		   }
+	   }
+	   if(helper==5){
+		   best_set[0]=1;
+		   best_set[1]=13;
+		   best_set[2]=12;
+		   best_set[3]=11;
+		   best_set[4]=10;
+		   return best_set;
+	   }
+	   
+	   
+	    for(int i=2; i>=0;i--){
+	        count=0;
+	        int k=i;
+	        int straight[] = new int[5];
+	        straight[count++] = temp[i+4];
+	        for(int j=i+4;j>k;j--){
+	            if (temp[j-1] + 1 == temp[j]) {
+	                straight[count++] = temp[j-1];
+	            }else if (temp[j-1] == temp[j]) {
+	            	k--;
+	            }
+	            
+	            if (k < 0) break;
+	        }
+	        if(count==5){
+	        	return straight;
+	        }
+	    }
+	    
+	    return null;
+}
 
 	public int[] isThreeOfKind(Card cards[]){
 		 int temp[];

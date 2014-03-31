@@ -25,7 +25,7 @@ public class GameSystem{
 	
 	public int blind;
 	public int leftover;
-	
+		
 	//constructor
 	//What to initialize:
 	//1. players
@@ -73,6 +73,7 @@ public class GameSystem{
 	}
 	public void updateHand(){
 		//find winner
+		int winner = (new Rank()).findWinner(flops, player);
 		
 		//pot to winner
 		
@@ -129,7 +130,7 @@ public class GameSystem{
 		gamestate.bigBlinder = bigBlinder;
 		gamestate.smallBlinder = smallBlinder;
 		gamestate.flops = flops;
-		gamestate.flopState = flopstate;
+		gamestate.flopState = flopState;
 		gamestate.potTotal = potTotal;
 		gamestate.highestBet = highestBet;
 		gamestate.leftover = leftover;

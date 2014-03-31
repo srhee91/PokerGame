@@ -37,7 +37,7 @@ public class Rank {
 	}
 
 	//finds the best hand out of all players
-	public int findWinner(Card[] card_player1){
+	public int findWinner(Card[] flop, Player[] player){
 		return 0;
 	}
 	//compare hands between two players?

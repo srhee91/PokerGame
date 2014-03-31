@@ -163,8 +163,18 @@ public class Host{
 	
 	
 	public void sendGameState(){
-		//send "game.gameState();"  <- this will be an object of "Gamestate"
+		//send "game.getGamestate();"  <- this will be an object of "Gamestate"
 		//to every player "game.player[]" (you have to check if player!=null)
+		
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+		
+			if(game.player[i] != null){
+				game.getGamestate(i);
+				
+			}
+		
+		}
+		
 	}
 	
 	

@@ -118,6 +118,24 @@ public class GameSystem{
 		
 		return count;
 	}
+	
+	public Gamestate getGamestate(int me){
+		Gamestate gamestate = new Gamestate();
+		
+		gamestate.me = me;
+		gamestate.player = player;
+		gamestate.whoseTurn = whoseTurn;
+		gamestate.dealer = dealer;
+		gamestate.bigBlinder = bigBlinder;
+		gamestate.smallBlinder = smallBlinder;
+		gamestate.flops = flops;
+		gamestate.flopState = flopstate;
+		gamestate.potTotal = potTotal;
+		gamestate.highestBet = highestBet;
+		gamestate.leftover = leftover;
+		
+		return gamestate;
+	}
 
 	public static int INIT_CHIP = 1000;
 	public static int MAXPLAYER = 8;

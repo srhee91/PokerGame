@@ -2,6 +2,7 @@ package Host;
 
 import java.util.Scanner;
 
+import sun.font.CreatedFontTracker;
 import GameState.*;
 import Host.GameSystem.GameSystem;
 import Network.HostBroadcaster;
@@ -19,6 +20,9 @@ import Network.UserAction;
 public class Host{
 	
 	public Object objReceived;
+	public HostBroadcaster hb;
+	public HostMessageHandler hmh;
+	
 	public GameSystem game;
 	public int playerCount;
 	public int port;
@@ -27,15 +31,16 @@ public class Host{
 		this.port=port;
 		
 	}
-			
+		
+	
 	public void createHost(){
-		HostBroadcaster hb=new HostBroadcaster(port-1);
+		hb=new HostBroadcaster(port-1);
 		hb.lobbyState=new LobbyState("hostname");
 		hb.new Listening().start();
-		HostMessageHandler hmh = new HostMessageHandler(port, this, Thread.currentThread());
-		
-		
+		hmh = new HostMessageHandler(port, this, Thread.currentThread());
 	}
+	
+	
 	
 	public void waitToStart(){
 		//wait to be started by hostplayer
@@ -207,6 +212,20 @@ public class Host{
 	//main method - a process created by Poker.java or GUI
 	public static void main(String args[]){
 
+		// start host, hostmessagehandler, hostbroadcaster
+		Host host = new Host(4321);
+		host.createHost();
+		
+		System.out.println("********waiting to receive hostname...");
+		
+		// wait for host player name 
+		host.receiveAction();
+		String hostName = (String)host.objReceived;
+		System.out.println("********host name: "+hostName);
+		
+		
+		
+		/*
 		Host host = new Host(4321);
 		
 		//TEST TEST TEST// V_01
@@ -217,5 +236,6 @@ public class Host{
 		host.waitToStart();
 		host.startGame();	
 		//host.endGame();
+		 * */
 	}	
 }

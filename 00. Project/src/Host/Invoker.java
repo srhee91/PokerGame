@@ -2,17 +2,25 @@ package Host;
 
 
 import java.io.*;
-import Host.Host;
 
-public class Invoker {
+public class Invoker extends Thread {
 	
-	public static void main(String[] args) throws Exception {
-		exec(Host.class);
-		System.out.println("Invoked process terminated.");
+	private Class klass;
+	
+	public Invoker(Class klass) {
+		this.klass = klass;
 	}
 	
+	public void run() {
+		try {
+			exec(klass);
+			System.out.println("Invoked process terminated.");
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 	
-	 public static int exec(Class klass) throws IOException, InterruptedException {
+	 private int exec(Class klass) throws IOException, InterruptedException {
 		 
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
@@ -27,8 +35,8 @@ public class Invoker {
 		
 		String line;
 		while ( (line = br.readLine()) != null) {
-			   System.out.println("read line: "+line);
-			}
+		   System.out.println("\tINVOKED_PROC: "+line);
+		}
 		
 		p.waitFor();
 		return p.exitValue();

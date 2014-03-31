@@ -65,8 +65,8 @@ public class ClientMessageHandler {
 	 * send UserAction object 
 	 * through oos stream to host message handler
 	 * */
-	public synchronized void send(UserAction ua) throws IOException{
-			oos.writeObject(ua);
+	public synchronized void send(Object ob) throws IOException{
+			oos.writeObject(ob);
 			oos.flush();
 	}
 	

@@ -1,11 +1,16 @@
 package GUI;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.StateBasedGame;
+
+import Network.ClientMessageHandler;
 
 
 public class GUI extends StateBasedGame
@@ -15,8 +20,12 @@ public class GUI extends StateBasedGame
 	public static final String CARDSPRITES_FOLDER = "cardsprites2/";
 	public static final String BUTTONS_FOLDER = "buttons/";
 	
+	
+	public static ClientMessageHandler cmh;
+	
+	
 	public GUI(String name) {
-		super(name);
+		super(name);		
 	}
 
 	@Override

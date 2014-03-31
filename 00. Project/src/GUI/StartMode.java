@@ -1,6 +1,8 @@
 package GUI;
 
 import java.awt.Font;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
@@ -16,6 +18,9 @@ import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+
+import Host.*;
+import Network.ClientMessageHandler;
 
 public class StartMode extends BasicGameState
 {
@@ -114,13 +119,19 @@ public class StartMode extends BasicGameState
 						setMenuEnable(true);
 						
 						if (source==(AbstractComponent)hostGameButton) {
+							
+							// START HOST
+							
 							System.out.println("Player "+popupPromptTwoButtons.getText()+" will host");
 							
 							
 							showPopupMessageAnimation(source, loadingString);
 							
-							// start host process
-							
+							// start thread to start host process and connect to it
+							String hostName = popupPromptTwoButtons.getText();
+							HostSetup hs = new HostSetup(hostName);
+							hs.start();
+							System.out.println("HostSetup thread started!");
 							
 						}
 						else if (source==(AbstractComponent)joinGameButton){

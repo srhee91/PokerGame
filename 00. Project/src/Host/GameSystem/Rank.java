@@ -130,8 +130,42 @@ public class Rank {
 	}
 	public int[] isStraightFlush(Card cards[]){
 		if(isFlush(cards)!=null&&isStraight(cards)!=null){
-			return isStraight(cards);
+			int temp[]=new int[7];
+			int temp_1[]=new int[7];
+			int count;
+			int best_set[]=new int[7];
+			int kind=isSameKind(cards);
+			if(kind!=0){
+			for(int i=0; i<7; i++){
+				if(cards[i].getKind()==kind){
+					temp[i]=cards[i].getNumber();
+				}
+			}
+			Arrays.sort(temp);
+			for(int j=0,k=6;j<7;j++,k--){
+				temp_1[k]=temp[j];
+			}
+			
+			  for(int i=2; i>=0;i--){
+			        count=0;
+			        int k=i;
+			        best_set[count++] = temp_1[i+4];
+			        for(int j=i+4;j>k;j--){
+			            if (temp_1[j-1] + 1 == temp_1[j]) {
+			                best_set[count++] = temp_1[j-1];
+			            }else if (temp_1[j-1] == temp_1[j]) {
+			            	k--;
+			            }
+			            
+			            if (k < 0) break;
+			        }
+			        if(count==5){
+			        	return best_set;
+			        }
+			    }
 		}
+		}
+		
 		return null;
 	}
 	public int[] isFourCard(Card cards[]){

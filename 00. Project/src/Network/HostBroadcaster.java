@@ -21,7 +21,7 @@ public class HostBroadcaster {
 	Socket socket=null;
 	ServerSocket server=null;
 	int port;
-	LobbyState lobbyState;
+	public LobbyState lobbyState;
 	
 	public HostBroadcaster(int port){
 		this.port=port;
@@ -34,7 +34,7 @@ public class HostBroadcaster {
 		}
 	}
 	
-	class Listening extends Thread{
+	public class Listening extends Thread{
 		public void run(){
 			while(true){
 				try{

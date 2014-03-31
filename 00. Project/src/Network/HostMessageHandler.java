@@ -63,7 +63,7 @@ public class HostMessageHandler {
 	 * return socket and create new streams in arrays
 	 * start receiving thread
 	 * */
-	class Listening extends Thread{
+	public class Listening extends Thread{
 		public void run(){
 			while(true){
 				try{
@@ -103,7 +103,7 @@ public class HostMessageHandler {
 				try{
 					Object ac;
 					ac=myois.readObject();
-					host.saveObject(ac);
+					host.objReceived=ac;
 					hostThread.notify();
 					System.out.println("Host receives an action from Client "+clientIndex+": \n");
 					System.out.println("\t"+(UserAction)ac+"\n");

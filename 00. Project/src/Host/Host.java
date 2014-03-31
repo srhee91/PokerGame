@@ -4,6 +4,9 @@ import java.util.Scanner;
 
 import GameState.*;
 import Host.GameSystem.GameSystem;
+import Network.HostBroadcaster;
+import Network.HostMessageHandler;
+import Network.HostBroadcaster.Listening;
 
 
 //Host will do the followings:
@@ -14,11 +17,23 @@ import Host.GameSystem.GameSystem;
 //   - uses methods in GameSystem
 public class Host{
 	
+	public Object objReceived;
 	public GameSystem game;
 	public int playerCount;
+	public int port;
+	
+	public Host(int port){
+		this.port=port;
+		
+	}
 			
 	public void createHost(){
-		//creates HostMessageHandler
+		HostBroadcaster hb=new HostBroadcaster(port-1);
+		hb.lobbyState=new LobbyState("hostname");
+		hb.new Listening().start();
+		HostMessageHandler hmh = new HostMessageHandler(port, this, Thread.currentThread());
+		
+		
 	}
 	
 	public void waitToStart(){
@@ -149,6 +164,11 @@ public class Host{
 	public void receiveAction(){
 		//request and receive user action from "game.whoseTurn"
 		//user action can be the enum we made last sunday
+		try {
+			Thread.currentThread().wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	public void updateAction(){
 		//bet/fold/call/raise...
@@ -162,7 +182,7 @@ public class Host{
 	//main method - a process created by Poker.java or GUI
 	public static void main(String args[]){
 
-		Host host = new Host();
+		Host host = new Host(4321);
 		
 		//TEST TEST TEST// V_01
 		host.playerCount = 4;

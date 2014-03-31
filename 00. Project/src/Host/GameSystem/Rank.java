@@ -3,6 +3,7 @@ package Host.GameSystem;
 import java.util.*;
 
 
+
 //For debugging Goto Deck.java
 public class Rank {
 	public static Card[][] merge_arr;
@@ -75,7 +76,7 @@ public class Rank {
 		}
 		else if(isFlush(cards)!=null){
 			System.out.println("Flush");
-			//highHand = isFlush(cards);
+			highHand = isFlush(cards);
 			final_rank = 5;
 		}
 		else if(isStraight(cards)!=null){
@@ -233,7 +234,26 @@ public class Rank {
 		return null;
 	}
 	public int[] isFlush(Card[]card){
-		return null;
+		int kind = isSameKind(card);
+		int valid;
+		int best_set[]=new int[7];
+		int temp[]= new int[5];
+		if(kind>0&&kind<5){
+			for(int i=0; i<7; i++){
+				if(card[i].getKind()==kind){
+					valid =card[i].getNumber();
+					best_set[i]=valid;
+				}
+			}
+			Arrays.sort(best_set);
+			for(int j=2,k=4;j<7;j++,k--){
+				temp[k]=best_set[j];
+			}
+			return temp;
+		}
+		else{
+			return null;
+		}
 	}
 	public int isSameKind(Card[]card){
 		

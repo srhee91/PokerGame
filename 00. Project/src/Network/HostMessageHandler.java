@@ -21,6 +21,8 @@ public class HostMessageHandler {
 	int clientIndex;
 	ArrayList<ObjectOutputStream> oos=null;
 	ArrayList<ObjectInputStream> ois=null;
+	Host.Host host;
+	Thread hostThread;
 	Socket socket=null;
 	ServerSocket server=null;
 	int port;
@@ -32,8 +34,10 @@ public class HostMessageHandler {
 	 * listen on specific port
 	 * create arrays to store multiple streams.
 	 * */
-	public HostMessageHandler(int port){
+	public HostMessageHandler(int port, Host.Host host, Thread hostThread){
 		this.port=port;
+		this.host=host;
+		this.hostThread=hostThread;
 		try{
 			server=new ServerSocket(port);
 			System.out.println("Host is Listening on port ["+port+"] Waiting for client to connect...");
@@ -97,11 +101,12 @@ public class HostMessageHandler {
 			
 			while(true){
 				try{
-					UserAction ac;
-					ac=(UserAction)myois.readObject();
+					Object ac;
+					ac=myois.readObject();
+					host.saveObject(ac);
+					hostThread.notify();
 					System.out.println("Host receives an action from Client "+clientIndex+": \n");
-					System.out.println("\t"+ac+"\n");
-					Thread.sleep(20);
+					System.out.println("\t"+(UserAction)ac+"\n");
 				}catch(IOException e){
 					System.out.println("Session end for client "+clientIndex);
 					//e.printStackTrace();
@@ -109,9 +114,6 @@ public class HostMessageHandler {
 				}catch(ClassNotFoundException e){
 					System.out.println("ClassNotFound");
 					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					break;
 				}
 			}
 		}
@@ -141,7 +143,7 @@ public class HostMessageHandler {
 	
 	
 	public static void main(String args[]){
-		HostMessageHandler host=new HostMessageHandler(4321);
+		HostMessageHandler host=new HostMessageHandler(4321,null,null);
 		host.sending();
 	}
 	

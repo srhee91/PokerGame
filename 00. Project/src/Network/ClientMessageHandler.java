@@ -94,7 +94,6 @@ public class ClientMessageHandler {
 				try{
 					gamestate=(Gamestate)ois.readObject();
 					System.out.println("Receive a game state from host\n\t: "+gamestate);
-					Thread.sleep(20);
 				}catch(IOException e){
 					System.out.println("Session End");
 					e.printStackTrace();
@@ -102,9 +101,6 @@ public class ClientMessageHandler {
 				}catch(ClassNotFoundException e){
 					System.out.println("ClassNotFound");
 					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					break;
 				}
 			}
 		}

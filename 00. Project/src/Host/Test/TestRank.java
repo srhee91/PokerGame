@@ -75,25 +75,25 @@ public class TestRank {
 	public static void threeofkind_check(Rank calrank){
 		System.out.println("Testing Three of Kinds");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(1,2);
-		temp[1]=new Card(1,7);
-		temp[2]=new Card(4,7);
-		temp[3]=new Card(2,7);
-		temp[4]=new Card(3,3);
-		temp[5]=new Card(1,5);
-		temp[6]=new Card(1,8);
+		temp[0]=new Card(1,10);
+		temp[1]=new Card(1,5);
+		temp[2]=new Card(4,5);
+		temp[3]=new Card(2,5);
+		temp[4]=new Card(3,1);
+		temp[5]=new Card(1,11);
+		temp[6]=new Card(1,2);
 		calrank.findBestHand(temp);
 	}
 	// two pairs
 	public static void twopair_check(Rank calrank){
 		System.out.println("Testing Two Pair");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(4,4);
-		temp[1]=new Card(2,8);
+		temp[0]=new Card(4,1);
+		temp[1]=new Card(2,10);
 		temp[2]=new Card(4,9);
 		temp[3]=new Card(2,9);
 		temp[4]=new Card(3,10);
-		temp[5]=new Card(1,8);
+		temp[5]=new Card(1,11);
 		temp[6]=new Card(1,11);
 		calrank.findBestHand(temp);
 	}

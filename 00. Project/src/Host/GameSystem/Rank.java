@@ -8,7 +8,6 @@ public class Rank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
 	public static int final_rank = 0; 
-	public static boolean Ace;
 	
 	public Rank(){
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
@@ -51,68 +50,68 @@ public class Rank {
 		
 		//find the best hand
 		int highHand[] = null;
-		int highHand_flush = 0;
 		if(isRoyalStraightFlush(cards)!=null){
 			System.out.println("RoyalStraightFlush");
 			highHand = isRoyalStraightFlush(cards);
-			final_rank = ROYAL_STRAIGHT_FLUSH;
+			final_rank = 9;
 		}
 		else if(isStraightFlush(cards)!=null){
 			System.out.println("StraightFlush");
 			highHand = isStraightFlush(cards);
-			final_rank = STRAIGHT_FLUSH;
+			final_rank = 8;
 		}
 		else if(isFourCard(cards)!=null){
 			System.out.println("FourCard");
 			highHand = isFourCard(cards);
-			final_rank = FOURCARD;
+			final_rank = 7;
 		}
 		else if(isFullHouse(cards)!=null){
 			System.out.println("FullHouse");
 			highHand = isFullHouse(cards);
-			final_rank = FULLHOUSE;
+			final_rank = 6;
 		}
 		else if(isFlush(cards)!=0){
 			System.out.println("Flush");
-			highHand_flush = isFlush(cards);
-			System.out.println(highHand_flush);
-			final_rank = FLUSH;
+			//highHand = isFlush(cards);
+			final_rank = 5;
 		}
 		else if(isStraight(cards)!=null){
 			System.out.println("Straight");
 			highHand = isStraight(cards);
-			final_rank = STRAIGHT;
+			final_rank = 4;
 		}
 		else if(isThreeOfKind(cards)!=null){
 			System.out.println("ThreeOfKind");
 			highHand = isThreeOfKind(cards);
-			final_rank = THREEPAIR;
+			final_rank = 3;
 		}
 		else if(isTwoPair(cards)!=null){
 			System.out.println("TwoPair");
 			highHand = isTwoPair(cards);
-			final_rank = TWOPAIR;
+			final_rank = 2;
 		}
 		else if(isOnePair(cards)!=null){
 			System.out.println("OnePair");
 			highHand = isOnePair(cards);
-			final_rank = ONEPAIR;
+			final_rank = 1;
 		}
 		else{	//No Pair
 			System.out.println("noPair");
 			highHand=noPair(cards);
-			final_rank = NOPAIR;
+			final_rank = 0;
 		}
 		System.out.println(Arrays.toString(highHand));
 	}
 	public int[] isRoyalStraightFlush(Card cards[]){
 		int royal_flush_helper=0;
 		int[]best_set=new int[5];
-		if(isFlush(cards)!=0){
+		int kind=isFlush(cards);
+		if(kind!=0){
 			for(int i=0;i<7;i++){			//checks for royal_flush
-				if(cards[i].getKind()==isFlush(cards)&&(cards[i].getNumber()==1
+				if(cards[i].getKind()==kind&&(cards[i].getNumber()==1
 					||cards[i].getNumber()==10||cards[i].getNumber()==11
 					||cards[i].getNumber()==12||cards[i].getNumber()==13)){
+					
 					best_set[royal_flush_helper++]=cards[i].getNumber();
 					
 				}
@@ -137,7 +136,7 @@ public class Rank {
 		 int high_num;
 		 int pop_num;
 		 temp=sort_toIntArray(cards);
-		 
+	
 		if(findPair(cards)==4){
 			pop_num=getMostPopularElement(temp);
 			
@@ -237,7 +236,8 @@ public class Rank {
 		    int count=0;
 		        
 		   temp=sort_toIntArray(cards);
-
+		   
+		   
 		    for(int i=2; i>=0;i--){
 		        count=0;
 		        int k=i;
@@ -266,29 +266,37 @@ public class Rank {
 		 int cardcount = 0;
 		 int best_set[]=new int[5];
 		 temp=sort_toIntArray(cards);
+		 
+		 for(int i=0;i<7;i++){			//if there is ace change it to 14
+			 	if(temp[i]==1){
+			 		temp[i]=14;
+			 	}
+		 }
+		 Arrays.sort(temp);
 		 pop_num=getMostPopularElement(temp);
 		 
 		if(findPair(cards)==3&&isFullHouse(cards)==null){
-			int i;
-			for(i=6;temp[i]>pop_num;i--){
-				cardcount++;
-				if(cardcount==2){
-					best_set[3]=temp[i+1];
-					best_set[4]=temp[i-3];
-					break;
-				}
-			}
-			if(cardcount==1){
-				best_set[3]=temp[i+1];
-				best_set[4]=temp[i-3];
-			}
-			if(cardcount==0){
-				best_set[3]=temp[i-3];
-				best_set[4]=temp[i-4];
-			}
 			for(int j=0;j<3;j++){
 				best_set[j]=pop_num;
 			}
+			for(int i=6;i>=0;i--){			//
+			    if(temp[i]!=pop_num){
+			    	best_set[3]=temp[i];
+			    	break;
+			    }
+			}
+			for(int i=6;i>=0;i--){
+				if(temp[i]!=pop_num&&temp[i]!=best_set[3]){
+			    	best_set[4]=temp[i];
+			    	break;
+			    }
+			}
+			for(int i=0;i<5;i++){		//returns 14 to 1.
+				if(best_set[i]==14){
+					best_set[i]=1;
+				}
+			}
+			
 				return best_set;
 		}
 		return null;
@@ -299,15 +307,27 @@ public class Rank {
 		int temp[];
 		 int pop_num1;
 		 int pop_num2=0;
+		 int high_num=0;
 		 int best_set1[]=new int[5];
+		
 		 temp=sort_toIntArray(cards);
+		 
+			 for(int i=0;i<temp.length;i++){			//checks if there is ace(1). If there is temporary change it to 14.
+				 if(temp[i]==1){
+					 temp[i]=14;
+				 }
+			 }
+		
+		 Arrays.sort(temp);
 		 pop_num1=getMostPopularElement(temp);
+	
 		for(int i=5;i>=0;i--){
 			if((temp[i]==temp[i+1])&&temp[i]!=pop_num1){
 				pop_num2=temp[i];
 				break;
 			}
 		}
+		
 		if(findPair(cards)==2&&pop_num2!=0){
 			//setting higher pair out of two pairs
 			//higher pair will be store as first two; then lower pair gets stored
@@ -330,7 +350,13 @@ public class Rank {
 			for(int i=6;i>=0;i--){
 			    if(temp[i]!=pop_num1 && temp[i]!=pop_num2){
 			    	best_set1[4]=temp[i];
+			    	break;
 			    }
+			}
+			for(int i=0;i<5;i++){		//returns 14 to 1.
+				if(best_set1[i]==14){
+					best_set1[i]=1;
+				}
 			}
 			return best_set1;
 		}
@@ -382,23 +408,9 @@ public class Rank {
 			 int temp[];
 			 int best_set[]=new int[5];
 			 temp=sort_toIntArray(cards);
-			 for(int i=6;i>=0;i--){
-				 if(temp[i]==1){
-					 Ace = true;
-					 best_set[0]=temp[i];
-				 }
+			 for(int i=6,j=0;j<5;i--,j++){
+				 best_set[j]=temp[i];
 			 }
-			 if(Ace != true){
-				 for(int i=6,j=0;j<5;i--,j++){
-					 best_set[j]=temp[i];
-				 }
-			 }
-			 else{
-				 for(int i=6,j=1;j<5;i--,j++){
-					 best_set[j]=temp[i];
-				 }
-			 }
-				 
 			 return best_set;
 		 }
 		 else{
@@ -460,6 +472,15 @@ public class Rank {
 	    }
 	    Arrays.sort(temp);
 	    return temp;
+    }
+    private static boolean isAce(int[]temp){
+    	boolean val=false;
+    	for(int i=0;i<temp.length;i++){
+    		if(1==temp[i]){
+    			val=true;
+    		}
+    	}
+    	return val;
     }
 
     

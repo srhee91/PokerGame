@@ -27,17 +27,20 @@ public class Host{
 	public int playerCount;
 	public int port;
 	
-	public Host(int port){
-		this.port=port;
-		
-	}
-		
+	public String hostname;
 	
+	public Host(int port, String hostname){
+		this.port=port;
+		this.hostname=hostname;
+	}
+			
 	public void createHost(){
-		hb=new HostBroadcaster(port-1);
+		HostBroadcaster hb=new HostBroadcaster(port-1,hostname);
 		hb.lobbyState=new LobbyState("hostname");
 		hb.new Listening().start();
-		hmh = new HostMessageHandler(port, this, Thread.currentThread());
+		HostMessageHandler hmh = new HostMessageHandler(port, this, Thread.currentThread());
+		
+		
 	}
 	
 	

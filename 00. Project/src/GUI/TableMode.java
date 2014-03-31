@@ -20,6 +20,8 @@ public class TableMode extends BasicGameState {
 	protected final int mainPanelSize[] = {500, 150};
 	protected final int mainNameOffset[] = {250, 15};
 	protected final int[] mainPanelLabelOffset = {250, 80};
+	protected final int[] mainLabelOffset = {400, 5};
+	protected final int[] mainLabelSize = {95, 20};
 	
 	protected final int playerPanelPositions[][] = {{-1, -1},	// 0th entry not used
 											{25, 290},
@@ -33,6 +35,11 @@ public class TableMode extends BasicGameState {
 	protected final int playerNameOffset[] = {85, 15};
 	protected final int[] playerPanelLabelOffset = {85, 75};
 	
+	protected final int[] playerLabelOffset = {0, 62};
+	protected final int[] playerLabelSize = {170, 40};
+	
+	private TrueTypeFont mainLabelFont;
+	private TrueTypeFont playerLabelFont;
 	
 	
 	@Override
@@ -43,6 +50,9 @@ public class TableMode extends BasicGameState {
 		
 		// load font
 		infoFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 16), true);
+		
+		mainLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 12), true);
+		playerLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 22), true);
 	}
 
 	
@@ -70,6 +80,29 @@ public class TableMode extends BasicGameState {
 		for (int i=1; i<8; ++i) {
 			g.fillRoundRect(playerPanelPositions[i][0], playerPanelPositions[i][1],
 					playerPanelSize[0], playerPanelSize[1], 0);
+		}
+	}
+	
+	protected void drawPlayerLabel(Graphics g, int player, String s,
+			Color textColor, Color labelColor) {
+		if (player==0) {
+			g.setColor(labelColor);
+			g.fillRoundRect(mainPanelPosition[0]+mainLabelOffset[0],
+					mainPanelPosition[1]+mainLabelOffset[1],
+					mainLabelSize[0], mainLabelSize[1], 0);
+			
+			GUI.drawStringCenter(g, mainLabelFont, textColor, s,
+					mainPanelPosition[0]+mainLabelOffset[0]+mainLabelSize[0]/2,
+					mainPanelPosition[1]+mainLabelOffset[1]+mainLabelSize[1]/2);
+		} else {
+			g.setColor(labelColor);
+			g.fillRoundRect(playerPanelPositions[player][0]+playerLabelOffset[0],
+					playerPanelPositions[player][1]+playerLabelOffset[1],
+					playerLabelSize[0], playerLabelSize[1], 0);
+			
+			GUI.drawStringCenter(g, playerLabelFont, textColor, s,
+					playerPanelPositions[player][0]+playerLabelOffset[0]+playerLabelSize[0]/2,
+					playerPanelPositions[player][1]+playerLabelOffset[1]+playerLabelSize[1]/2);
 		}
 	}
 	

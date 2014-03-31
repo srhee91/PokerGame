@@ -172,6 +172,7 @@ public class Deck {
 		System.out.println(" ");
 		calrank.findBestHand(player_1);
 		int player_1_has = calrank.final_rank;
+	
 		System.out.println(player_1_has);
 		calrank.findBestHand(player_2);
 		int player_2_has = calrank.final_rank;

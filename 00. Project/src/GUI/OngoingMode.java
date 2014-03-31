@@ -8,7 +8,6 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
@@ -28,14 +27,18 @@ public class OngoingMode extends TableMode {
 	private final int[] mainChipAmountOffset = {37, -30};
 	private final int[] mainDealerChipOffset = {7, -30};
 	
+	
 	private final int[][] playerCardOffsets = {{7, 32}, {89, 32}};
 	private final int[] playerChipAmountOffset = {72, 145};
 	private final int[] playerDealerChipOffset = {42, 145};
 	
-	//private final Color foldLabelColor = new Color(231, 76, 60, 230);
+
+	
+	private final Color thinkingLabelColor = new Color(128, 128, 128, 242);
 	private final Color foldLabelColor = new Color(206, 0, 0, 242);
-	private final Color raiseLabelColor = new Color(92, 184, 17, 24);
-	//private final Color checkLabelColor = new Color();
+	private final Color raiseLabelColor = new Color(92, 184, 17, 242);
+	private final Color checkLabelColor = new Color(30, 98, 208, 242);
+	private final Color allInLabelColor = new Color(156, 51, 237, 242);
 	//...
 	
 	private Cards cards;
@@ -47,7 +50,7 @@ public class OngoingMode extends TableMode {
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont allInButtonFont;
 	
-	private TrueTypeFont labelFont;
+
 	
 	Button foldButton;
 	Button checkButton;
@@ -66,7 +69,7 @@ public class OngoingMode extends TableMode {
 		infoFontBig = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 26), true);
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
-		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 22), true);
+
 		
 		// initialize cards
 		int[][][] playerCardPositions = new int[8][2][2];
@@ -91,7 +94,7 @@ public class OngoingMode extends TableMode {
 			playerAmountPositions[i][0] = playerPanelPositions[i][0]+playerChipAmountOffset[0];
 			playerAmountPositions[i][1] = playerPanelPositions[i][1]+playerChipAmountOffset[1];
 		}
-		chipAmounts = new ChipAmounts(infoFont, infoFontBig, 200, playerAmountPositions);
+		chipAmounts = new ChipAmounts(infoFont, infoFontBig, 9999, playerAmountPositions);
 		
 		// initialize dealer chip
 		int[][] dealerChipPositions = new int[8][2];
@@ -266,28 +269,22 @@ public class OngoingMode extends TableMode {
 
 	private void drawLabels(Graphics g) {
 		for (int i=0; i<8; ++i) {
-			if (i%2==0)
-				drawPlayerLabel(g, i, labelFont, "Folded", Color.white, foldLabelColor);
-			else
-				drawPlayerLabel(g, i, labelFont, "Folded", Color.white, raiseLabelColor);
+			if (i==0)
+				drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
+			else if (i==1)
+				drawPlayerLabel(g, i, "Fold", Color.white, foldLabelColor);
+			else if (i==2)
+				drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
+			else if (i==3)
+				drawPlayerLabel(g, i, "Call", Color.white, checkLabelColor);
+			else if (i==4)
+				drawPlayerLabel(g, i, "All in", Color.white, allInLabelColor);
+			else if (i==5)
+				drawPlayerLabel(g, i, "Thinking...", Color.white, thinkingLabelColor);
 		}
 	}
 	
-	
-	private void drawPlayerLabel(Graphics g, int player, TrueTypeFont font, String s,
-			Color textColor, Color labelColor) {
-		if (player==0) {
-			
-		} else {
-			g.setColor(labelColor);
-			g.fillRoundRect(playerPanelPositions[player][0],
-					playerPanelPositions[player][1]+62, 170, 40, 0);
-			GUI.drawStringCenter(g, labelFont, textColor, s,
-					playerPanelPositions[player][0]+82,
-					playerPanelPositions[player][1]+82);
-		}
-	}
-	
+		
 	
 	private void drawInteractiveElements(GUIContext container, Graphics g) {
 		g.setColor(Color.white);

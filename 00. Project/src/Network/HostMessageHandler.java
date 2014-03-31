@@ -104,7 +104,9 @@ public class HostMessageHandler {
 					Object ac;
 					ac=myois.readObject();
 					host.objReceived=ac;
-					hostThread.notify();
+					synchronized(host){
+						host.notify();
+					}
 					System.out.println("Host receives an action from Client "+clientIndex+": \n");
 					System.out.println("\t"+(UserAction)ac+"\n");
 				}catch(IOException e){

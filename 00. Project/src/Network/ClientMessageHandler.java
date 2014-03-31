@@ -120,7 +120,6 @@ public class ClientMessageHandler {
 				try {
 					send(ua);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -130,7 +129,7 @@ public class ClientMessageHandler {
 	public static void main(String args[]){
 		InetAddress serverIP=null;
 		try {
-			serverIP=InetAddress.getByName("192.168.1.2");
+			serverIP=InetAddress.getByName("127.0.0.1");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

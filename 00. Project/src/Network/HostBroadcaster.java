@@ -27,7 +27,7 @@ public class HostBroadcaster {
 		this.port=port;
 		try{
 			server=new ServerSocket(port);
-			System.out.println("Host is Listening on port ["+port+"] Waiting for client to connect...");
+			System.out.println("Host Broadcaster is Listening on port ["+port+"] Waiting for client to connect...");
 		}catch(IOException e){
 			System.out.println("Cannot listen on port");
 			System.exit(0);

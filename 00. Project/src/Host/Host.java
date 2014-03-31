@@ -7,6 +7,7 @@ import Host.GameSystem.GameSystem;
 import Network.HostBroadcaster;
 import Network.HostMessageHandler;
 import Network.HostBroadcaster.Listening;
+import Network.UserAction;
 
 
 //Host will do the followings:
@@ -157,19 +158,33 @@ public class Host{
 		//celebrateWinner();
 	}
 	
+	
+	
+	
+	
 	public void sendGameState(){
 		//send "game.gameState();"  <- this will be an object of "Gamestate"
 		//to every player "game.player[]" (you have to check if player!=null)
 	}
+	
+	
+	
 	public void receiveAction(){
 		//request and receive user action from "game.whoseTurn"
 		//user action can be the enum we made last sunday
 		try {
-			Thread.currentThread().wait();
+			synchronized(this){
+				this.wait();
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Host class receive"+(UserAction)objReceived);
 	}
+	
+	
+	
+	
 	public void updateAction(){
 		//bet/fold/call/raise...
 //		if(action)?

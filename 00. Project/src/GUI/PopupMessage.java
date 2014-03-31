@@ -27,7 +27,7 @@ public class PopupMessage {
 		public ExitListener(ComponentListener listener) {this.listener=listener;}
 		@Override
 		public void componentActivated(AbstractComponent source) {
-			makeInvisible();
+			setInvisible();
 			// provided on-exit listener will be give source that caused the popup,
 			// not the source that caused the exit (which is just okButton)
 			listener.componentActivated(popupSource);
@@ -50,12 +50,16 @@ public class PopupMessage {
 	}
 	
 	
-	public void makeVisible(AbstractComponent source) {
+	public void setVisible(AbstractComponent source) {
 		popupSource = source;
 		visible = true;
 	}
 	
-	public void makeInvisible() {
+	public AbstractComponent getPopupSource() {
+		return popupSource;
+	}
+	
+	public void setInvisible() {
 		visible = false;
 	}
 	

@@ -34,14 +34,14 @@ public class PopupMessageOneButton extends PopupMessage {
 	}
 	
 	@Override
-	public void makeVisible(AbstractComponent source) {
-		super.makeVisible(source);
+	public void setVisible(AbstractComponent source) {
+		super.setVisible(source);
 		okButton.setEnable(true);
 	}
 	
 	@Override
-	public void makeInvisible() {
-		super.makeInvisible();
+	public void setInvisible() {
+		super.setInvisible();
 		okButton.setEnable(false);
 	}
 	

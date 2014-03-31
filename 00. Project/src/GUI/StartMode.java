@@ -60,6 +60,11 @@ public class StartMode extends BasicGameState
 	private PopupPromptTwoButtons popupPromptTwoButtons;
 	
 	
+	// status flags
+	public static boolean hostSetupComplete_flag;
+	
+	
+	
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		
 		background = new Image(GUI.RESOURCES_PATH+"background.png");
@@ -68,16 +73,6 @@ public class StartMode extends BasicGameState
 		popupMessageFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		popupPromptTextFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
 		
-		/*
-		portTextField = new MyTextField(container, portTextFieldFont, menuPanelPosition[0]+portTextFieldOffset[0],
-				menuPanelPosition[1]+portTextFieldOffset[1], portTextFieldSize[0], portTextFieldSize[1]);
-		portTextField.setBackgroundColor(new Color(255, 255, 255, 32));
-		portTextField.setBorderColor(new Color(0.0f, 0.0f, 0.0f, 0.0f));
-		portTextField.setTextColor(Color.white);
-		portTextField.setMaxLength(2);
-		portTextField.setNumeralsOnly(true);
-		portTextField.setAcceptingInput(true);
-		*/
 		
 		
 		Animation waitingAnimation = new Animation();
@@ -125,14 +120,14 @@ public class StartMode extends BasicGameState
 							System.out.println("Player "+popupPromptTwoButtons.getText()+" will host");
 							
 							
-							showPopupMessageAnimation(source, loadingString);
-							
 							// start thread to start host process and connect to it
+							hostSetupComplete_flag = false;
 							String hostName = popupPromptTwoButtons.getText();
 							HostSetup hs = new HostSetup(hostName);
 							hs.start();
 							System.out.println("HostSetup thread started!");
 							
+							showPopupMessageAnimation(source, loadingString);
 						}
 						else if (source==(AbstractComponent)joinGameButton){
 							System.out.println("Player "+popupPromptTwoButtons.getText()+" will join");
@@ -227,17 +222,17 @@ public class StartMode extends BasicGameState
 	private void showPopupMessageAnimation(AbstractComponent source, String msg) {
 		setMenuEnable(false);
 		popupMessageAnimation.setMessageString(msg);
-		popupMessageAnimation.makeVisible(source);
+		popupMessageAnimation.setVisible(source);
 	}
 	private void showPopupPromptTwoButtons(AbstractComponent source, String msg) {
 		setMenuEnable(false);
 		popupPromptTwoButtons.setMessageString(msg);
-		popupPromptTwoButtons.makeVisible(source);
+		popupPromptTwoButtons.setVisible(source);
 	}
 	private void showPopupMessageTwoButtons(AbstractComponent source, String msg) {
 		setMenuEnable(false);
 		popupMessageTwoButtons.setMessageString(msg);
-		popupMessageTwoButtons.makeVisible(source);
+		popupMessageTwoButtons.setVisible(source);
 	}
 	
 	
@@ -252,13 +247,28 @@ public class StartMode extends BasicGameState
 			game.enterState(4);
 
 		
+		// if loading screen is up, check status of whatever's loading
+		if (popupMessageAnimation.isVisible()) {
+			AbstractComponent source = popupMessageAnimation.getPopupSource();
+			if (source==hostGameButton) {
+				if (hostSetupComplete_flag){
+					popupMessageAnimation.setInvisible();
+					setMenuEnable(true);
+					game.enterState(3);
+				} 
+			} else {
+				System.out.println("SOMETHING'S WRONG");
+			}
+		}
+		
+		/*
 		// temporary method for stopping the loading screen
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
 			if (popupMessageAnimation.isVisible()) {
-				popupMessageAnimation.makeInvisible();
+				popupMessageAnimation.setInvisible();
 				setMenuEnable(true);
 			}
-		}
+		}*/
 	}
 	
 
@@ -299,3 +309,15 @@ public class StartMode extends BasicGameState
 		return 1;
 	}
 }
+
+
+/*
+portTextField = new MyTextField(container, portTextFieldFont, menuPanelPosition[0]+portTextFieldOffset[0],
+		menuPanelPosition[1]+portTextFieldOffset[1], portTextFieldSize[0], portTextFieldSize[1]);
+portTextField.setBackgroundColor(new Color(255, 255, 255, 32));
+portTextField.setBorderColor(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+portTextField.setTextColor(Color.white);
+portTextField.setMaxLength(2);
+portTextField.setNumeralsOnly(true);
+portTextField.setAcceptingInput(true);
+*/

@@ -29,18 +29,13 @@ public class Host{
 	
 	public String hostname;
 	
-	public Host(int port, String hostname){
+	public Host(int port){
 		this.port=port;
-		this.hostname=hostname;
+		hmh = new HostMessageHandler(port, this, Thread.currentThread());
 	}
 			
-	public void createHost(){
-		HostBroadcaster hb=new HostBroadcaster(port-1,hostname);
-		hb.lobbyState=new LobbyState("hostname");
-		hb.new Listening().start();
-		HostMessageHandler hmh = new HostMessageHandler(port, this, Thread.currentThread());
-		
-		
+	public void createBroadcaster(){
+		hb = new HostBroadcaster(port-1, hostname);
 	}
 	
 	
@@ -197,7 +192,6 @@ public class Host{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Host class receive"+(UserAction)objReceived);
 	}
 	
 	
@@ -216,17 +210,28 @@ public class Host{
 	public static void main(String args[]){
 
 		// start host, hostmessagehandler, hostbroadcaster
-		Host host = new Host(4321,"hostname");
-		host.createHost();
-		
-		System.out.println("********waiting to receive hostname...");
-		
+		Host host = new Host(4321);
+				
 		// wait for host player name 
+		System.out.println("****waiting to receive hostname...");
 		host.receiveAction();
-		String hostName = (String)host.objReceived;
-		System.out.println("********host name: "+hostName);
+		host.hostname = (String)host.objReceived;
+		System.out.println("****host name: "+host.hostname);
+		
+		// start broadcaster
+		host.createBroadcaster();
+		
+		// wait for players to join, wait for start-game message from client 0
 		
 		
+		
+		// close broadcaster when game starts
+		host.hb.close();
+		
+		
+		
+		// close hostmessagehandler last
+		host.hmh.close();
 		
 		/*
 		Host host = new Host(4321);

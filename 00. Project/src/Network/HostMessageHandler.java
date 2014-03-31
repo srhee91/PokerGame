@@ -27,6 +27,9 @@ public class HostMessageHandler {
 	ServerSocket server=null;
 	int port;
 	
+	Listening listeningThread = null;
+	ArrayList<ReceivingThread> receivingThreads=null;
+	
 	/*
 	 * Constructor 
 	 * Used to create HostMessageHandler
@@ -53,9 +56,34 @@ public class HostMessageHandler {
 		oos.add(0,null);
 		ois.add(0,null);
 		
-		new Listening().start();
-
+		receivingThreads = new ArrayList<ReceivingThread>();
+		listeningThread = new Listening();
+		listeningThread.start();
 	}
+	
+	
+	// stop all threads
+	public void close() {
+		if (listeningThread != null) {
+			listeningThread.enable = false;
+			try {
+				server.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		for (int i=0; i<receivingThreads.size(); i++) {
+			receivingThreads.get(i).enable = false;
+			try {
+				ois.get(i).close();
+				oos.get(i).close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
 	
 	/*
 	 * Inner class
@@ -64,17 +92,20 @@ public class HostMessageHandler {
 	 * start receiving thread
 	 * */
 	public class Listening extends Thread{
+		boolean enable = true;
 		public void run(){
-			while(true){
+			while(enable){
 				try{
 					socket=server.accept();
-					clientIndex++;
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["+port+"] as client "+clientIndex);
 					DataOutputStream dos=new DataOutputStream(socket.getOutputStream());
 					dos.writeInt(clientIndex);
 					oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
 					ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
-					new ReceivingThread(clientIndex).start();
+					ReceivingThread receivingThread = new ReceivingThread(clientIndex);
+					receivingThreads.add(clientIndex, receivingThread);
+					receivingThread.start();
+					clientIndex++;
 				}catch(NullPointerException e){
 					System.out.println("Cannot listen on port");
 					break;
@@ -93,13 +124,15 @@ public class HostMessageHandler {
 	class ReceivingThread extends Thread{
 		ObjectInputStream myois=null;
 		int clientIndex;
+		boolean enable;
 		public ReceivingThread(int index) {
 			myois=ois.get(index);
 			clientIndex=index;
+			enable = true;
 		}
 		public void run(){
 			
-			while(true){
+			while(enable){
 				try{
 					Object ac;
 					ac=myois.readObject();
@@ -107,8 +140,7 @@ public class HostMessageHandler {
 					synchronized(host){
 						host.notify();
 					}
-					System.out.println("Host receives an action from Client "+clientIndex+": \n");
-					System.out.println("\t"+(UserAction)ac+"\n");
+					System.out.println("Host receives an object from Client "+clientIndex);
 				}catch(IOException e){
 					System.out.println("Session end for client "+clientIndex);
 					//e.printStackTrace();
@@ -120,6 +152,14 @@ public class HostMessageHandler {
 			}
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/*call this function will send game state to specific client,
 	 * which are arguments*/

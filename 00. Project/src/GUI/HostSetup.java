@@ -17,7 +17,7 @@ public class HostSetup extends Thread {
 	}
 	
 	public void run() {
-
+		
 		// start host process by creating an invoker thread
 		Invoker hostInvoker = new Invoker(Host.class);
 		hostInvoker.start();
@@ -46,5 +46,7 @@ public class HostSetup extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		StartMode.hostSetupComplete_flag = true;
 	}
 }

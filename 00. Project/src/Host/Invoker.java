@@ -5,9 +5,9 @@ import java.io.*;
 
 public class Invoker extends Thread {
 	
-	private Class klass;
+	private Class<?> klass;
 	
-	public Invoker(Class klass) {
+	public Invoker(Class<?> klass) {
 		this.klass = klass;
 	}
 	
@@ -20,7 +20,7 @@ public class Invoker extends Thread {
 		}
 	}
 	
-	 private int exec(Class klass) throws IOException, InterruptedException {
+	 private int exec(Class<?> klass) throws IOException, InterruptedException {
 		 
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";

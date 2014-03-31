@@ -50,15 +50,15 @@ public class PopupPromptTwoButtons extends PopupMessageTwoButtons{
 	}
 	
 	@Override
-	public void makeVisible(AbstractComponent source) {
-		super.makeVisible(source);
+	public void setVisible(AbstractComponent source) {
+		super.setVisible(source);
 		textField.setAcceptingInput(true);
 		okButton.setEnable(!textField.getText().isEmpty());
 	}
 	
 	@Override
-	public void makeInvisible() {
-		super.makeInvisible();
+	public void setInvisible() {
+		super.setInvisible();
 		textField.setAcceptingInput(false);
 	}
 	

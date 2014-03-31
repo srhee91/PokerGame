@@ -22,13 +22,16 @@ public class HostBroadcaster {
 	ServerSocket server=null;
 	int port;
 	public LobbyState lobbyState;
-	
+	Listening listeningThread;
 	
 	public HostBroadcaster(int port, String hostname){
 		this.port=port;
 		lobbyState=new LobbyState(hostname);
 		try{
 			server=new ServerSocket(port);
+			lobbyState=new LobbyState("hostname");
+			listeningThread = new Listening();
+			listeningThread.start();
 			System.out.println("Host Broadcaster is Listening on port ["+port+"] Waiting for client to connect...");
 		}catch(IOException e){
 			System.out.println("Cannot listen on port");
@@ -36,9 +39,21 @@ public class HostBroadcaster {
 		}
 	}
 	
+	public void close() {
+		if (listeningThread!=null) {
+			listeningThread.enable = false;
+			try {
+				server.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public class Listening extends Thread{
+		boolean enable = true;
 		public void run(){
-			while(true){
+			while(enable){
 				try{
 					socket=server.accept();
 					oos=new ObjectOutputStream(socket.getOutputStream());
@@ -55,9 +70,11 @@ public class HostBroadcaster {
 			}
 		}
 	}
+	
+	/*
 	public static void main(String args[]){
 		HostBroadcaster hb=new HostBroadcaster(4320,"hostname");
 
 		hb.new Listening().start();
-	}
+	}*/
 }

@@ -32,14 +32,14 @@ public class PopupMessageTwoButtons extends PopupMessageOneButton {
 	}
 	
 	@Override
-	public void makeVisible(AbstractComponent source) {
-		super.makeVisible(source);
+	public void setVisible(AbstractComponent source) {
+		super.setVisible(source);
 		cancelButton.setEnable(true);
 	}
 	
 	@Override
-	public void makeInvisible() {
-		super.makeInvisible();
+	public void setInvisible() {
+		super.setInvisible();
 		cancelButton.setEnable(false);
 	}
 	

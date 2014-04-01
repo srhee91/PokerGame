@@ -29,7 +29,6 @@ public class HostBroadcaster {
 		lobbyState=new LobbyState(hostname);
 		try{
 			server=new ServerSocket(port);
-			lobbyState=new LobbyState("hostname");
 			listeningThread = new Listening();
 			listeningThread.start();
 			System.out.println("Host Broadcaster is Listening on port ["+port+"] Waiting for client to connect...");

@@ -1,20 +1,7 @@
 package Network;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-import sun.net.ConnectionResetException;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 
 public class HostMessageHandler {
@@ -158,11 +145,8 @@ public class HostMessageHandler {
 	
 	
 	
-	
-	
-	
-	/*call this function will send game state to specific client,
-	 * which are arguments*/
+	// call this function will send game state to specific client,
+	// which are arguments
 	public synchronized void send(int index,Gamestate gs){
 		gs.setIndex(index);
 		try{
@@ -174,7 +158,7 @@ public class HostMessageHandler {
 		}
 	}
 	
-	/*call this function will send game state to all clients*/
+	// call this function will send game state to all clients
 	public synchronized void sendAll(Gamestate gs){
 
 		for(int i=1;i<=clientIndex;i++){
@@ -183,20 +167,19 @@ public class HostMessageHandler {
 	}
 	
 	
-	
+	/*
 	public static void main(String args[]){
 		HostMessageHandler host=new HostMessageHandler(4321,null,null);
 		host.sending();
 	}
 	
-	/*call this function will start SendThread */
+	// call this function will start SendThread
 	public void sending(){
 		new SendThread().start();
 	}
 	
-	/*
-	 * Get user input and call send(input);
-	 * */
+
+ 	// Get user input and call send(input);
 	public class SendThread extends Thread{
 		Gamestate gs;
 		public void run(){
@@ -213,4 +196,5 @@ public class HostMessageHandler {
 			}
 		}
 	}
+	*/
 }

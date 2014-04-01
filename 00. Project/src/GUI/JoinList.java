@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Font;
 import java.util.*;
 
 import org.newdawn.slick.Color;
@@ -13,6 +14,21 @@ import org.newdawn.slick.gui.GUIContext;
 
 public class JoinList {
 
+	private static final int[] position = {0, 50};
+	private static final int[] size = {1000, 500};
+	
+	private final TrueTypeFont headerFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 20), true);
+	private final TrueTypeFont listFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
+	private final TrueTypeFont joinButtonsFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 12), true);
+	private final TrueTypeFont pageLabelFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 16), true);
+	private final TrueTypeFont navButtonsFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
+	
+	
 	private final int listYOffset = 50;	// vertical space between top of list and top of frame
 	private final int rowHeight = 36;
 	private final int numRowsDisplayed = 8;
@@ -26,9 +42,6 @@ public class JoinList {
 	private final int[] cancelButtonOffset = {770, 400};
 	
 	
-	private int position[];
-	private int size[];
-	
 	private String[] columnNames;
 	private int[] columnWidths;		// in pixels
 	
@@ -36,17 +49,15 @@ public class JoinList {
 	private List<String[]> rowsData;
 	private List<Boolean> rowsJoinable;
 	
-	private TrueTypeFont headerFont;
-	private TrueTypeFont listFont;
-	private TrueTypeFont joinButtonsFont;
-	private TrueTypeFont pageLabelFont;
-	private TrueTypeFont navButtonsFont;
 	
 	private Button[] joinButtons;
 	private Button prevButton;
 	private Button nextButton;
 	private Button refreshButton;
 	private Button cancelButton;
+	
+	private boolean visible;
+	
 	
 	// meta-info
 	private int currentPage;
@@ -58,28 +69,18 @@ public class JoinList {
 	}
 	
 	
-	public JoinList(GUIContext container, int[] position, int size[],
+	public JoinList(GUIContext container, boolean initialVisible,
 			String[] columnNames, int[] columnWidths,
-			TrueTypeFont headerFont, TrueTypeFont listFont, TrueTypeFont joinButtonsFont,
-			TrueTypeFont pageLabelFont, TrueTypeFont navButtonsFont,
 			final IndexedComponentListener joinListener, ComponentListener refreshListener,
 			ComponentListener cancelListener) throws SlickException{
 		
-		this.position = position;
-		this.size = size;
+		this.visible = initialVisible;
 		this.columnNames = columnNames;
 		this.columnWidths = columnWidths;
 		rowsData = new ArrayList<String[]>();
 		rowsJoinable = new ArrayList<Boolean>();
 		currentPage = 0;
-		
-		
-		this.headerFont = headerFont;
-		this.listFont = listFont;
-		this.joinButtonsFont = joinButtonsFont;
-		this.pageLabelFont = pageLabelFont;
-		this.navButtonsFont = navButtonsFont;
-		
+				
 		
 		Image joinButtonNormalImage = new Image(GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_join.png");
 		Image joinButtonPressedImage = new Image(GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_join_down.png");
@@ -148,6 +149,23 @@ public class JoinList {
 				cancelListener);
 	}
 	
+	
+	private void setButtonsEnable(boolean enable) {
+		if (!enable) {
+			for (Button b : joinButtons)
+				b.setEnable(false);
+			prevButton.setEnable(false);
+			nextButton.setEnable(false);
+		} else {
+			updateJoinButtons();
+			updatePrevNextButtons();
+		}
+		refreshButton.setEnable(enable);
+		cancelButton.setEnable(enable);
+	}
+	
+	
+	
 	private void updatePrevNextButtons() {
 		int numPages;
 		if (rowsData.size()==0) {
@@ -167,12 +185,16 @@ public class JoinList {
 	}
 	
 	private void updateJoinButtons() {
-		int offset = currentPage*numRowsDisplayed;
-		for (int i=offset;
-			i<Math.min(offset+numRowsDisplayed, rowsData.size());
-			++i) {
-			boolean joinable = rowsJoinable.get(i).booleanValue();
-			joinButtons[i-offset].setEnable(joinable);
+		int row = currentPage*numRowsDisplayed;
+		for (int i=0; i<numRowsDisplayed; ++i) {
+			if (row < rowsData.size()) {
+				boolean joinable = rowsJoinable.get(row).booleanValue();
+				joinButtons[i].setEnable(joinable);
+			} else {
+				// disable buttons for rows that don't exist
+				joinButtons[i].setEnable(false);
+			}
+			row++;
 		}
 	}
 	
@@ -188,61 +210,70 @@ public class JoinList {
 	}
 	
 	
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+		setButtonsEnable(visible);
+	}
+	
+	
 	public void render(GUIContext container, Graphics g) {
 	
-		g.setColor(new Color(0.0f, 0.0f, 0.0f, 0.85f));
-		g.fillRect(position[0], position[1], size[0], size[1]);
-		
-		
-		int textXLeft = position[0] + (size[0]-rowWidth)/2;
-		int textYCenter = position[1] + listYOffset + rowHeight/2;
-		int textX;
-		
-		// draw column headers
-		textX = textXLeft + indexColumnWidth;
-		for (int i=0; i<columnNames.length; ++i) {
-			GUI.drawStringLeftCenter(g, headerFont, Color.white,
-					columnNames[i], textX, textYCenter);
-			textX += columnWidths[i];
-		}
-		
-		// draw each row
-		if (!rowsData.isEmpty()) {
-			textYCenter += rowHeight;
-			for (int i=currentPage*numRowsDisplayed;
-					i < Math.min((currentPage+1)*numRowsDisplayed, rowsData.size());
-					++i) {
-				textX = textXLeft;
-				GUI.drawStringLeftCenter(g, headerFont, Color.white, Integer.toString(i+1), textX, textYCenter);
-				textX += indexColumnWidth;
-				
-				String[] rowData = rowsData.get(i);
-				for (int j=0; j<columnNames.length; ++j) {
-					GUI.drawStringLeftCenter(g, listFont, Color.white, rowData[j], textX, textYCenter);
-					textX += columnWidths[j];
-				}
-				joinButtons[i%numRowsDisplayed].render(container, g, joinButtonsFont, Color.white, "Join");
-				textYCenter += rowHeight;
+		if (visible) {
+			
+			g.setColor(new Color(0.0f, 0.0f, 0.0f, 0.85f));
+			g.fillRect(position[0], position[1], size[0], size[1]);
+			
+			
+			int textXLeft = position[0] + (size[0]-rowWidth)/2;
+			int textYCenter = position[1] + listYOffset + rowHeight/2;
+			int textX;
+			
+			// draw column headers
+			textX = textXLeft + indexColumnWidth;
+			for (int i=0; i<columnNames.length; ++i) {
+				GUI.drawStringLeftCenter(g, headerFont, Color.white,
+						columnNames[i], textX, textYCenter);
+				textX += columnWidths[i];
 			}
+			
+			// draw each row
+			if (!rowsData.isEmpty()) {
+				textYCenter += rowHeight;
+				for (int i=currentPage*numRowsDisplayed;
+						i < Math.min((currentPage+1)*numRowsDisplayed, rowsData.size());
+						++i) {
+					textX = textXLeft;
+					GUI.drawStringLeftCenter(g, headerFont, Color.white, Integer.toString(i+1), textX, textYCenter);
+					textX += indexColumnWidth;
+					
+					String[] rowData = rowsData.get(i);
+					for (int j=0; j<columnNames.length; ++j) {
+						GUI.drawStringLeftCenter(g, listFont, Color.white, rowData[j], textX, textYCenter);
+						textX += columnWidths[j];
+					}
+					joinButtons[i%numRowsDisplayed].render(container, g, joinButtonsFont, Color.white, "Join");
+					textYCenter += rowHeight;
+				}
+			}
+			
+			// draw page label
+			String labelString;
+			if (rowsData.size()==0) {
+				labelString = "No games found.";
+			} else {
+				int firstIndex = currentPage * numRowsDisplayed + 1;
+				int lastIndex = Math.min(firstIndex+numRowsDisplayed-1, rowsData.size());
+				labelString = firstIndex+" to "+lastIndex+
+						" of "+rowsData.size()+" games found";
+			}
+			GUI.drawStringCenter(g, pageLabelFont, Color.white, 
+					labelString, position[0]+pageLabelOffset[0], position[1]+pageLabelOffset[1]);
+			
+			// draw prev, next, refresh buttons
+			prevButton.render(container, g, navButtonsFont, Color.white, "<");
+			nextButton.render(container, g, navButtonsFont, Color.white, ">");
+			refreshButton.render(container, g, navButtonsFont, Color.white, "Refresh");
+			cancelButton.render(container, g, navButtonsFont, Color.white, "Cancel");
 		}
-		
-		// draw page label
-		String labelString;
-		if (rowsData.size()==0) {
-			labelString = "No games found.";
-		} else {
-			int firstIndex = currentPage * numRowsDisplayed + 1;
-			int lastIndex = Math.min(firstIndex+numRowsDisplayed-1, rowsData.size());
-			labelString = firstIndex+" to "+lastIndex+
-					" of "+rowsData.size()+" games found";
-		}
-		GUI.drawStringCenter(g, pageLabelFont, Color.white, 
-				labelString, position[0]+pageLabelOffset[0], position[1]+pageLabelOffset[1]);
-		
-		// draw prev, next, refresh buttons
-		prevButton.render(container, g, navButtonsFont, Color.white, "<");
-		nextButton.render(container, g, navButtonsFont, Color.white, ">");
-		refreshButton.render(container, g, navButtonsFont, Color.white, "Refresh");
-		cancelButton.render(container, g, navButtonsFont, Color.white, "Cancel");
 	}
 }

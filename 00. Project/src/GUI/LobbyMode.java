@@ -18,7 +18,6 @@ import org.newdawn.slick.state.StateBasedGame;
 public class LobbyMode extends TableMode {
 
 	private TrueTypeFont mainStatusFont;
-	private TrueTypeFont labelFont;
 	private TrueTypeFont startButtonFont;
 
 	private final int[] playerPanelAnimationOffset = {69, 54};
@@ -42,7 +41,6 @@ public class LobbyMode extends TableMode {
 		super.init(container, game);
 		
 		mainStatusFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 32), true);
-		labelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
 		startButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		
 		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig.png", 

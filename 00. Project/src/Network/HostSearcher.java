@@ -14,21 +14,8 @@ public abstract class HostSearcher {
 	
 	static int IP1,IP2,IP3;
 	static String IP4[]=new String[255];
-	static volatile boolean stop;
+	static volatile boolean stop = true;
 	static int port;
-	
-	ArrayList<String> validIP=new ArrayList<String>(5);
-	
-	
-	public ArrayList ValidIP(){
-		
-		String IPprefix=IP1+"."+IP2+"."+IP3+".";
-		for(int i=0;i<255;i++){
-			if(IP4[i]!=null)
-				validIP.add(IPprefix+"."+i+"|"+IP4[i]);
-		}
-		return validIP;
-	}
 	
 	
 	public static void start(int port){
@@ -52,6 +39,25 @@ public abstract class HostSearcher {
 		new SearchSuperThread().start();
 	}
 	
+	
+	public static ArrayList<String[]> getValidNamesAndIps(){
+		ArrayList<String[]> ret = new ArrayList<String[]>();
+		String IPprefix=IP1+"."+IP2+"."+IP3+".";
+		for(int i=0;i<255;i++){
+			if(IP4[i]!=null) {
+				String[] nameAndIp = new String[2];
+				nameAndIp[0] = IP4[i];
+				nameAndIp[1] = IPprefix+i;
+				ret.add(nameAndIp);
+			}
+		}
+		return ret;
+	}
+		
+	public static boolean isRunning() {
+		return !stop;
+	}
+	
 	public static void stop(){
 		stop=true;
 	}
@@ -60,10 +66,39 @@ public abstract class HostSearcher {
 		start(4320);
 	}
 	
-	
-
+	static class SearchSuperThread extends Thread{
+		public void run(){
+			while(!stop){
+				for (int i=1;i<255;i++){
+					try {
+						Socket socket = new Socket();
+						socket.connect(new InetSocketAddress(InetAddress.getByName(""+IP1+"."+IP2+"."+IP3+"."+i), port),
+								30);
+						ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());
+						LobbyState lobbyState=(LobbyState)ois.readObject();
+						System.out.println("HostNickName: "+lobbyState.hostName);
+						IP4[i]=lobbyState.hostName;
+						ois.close();
+						socket.close();
+						System.out.println("Connecting successfully: 192.168.1."+i);
+					
+					} catch (IOException e) {
+						//e.printStackTrace();
+						HostSearcher.IP4[i] = null;
+					
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
 }
 
+
+
+
+/*
 class SearchSuperThread extends Thread{
 	public void run(){
 		while(!HostSearcher.stop){
@@ -102,5 +137,5 @@ class SearchThread extends Thread{
 		} catch (IOException e) {
 		}
 	}
-}
+}*/
 

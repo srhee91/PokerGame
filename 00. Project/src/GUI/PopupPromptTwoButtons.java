@@ -1,5 +1,7 @@
 package GUI;
 
+import java.awt.Font;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -12,25 +14,27 @@ public class PopupPromptTwoButtons extends PopupMessageTwoButtons{
 
 
 	//private final int[] messageStringOffset = {500, 75};
-	private final int[] textFieldOffset = {350, 110};
-	private final int[] textFieldSize = {300, 45};
+	private static final int[] textFieldOffset = {350, 110};
+	private static final int[] textFieldSize = {300, 45};
 
-
-	private MyTextField textField;
-	//GUIContext container;
+	
+	private static final TrueTypeFont textFieldFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
 	
 
-	public PopupPromptTwoButtons(GUIContext container, int[] popupPosition, int[] popupSize,
-			TrueTypeFont msgFont, TrueTypeFont buttonFont, TrueTypeFont textFieldFont,
+	private MyTextField textField;
+	
+	
+
+	public PopupPromptTwoButtons(GUIContext container, String messageString,
 			ComponentListener onOkListener,
 			ComponentListener onCancelListener) throws SlickException {
 		
-		super(container, popupPosition, popupSize, msgFont, buttonFont,
-				onOkListener, onCancelListener);
+		super(container, messageString, onOkListener, onCancelListener);
 		
 		
-		textField = new MyTextField(container, textFieldFont, popupPosition[0]+textFieldOffset[0],
-				popupPosition[1]+textFieldOffset[1], textFieldSize[0], textFieldSize[1]);
+		textField = new MyTextField(container, textFieldFont, position[0]+textFieldOffset[0],
+				position[1]+textFieldOffset[1], textFieldSize[0], textFieldSize[1]);
 		textField.setBackgroundColor(new Color(255, 255, 255, 32));
 		textField.setBorderColor(new Color(0.0f, 0.0f, 0.0f, 0.0f));
 		textField.setTextColor(Color.white);

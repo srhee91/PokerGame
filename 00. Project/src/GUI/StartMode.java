@@ -1,28 +1,23 @@
 package GUI;
 
 import java.awt.Font;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
-import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.GUIContext;
-import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-import Host.*;
-import Network.ClientMessageHandler;
+import GuiActionThreads.StartHostThread;
+import Network.HostSearcher;
 
-public class StartMode extends BasicGameState
+public class StartMode extends Mode
 {
 	private Image background;
 
@@ -37,55 +32,46 @@ public class StartMode extends BasicGameState
 
 	private final String namePromptString = "Enter player name:";
 	private final String areYouSureExitString = "Are you sure you want to exit to desktop?";
-	private final String loadingString = "Loading... (TEST! press 'f' to finish)";
+	private final String hostFailedString = "Failed to start host.";
 	
 	private TrueTypeFont buttonFont;
-	private TrueTypeFont popupMessageFont;
 	
 	private Button hostGameButton;
 	private Button joinGameButton;
 	private Button spectateGameButton;
 	private Button exitButton;
+		
 	
-
-	// popup message stuff
-	private int[] popupPosition = {0, 150};
-	private int[] popupSize = {1000, 300};
-	
-	private TrueTypeFont popupPromptTextFieldFont;
-	
-	
-	private PopupMessageAnimation popupMessageAnimation;
-	private PopupMessageTwoButtons popupMessageTwoButtons;
-	private PopupPromptTwoButtons popupPromptTwoButtons;
+	private PopupMessageTwoButtons popupConfirmExit;
+	private PopupPromptTwoButtons popupEnterName;
+	private PopupMessageOneButton popupFailedHost;
 	
 	
 	// status flags
-	public static boolean hostSetupComplete_flag;
+	public boolean startHostSuccess_flag;
+	public boolean startHostError_flag;
 	
 	
-	
-	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+	public void init(GameContainer container, final StateBasedGame game) throws SlickException {
+		
+		super.init(container, game);
 		
 		background = new Image(GUI.RESOURCES_PATH+"background.png");
 		
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
-		popupMessageFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
-		popupPromptTextFieldFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 28), true);
+				
+		
+		popupFailedHost = new PopupMessageOneButton(container, hostFailedString,
+				new ComponentListener() {
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// ok action
+						setMenuEnable(true);
+					}
+				});
 		
 		
 		
-		Animation waitingAnimation = new Animation();
-		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"loading2.png", 32, 32);
-		for (int i=0; i<8; ++i) {
-			waitingAnimation.addFrame(sheet.getSprite(i, 0), 64);
-		}
-		popupMessageAnimation = new PopupMessageAnimation(container, popupPosition, popupSize, popupMessageFont,
-				waitingAnimation);
-		
-		
-		popupMessageTwoButtons = new PopupMessageTwoButtons(container, popupPosition, popupSize,
-				popupMessageFont, buttonFont,
+		popupConfirmExit = new PopupMessageTwoButtons(container, areYouSureExitString,
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {	// OK action
@@ -106,8 +92,7 @@ public class StartMode extends BasicGameState
 					}
 				});
 		
-		popupPromptTwoButtons = new PopupPromptTwoButtons(container, popupPosition, popupSize, popupMessageFont, buttonFont,
-				popupPromptTextFieldFont,
+		popupEnterName = new PopupPromptTwoButtons(container, namePromptString,
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {	// OK action
@@ -115,23 +100,23 @@ public class StartMode extends BasicGameState
 						
 						if (source==(AbstractComponent)hostGameButton) {
 							
-							// START HOST
-							
-							System.out.println("Player "+popupPromptTwoButtons.getText()+" will host");
-							
-							
+							// START HOST							
 							// start thread to start host process and connect to it
-							hostSetupComplete_flag = false;
-							String hostName = popupPromptTwoButtons.getText();
-							HostSetup hs = new HostSetup(hostName);
-							hs.start();
+							String hostName = popupEnterName.getText();
+							StartHostThread sht = new StartHostThread(hostName);
+							sht.start();
 							System.out.println("HostSetup thread started!");
 							
-							showPopupMessageAnimation(source, loadingString);
+							showPopupLoading(source);
 						}
 						else if (source==(AbstractComponent)joinGameButton){
-							System.out.println("Player "+popupPromptTwoButtons.getText()+" will join");
-							showPopupMessageAnimation(source, loadingString);
+							System.out.println("Player "+popupEnterName.getText()+" will join");
+							
+							// GO TO JOIN MODE
+							GUI.joinMode.playerName = popupEnterName.getText();
+							GUI.joinMode.updateGamesList();
+							game.enterState(2);	
+							setMenuEnable(true);
 						}
 						else {
 							System.out.println("SOMETHING'S WRONG");
@@ -144,7 +129,7 @@ public class StartMode extends BasicGameState
 						setMenuEnable(true);
 					}
 				});
-		popupPromptTwoButtons.setMaxLength(10);
+		popupEnterName.setMaxLength(10);
 		
 		
 		
@@ -160,7 +145,7 @@ public class StartMode extends BasicGameState
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						System.out.println("host game button pressed!");
-						showPopupPromptTwoButtons(source, namePromptString);
+						showPopupEnterName(source);
 					}
 				});
 		//hostGameButton.setAlphaWhileDisabled(1.0f);
@@ -175,7 +160,7 @@ public class StartMode extends BasicGameState
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("join game button pressed!");
-						showPopupPromptTwoButtons(source, namePromptString);
+						showPopupEnterName(source);
 					}
 				});
 		//joinGameButton.setAlphaWhileDisabled(1.0f);
@@ -190,7 +175,7 @@ public class StartMode extends BasicGameState
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("spectate game button pressed!");
-						showPopupMessageAnimation(source, loadingString);
+						//showPopupLoading(source);
 					}
 				});
 		//spectateGameButton.setAlphaWhileDisabled(1.0f);
@@ -205,7 +190,7 @@ public class StartMode extends BasicGameState
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("exit button pressed!");
-						showPopupMessageTwoButtons(source, areYouSureExitString);
+						showPopupConfirmExit(source);
 					}
 				});
 		//exitButton.setAlphaWhileDisabled(1.0f);
@@ -218,21 +203,21 @@ public class StartMode extends BasicGameState
 		spectateGameButton.setEnable(enable);
 		exitButton.setEnable(enable);
 	}
-	
-	private void showPopupMessageAnimation(AbstractComponent source, String msg) {
+	private void showPopupFailedHost(AbstractComponent source) {
 		setMenuEnable(false);
-		popupMessageAnimation.setMessageString(msg);
-		popupMessageAnimation.setVisible(source);
+		popupFailedHost.setVisible(source);
 	}
-	private void showPopupPromptTwoButtons(AbstractComponent source, String msg) {
+	private void showPopupLoading(AbstractComponent source) {
 		setMenuEnable(false);
-		popupPromptTwoButtons.setMessageString(msg);
-		popupPromptTwoButtons.setVisible(source);
+		popupLoading.setVisible(source);
 	}
-	private void showPopupMessageTwoButtons(AbstractComponent source, String msg) {
+	private void showPopupEnterName(AbstractComponent source) {
 		setMenuEnable(false);
-		popupMessageTwoButtons.setMessageString(msg);
-		popupMessageTwoButtons.setVisible(source);
+		popupEnterName.setVisible(source);
+	}
+	private void showPopupConfirmExit(AbstractComponent source) {
+		setMenuEnable(false);
+		popupConfirmExit.setVisible(source);
 	}
 	
 	
@@ -247,15 +232,23 @@ public class StartMode extends BasicGameState
 			game.enterState(4);
 
 		
+		// if HostSearcher is not running, start it
+		if (!HostSearcher.isRunning())
+			HostSearcher.start(4320);
+		
+		
 		// if loading screen is up, check status of whatever's loading
-		if (popupMessageAnimation.isVisible()) {
-			AbstractComponent source = popupMessageAnimation.getPopupSource();
+		if (popupLoading.isVisible()) {
+			AbstractComponent source = popupLoading.getPopupSource();
 			if (source==hostGameButton) {
-				if (hostSetupComplete_flag){
-					popupMessageAnimation.setInvisible();
+				if (startHostSuccess_flag){
+					popupLoading.setInvisible();
 					setMenuEnable(true);
 					game.enterState(3);
-				} 
+				} else if (startHostError_flag) {
+					popupLoading.setInvisible();
+					showPopupFailedHost(source);
+				}
 			} else {
 				System.out.println("SOMETHING'S WRONG");
 			}
@@ -283,10 +276,10 @@ public class StartMode extends BasicGameState
 		
 		drawMenuButtons(container, g);
 
-		// call render on all popup msgs; only visible ones will render
-		popupMessageAnimation.render(container, g);
-		popupMessageTwoButtons.render(container, g);
-		popupPromptTwoButtons.render(container, g);
+		popupConfirmExit.render(container, g);
+		popupEnterName.render(container, g);
+		popupLoading.render(container, g);
+		popupFailedHost.render(container, g);
 	}
 	
 	private void drawMenuPanel(Graphics g) {

@@ -1,68 +1,89 @@
 package GUI;
 
 import java.util.*;
-import java.awt.Font;
-
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
-import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class JoinMode extends BasicGameState {
+import GuiActionThreads.JoinHostThread;
+import Network.HostSearcher;
 
-	private final int[] joinListPosition = {0, 50};
-	private final int[] joinListSize = {1000, 500};
-	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS", "PLAYERS"};
-	private final int[] joinListColumnWidths = {220, 180, 120};
+public class JoinMode extends Mode {
+
+	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS"};//, "PLAYERS"};
+	private final int[] joinListColumnWidths = {220, 180};//, 120};
 	
-	private TrueTypeFont joinListHeaderFont;
-	private TrueTypeFont joinListListFont;
-	private TrueTypeFont joinListJoinButtonsFont;
-	private TrueTypeFont joinListPageLabelFont;
-	private TrueTypeFont joinListNavButtonsFont;
+	private final String failedJoinString = "Selected game lobby is no longer availabe.";
 	
-	
+		
 	private Image background;
 	private JoinList joinList;
 	
-	List<String[]> gamesInfo;
-	List<Boolean>  gamesJoinable;
+	private PopupMessageOneButton popupFailedJoin;
+	
+	protected List<String[]> gamesInfo;
+	protected List<Boolean>  gamesJoinable;
+	
+	protected String playerName;	// passed from StartMode
+	
+	
+	// status flags
+	public boolean joinHostSuccess_flag;
+	public boolean joinHostError_flag;
+		
 	
 	@Override
 	public void init(GameContainer container, final StateBasedGame game)
 			throws SlickException {
 		
+		super.init(container, game);
+		
 		background = new Image(GUI.RESOURCES_PATH+"background.png");
 		
-		joinListHeaderFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 20), true);
-		joinListListFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
-		joinListJoinButtonsFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 12), true);
-		joinListPageLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.PLAIN, 16), true);
-		joinListNavButtonsFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
+				
+				
+		popupFailedJoin = new PopupMessageOneButton(container, failedJoinString,
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent source) {	// ok action
+						updateGamesList();
+						joinList.setVisible(true);
+					}
+				});
 		
-		joinList = new JoinList(container, joinListPosition, joinListSize, joinListColumnNames,
-				joinListColumnWidths, joinListHeaderFont, joinListListFont, joinListJoinButtonsFont,
-				joinListPageLabelFont, joinListNavButtonsFont,
+		
+		joinList = new JoinList(container, true,
+				joinListColumnNames, joinListColumnWidths,
 				new JoinList.IndexedComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent arg0, int index){
-						System.out.println("Joined game "+index);
+					public void componentActivated(AbstractComponent source,
+							int index){								// join action
+						
+						// JOIN GAME
+						String ipString = gamesInfo.get(index)[1];
+						JoinHostThread jht = new JoinHostThread(ipString, playerName);
+						jht.start();
+						
+						showPopupLoading(source);
 					}
 				},
 				new ComponentListener() {	
 					@Override
-					public void componentActivated(AbstractComponent arg0) {
+					public void componentActivated(AbstractComponent arg0) {	// refresh action
+						
 						System.out.println("refresh games list!");
+						
+						// UPDATE GAMES LIST
+						updateGamesList();
 					}
 				},
-				new ComponentListener() {
+				new ComponentListener() {			// cancel action
 					
 					@Override
 					public void componentActivated(AbstractComponent arg0) {
@@ -73,14 +94,40 @@ public class JoinMode extends BasicGameState {
 		
 		gamesInfo = new ArrayList<String[]>();
 		gamesJoinable = new ArrayList<Boolean>();
+		/*
 		String[] data = {"host_name", "192.128.234.122", "3/8"};
 		for (int i=0; i<20; ++i) {
 			gamesInfo.add(data);
 			gamesJoinable.add(7854%(i+1)==0);
-		}
+		}*/
 		joinList.setRowsData(gamesInfo);
 		joinList.setRowsJoinable(gamesJoinable);
 	}
+	
+	
+	
+	public void updateGamesList() {
+		
+		gamesInfo = HostSearcher.getValidNamesAndIps();
+		gamesJoinable.clear();
+		for (int i=0; i<gamesInfo.size(); ++i)
+			gamesJoinable.add(true);
+		joinList.setRowsData(gamesInfo);
+		joinList.setRowsJoinable(gamesJoinable);
+	}
+	
+	
+	private void showPopupLoading(AbstractComponent source) {
+		joinList.setVisible(false);
+		popupLoading.setVisible(source);
+	}
+	private void showPopupFailedJoin(AbstractComponent source) {
+		joinList.setVisible(false);
+		popupFailedJoin.setVisible(source);
+	}
+	
+	
+	
 	
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta)
@@ -95,6 +142,26 @@ public class JoinMode extends BasicGameState {
 			game.enterState(4);
 		
 		
+		// if HostSearcher is not running, start it
+		if (!HostSearcher.isRunning())
+			HostSearcher.start(4320);
+		
+		// if we're trying to join a host, check the status of it
+		if (popupLoading.isVisible()) {
+			if (joinHostSuccess_flag){
+				popupLoading.setInvisible();
+				joinList.setVisible(true);
+				// get game state before going to lobby mode?
+				System.out.println("connection to host established... going to lobby");
+				game.enterState(3);
+				
+			} else if (joinHostError_flag) {
+				popupLoading.setInvisible();
+				showPopupFailedJoin(popupLoading.getPopupSource());
+			}
+		}
+		
+		/*
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
 			if (!gamesInfo.isEmpty()) {
 				gamesInfo.remove(0);
@@ -102,7 +169,7 @@ public class JoinMode extends BasicGameState {
 			}
 			joinList.setRowsData(gamesInfo);
 			joinList.setRowsJoinable(gamesJoinable);
-		}
+		}*/
 	}
 	
 	@Override
@@ -112,6 +179,9 @@ public class JoinMode extends BasicGameState {
 		background.draw(0, 0, container.getWidth(), container.getHeight());
 		
 		joinList.render(container, g);
+		
+		popupLoading.render(container, g);
+		popupFailedJoin.render(container, g);
 	}
 
 	

@@ -1,8 +1,5 @@
 package GUI;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -15,13 +12,18 @@ import Network.ClientMessageHandler;
 
 public class GUI extends StateBasedGame
 {
-
 	public static final String RESOURCES_PATH = "./resources/";
 	public static final String CARDSPRITES_FOLDER = "cardsprites2/";
 	public static final String BUTTONS_FOLDER = "buttons/";
 	
+	public static StartMode startMode;
+	public static JoinMode joinMode;
+	public static LobbyMode lobbyMode;
+	public static OngoingMode ongoingMode;
 	
 	public static ClientMessageHandler cmh;
+	
+	
 	
 	
 	public GUI(String name) {
@@ -31,10 +33,15 @@ public class GUI extends StateBasedGame
 	@Override
 	public void initStatesList(GameContainer container) throws SlickException
 	{
-		this.addState(new StartMode());
-		this.addState(new JoinMode());
-		this.addState(new LobbyMode());
-		this.addState(new OngoingMode());
+		startMode = new StartMode();
+		joinMode = new JoinMode();
+		lobbyMode = new LobbyMode();
+		ongoingMode = new OngoingMode();
+		
+		this.addState(startMode);
+		this.addState(joinMode);
+		this.addState(lobbyMode);
+		this.addState(ongoingMode);
 		//this.addState(new OverMode());
 	}
 	

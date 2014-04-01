@@ -8,10 +8,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class TableMode extends BasicGameState {
+public class TableMode extends Mode {
 
 	protected Image background;	
 	protected TrueTypeFont infoFont;
@@ -42,8 +41,15 @@ public class TableMode extends BasicGameState {
 	private TrueTypeFont playerLabelFont;
 	
 	
+	public boolean hostConnectionError_flag;
+	
+	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		
+		super.init(container, game);
+		
+		hostConnectionError_flag = false;
 		
 		// load background image of table surface
 		background = new Image(GUI.RESOURCES_PATH + "table_background.jpg");

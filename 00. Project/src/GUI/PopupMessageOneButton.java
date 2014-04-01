@@ -1,5 +1,7 @@
 package GUI;
 
+import java.awt.Font;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
@@ -10,24 +12,25 @@ import org.newdawn.slick.SlickException;
 
 public class PopupMessageOneButton extends PopupMessage {
 
-	protected final int[] okButtonOffset = {770, 200};
+	protected static final TrueTypeFont buttonFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
+	
+	protected static final int[] okButtonOffset = {770, 200};
+	
+	
 	protected Button okButton;
-	protected TrueTypeFont buttonFont;
 	
 		
-	public PopupMessageOneButton(GUIContext container, int[] popupPosition, int[] popupSize,
-			TrueTypeFont msgFont, TrueTypeFont buttonFont,
+	public PopupMessageOneButton(GUIContext container, String messageString,
 			ComponentListener onOkListener) throws SlickException {
 		
-		super(container, popupPosition, popupSize, msgFont);
-		
-		this.buttonFont = buttonFont;
-		
+		super(messageString);
+				
 		okButton = new Button(container,
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_green.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_green_down.png",
-				popupPosition[0]+okButtonOffset[0],
-				popupPosition[1]+okButtonOffset[1],
+				position[0]+okButtonOffset[0],
+				position[1]+okButtonOffset[1],
 				new ExitListener(onOkListener));
 		
 		okButton.setEnable(false);	

@@ -1,14 +1,10 @@
 package Host;
 
-import java.util.Scanner;
+import java.util.*;
 
-import sun.font.CreatedFontTracker;
 import GameState.*;
 import Host.GameSystem.GameSystem;
-import Network.HostBroadcaster;
-import Network.HostMessageHandler;
-import Network.HostBroadcaster.Listening;
-import Network.UserAction;
+import Network.*;
 
 
 //Host will do the followings:
@@ -212,26 +208,30 @@ public class Host{
 		// start host, hostmessagehandler, hostbroadcaster
 		Host host = new Host(4321);
 				
+		/*
 		// wait for host player name 
 		System.out.println("****waiting to receive hostname...");
 		host.receiveAction();
 		host.hostname = (String)host.objReceived;
 		System.out.println("****host name: "+host.hostname);
+		*/
+		// PLACEHOLDER!!!!:
+		host.hostname = "wangyix";
 		
 		// start broadcaster
 		host.createBroadcaster();
 		
 		// wait for players to join, wait for start-game message from client 0
 		
-		
+		/*
 		
 		// close broadcaster when game starts
 		host.hb.close();
 		
-		
-		
 		// close hostmessagehandler last
 		host.hmh.close();
+		*/
+		
 		
 		/*
 		Host host = new Host(4321);

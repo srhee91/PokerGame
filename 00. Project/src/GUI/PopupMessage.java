@@ -1,5 +1,7 @@
 package GUI;
 
+import java.awt.Font;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -10,12 +12,15 @@ import org.newdawn.slick.gui.GUIContext;
 
 public class PopupMessage {
 	
-	protected int[] popupPosition;
-	protected int[] popupSize;
+	protected static final int[] position = {0, 150};
+	protected static final int[] size = {1000, 300};
+	
+	protected static final TrueTypeFont messageFont =
+			new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
+	
 	
 	protected final int[] messageStringOffset = {500, 75};
 	protected String messageString;
-	protected TrueTypeFont messageFont;
 	
 	protected AbstractComponent popupSource;
 	
@@ -34,18 +39,8 @@ public class PopupMessage {
 		}
 	}
 	
-	public PopupMessage(GUIContext container, int[] popupPosition, int[] popupSize,
-			TrueTypeFont msgFont) throws SlickException {
-		
-		this.popupPosition = new int[2];
-		this.popupPosition[0] = popupPosition[0];
-		this.popupPosition[1] = popupPosition[1];
-		this.popupSize = new int[2];
-		this.popupSize[0] = popupSize[0];
-		this.popupSize[1] = popupSize[1];
-		
-		this.messageFont = msgFont;
-		
+	public PopupMessage(String messageString) throws SlickException {
+		this.messageString = messageString;
 		visible = false;
 	}
 	
@@ -67,17 +62,13 @@ public class PopupMessage {
 		return visible;
 	}
 	
-	public void setMessageString(String messageString) {
-		this.messageString = messageString;
-	}
-	
 	public void render(GUIContext container, Graphics g) {
 		if (visible) {
 			g.setColor(new Color(0.0f, 0.0f, 0.0f, 0.85f));
-			g.fillRect(popupPosition[0], popupPosition[1], popupSize[0], popupSize[1]);
+			g.fillRect(position[0], position[1], size[0], size[1]);
 			
 			GUI.drawStringCenter(g, messageFont, Color.white, messageString,
-					popupPosition[0]+messageStringOffset[0], popupPosition[1]+messageStringOffset[1]);
+					position[0]+messageStringOffset[0], position[1]+messageStringOffset[1]);
 		}
 	}
 }

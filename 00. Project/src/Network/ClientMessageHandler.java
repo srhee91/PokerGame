@@ -1,17 +1,7 @@
 package Network;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
-
-import sun.awt.event.IgnorePaintEvent;
+import java.io.*;
+import java.net.*;
+import GUI.GUI;
 
 public class ClientMessageHandler {
 	
@@ -20,6 +10,7 @@ public class ClientMessageHandler {
 	Socket socket=null;
 	Gamestate gamestate=null;
 	int ChildIndex=-1;
+	ReceivingThread receivingThread;
 	
 	/* 
 	 * Constructor 
@@ -28,25 +19,18 @@ public class ClientMessageHandler {
 	 * Connect to a specific port listened by HostMessageHandler
 	 * Get a pair of streams in socket
 	 **/
-	public ClientMessageHandler(InetAddress IP,int port){
-		try {
-			socket = new Socket();
-			socket.connect(new InetSocketAddress(IP, port), 1000);
-			DataInputStream dis=new DataInputStream(socket.getInputStream());
-			ChildIndex=dis.readInt();
-			System.out.println("I am client "+ChildIndex);
-			oos=new ObjectOutputStream(socket.getOutputStream());
-			ois=new ObjectInputStream(socket.getInputStream());
-		} catch (UnknownHostException e) {
-			System.out.println("Cannot connect to server");
-			e.printStackTrace();
-			System.exit(0);
-		} catch (IOException e) {
-			System.out.println("Cannot create object stream");
-			e.printStackTrace();
-			System.exit(0);
-		}
-		new ReceivingThread().start();
+	public ClientMessageHandler(InetAddress IP,int port) throws IOException{
+
+		socket = new Socket();
+		socket.connect(new InetSocketAddress(IP, port), 1000);
+		DataInputStream dis=new DataInputStream(socket.getInputStream());
+		ChildIndex=dis.readInt();
+		System.out.println("I am client "+ChildIndex);
+		oos=new ObjectOutputStream(socket.getOutputStream());
+		ois=new ObjectInputStream(socket.getInputStream());
+
+		receivingThread = new ReceivingThread();
+		receivingThread.start();
 	}	
 	
 	public Gamestate getUpdatedGameState() {
@@ -74,7 +58,8 @@ public class ClientMessageHandler {
 	 * Call this function will make
 	 * current socket close
 	 * */
-	public void disconnect(){
+	public void close(){
+		receivingThread.enable = false;
 		try {
 			socket.close();
 		} catch (IOException e) {
@@ -89,26 +74,27 @@ public class ClientMessageHandler {
 	 * run when client message handler is created
 	 * */
 	class ReceivingThread extends Thread{
+		public boolean enable = true;
 		public void run(){
-			while(true){
+			while(enable){
 				try{
 					gamestate=(Gamestate)ois.readObject();
 					System.out.println("Receive a game state from host\n\t: "+gamestate);
-				}catch(IOException e){
-					System.out.println("Session End");
-					e.printStackTrace();
+				}catch(IOException | ClassNotFoundException e){
+					System.out.println("Lost connection to host!");
+					if (enable) {
+						GUI.lobbyMode.hostConnectionError_flag = true;
+						GUI.ongoingMode.hostConnectionError_flag = true;
+					}
 					break;
-				}catch(ClassNotFoundException e){
-					System.out.println("ClassNotFound");
-					e.printStackTrace();
 				}
 			}
 		}
 	}
-	
+
 	/*
-	 * Get user input and call send(input);
-	 * */
+	//Get user input and call send(input);
+
 	public class SendThread extends Thread{
 		UserAction ua;
 		public void run(){
@@ -138,8 +124,9 @@ public class ClientMessageHandler {
 		client.sending();
 	}
 	
-	/*call this function will start SendThread*/
+	//call this function will start SendThread
 	public void sending(){
 		new SendThread().start();
 	}
-}
+	*/
+}	

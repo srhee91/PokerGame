@@ -14,7 +14,6 @@ import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
-import Poker.Poker;
 
 public class OngoingMode extends TableMode {
 	

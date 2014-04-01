@@ -2,6 +2,7 @@ package Host.GameSystem;
 
 public class Player {
 
+	public String name;
 	public Card hand[];
 	public int totalChip;
 	public int betAmount;
@@ -9,7 +10,8 @@ public class Player {
 	public boolean hasFolded, hasLeft;
 
 	//Constructor
-	public Player() {
+	public Player(String playerName) {
+		name = playerName;
 		totalChip = GameSystem.INIT_CHIP;
 		hasLeft = false;
 		betAmount = 0;

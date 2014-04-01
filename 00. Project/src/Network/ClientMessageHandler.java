@@ -1,6 +1,7 @@
 package Network;
 import java.io.*;
 import java.net.*;
+
 import GUI.GUI;
 
 public class ClientMessageHandler {
@@ -12,6 +13,13 @@ public class ClientMessageHandler {
 	int ChildIndex=-1;
 	ReceivingThread receivingThread;
 	
+	
+	public static class NameTakenException extends Exception {
+		public NameTakenException(String msg) {
+			super(msg);
+		}
+	}
+	
 	/* 
 	 * Constructor 
 	 * Used to create ClientMessageHandler
@@ -19,16 +27,28 @@ public class ClientMessageHandler {
 	 * Connect to a specific port listened by HostMessageHandler
 	 * Get a pair of streams in socket
 	 **/
-	public ClientMessageHandler(InetAddress IP,int port) throws IOException{
+	public ClientMessageHandler(InetAddress IP, int port, String playerName)
+			throws IOException, ClassNotFoundException, NameTakenException{
 
 		socket = new Socket();
 		socket.connect(new InetSocketAddress(IP, port), 1000);
+		
+		// send player name to host, await boolean reply to see if name
+		// is ok
 		DataInputStream dis=new DataInputStream(socket.getInputStream());
-		ChildIndex=dis.readInt();
-		System.out.println("I am client "+ChildIndex);
+		DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+		dos.writeUTF(playerName);
+		dos.flush();
+		boolean playerNameOk = dis.readBoolean();
+		if (!playerNameOk) {
+			socket.close();
+			throw new NameTakenException("Name "+playerName+" is being used by another client.");
+		}
+				
+		// get object i/o streams of socket
 		oos=new ObjectOutputStream(socket.getOutputStream());
 		ois=new ObjectInputStream(socket.getInputStream());
-
+		
 		receivingThread = new ReceivingThread();
 		receivingThread.start();
 	}	
@@ -50,8 +70,8 @@ public class ClientMessageHandler {
 	 * through oos stream to host message handler
 	 * */
 	public synchronized void send(Object ob) throws IOException{
-			oos.writeObject(ob);
-			oos.flush();
+		oos.writeObject(ob);
+		oos.flush();
 	}
 	
 	/*

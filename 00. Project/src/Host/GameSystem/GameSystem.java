@@ -25,6 +25,20 @@ public class GameSystem{
 	
 	public int blind;
 	public int leftover;
+	
+	
+	
+	public GameSystem() {
+		
+		player = new Player[MAXPLAYER];
+		for(int i=0; i<MAXPLAYER; i++){
+			player[i] = null;
+		}
+		
+		blind = INIT_BLIND;
+		dealer = INIT_DEALER;
+		leftover = 0;
+	}
 		
 	//constructor
 	//What to initialize:
@@ -34,7 +48,7 @@ public class GameSystem{
 		
 		player = new Player[MAXPLAYER];
 		for(int i=0; i<numPlayer; i++){
-			player[i] = new Player();
+			player[i] = new Player("");
 		}
 		for(int i=numPlayer; i<MAXPLAYER; i++){
 			player[i] = null;

@@ -207,30 +207,39 @@ public class Host{
 
 		// start host, hostmessagehandler, hostbroadcaster
 		Host host = new Host(4321);
-				
-		/*
-		// wait for host player name 
-		System.out.println("****waiting to receive hostname...");
-		host.receiveAction();
-		host.hostname = (String)host.objReceived;
-		System.out.println("****host name: "+host.hostname);
-		*/
-		// PLACEHOLDER!!!!:
-		host.hostname = "wangyix";
+		
+		
+		// PLACEHOLDER!!!
+		host.hostname = "test_hostname";
 		
 		// start broadcaster
 		host.createBroadcaster();
 		
+		
+		
+		while (true) {
+			
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+			}
+			host.hmh.removeDeadConnections();
+			System.out.println("\n\nConnected players:");
+			for (String s : host.hmh.getConnectedPlayerNames())
+				System.out.println(s);
+		}
+		
+		
 		// wait for players to join, wait for start-game message from client 0
 		
-		/*
+		
 		
 		// close broadcaster when game starts
-		host.hb.close();
+		//host.hb.close();
 		
 		// close hostmessagehandler last
-		host.hmh.close();
-		*/
+		//host.hmh.close();
+		
 		
 		
 		/*

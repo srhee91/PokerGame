@@ -5,17 +5,38 @@ import java.util.*;
 
 
 public class HostMessageHandler {
-	int clientIndex;
-	ArrayList<ObjectOutputStream> oos=null;
-	ArrayList<ObjectInputStream> ois=null;
-	Host.Host host;
-	Thread hostThread;
-	Socket socket=null;
-	ServerSocket server=null;
-	int port;
 	
-	Listening listeningThread = null;
-	ArrayList<ReceivingThread> receivingThreads=null;
+	private class ClientConnection {
+		private ObjectOutputStream oos;
+		private ObjectInputStream ois;
+		private ReceivingThread rt;
+		private ClientConnection(ObjectOutputStream oos, ObjectInputStream ois,
+				ReceivingThread rt) {
+			this.oos = oos;
+			this.ois = ois;
+			this.rt = rt;
+		}
+		private void close() {
+			rt.enable = false;
+			try {
+				ois.close();
+				oos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	
+	private Map<String, ClientConnection> clientConnections;
+	
+	private Host.Host host;
+	private Thread hostThread;	// will be notified when object is received
+	private ServerSocket server=null;
+	private int port;
+	
+	private Listening listeningThread = null;
+	
 	
 	/*
 	 * Constructor 
@@ -37,13 +58,7 @@ public class HostMessageHandler {
 			System.exit(0);
 		}
 		
-		clientIndex=0;
-		oos=new ArrayList<ObjectOutputStream>();
-		ois=new ArrayList<ObjectInputStream>();
-		oos.add(0,null);
-		ois.add(0,null);
-		
-		receivingThreads = new ArrayList<ReceivingThread>();
+		clientConnections = new HashMap<String, ClientConnection>();
 		listeningThread = new Listening();
 		listeningThread.start();
 	}
@@ -59,18 +74,37 @@ public class HostMessageHandler {
 				e.printStackTrace();
 			}
 		}
-		for (int i=0; i<receivingThreads.size(); i++) {
-			receivingThreads.get(i).enable = false;
-			try {
-				ois.get(i).close();
-				oos.get(i).close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		for (ClientConnection cc : clientConnections.values()) {
+			cc.close();
 		}
+		clientConnections.clear();
 	}
 	
 	
+	// remove dead connections, returns true if a dead connection was found
+	public boolean removeDeadConnections() {
+		boolean clientDisconnected = false;
+		Iterator<Map.Entry<String, ClientConnection>> iter = clientConnections.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<String, ClientConnection> entry = iter.next();
+			if (!entry.getValue().rt.isAlive()) {
+				iter.remove();
+				clientDisconnected = true;
+			}
+		}
+		return clientDisconnected;
+	}
+	
+	
+	
+	// check if a player's connection is still alive
+	public boolean isConnected(String playerName) {
+		return clientConnections.containsKey(playerName);
+	}
+	
+	public Set<String> getConnectedPlayerNames() {
+		return clientConnections.keySet();
+	}
 	
 	/*
 	 * Inner class
@@ -79,20 +113,38 @@ public class HostMessageHandler {
 	 * start receiving thread
 	 * */
 	public class Listening extends Thread{
+		
 		boolean enable = true;
+		
 		public void run(){
+			Socket socket;
 			while(enable){
 				try{
 					socket=server.accept();
-					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["+port+"] as client "+clientIndex);
+					
+					// wait for client to send player name, reply whether or not
+					// the name is ok
+					DataInputStream dis = new DataInputStream(socket.getInputStream());
 					DataOutputStream dos=new DataOutputStream(socket.getOutputStream());
-					dos.writeInt(clientIndex);
-					oos.add(clientIndex, new ObjectOutputStream(socket.getOutputStream()));
-					ois.add(clientIndex, new ObjectInputStream(socket.getInputStream()));
-					ReceivingThread receivingThread = new ReceivingThread(clientIndex);
-					receivingThreads.add(clientIndex, receivingThread);
-					receivingThread.start();
-					clientIndex++;
+					String playerName = dis.readUTF();
+					boolean playerNameOk = !clientConnections.containsKey(playerName);
+					dos.writeBoolean(playerNameOk);
+					dos.flush();
+					
+					if (!playerNameOk) {
+						socket.close();
+						continue;
+					}
+					ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+					ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+					ReceivingThread rt = new ReceivingThread(playerName, ois);
+					clientConnections.put(playerName, new ClientConnection(oos, ois, rt));
+					
+					rt.start();
+					
+					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
+							+port+"] as client "+playerName);
+					
 				}catch(NullPointerException e){
 					System.out.println("Cannot listen on port");
 					break;
@@ -109,12 +161,12 @@ public class HostMessageHandler {
 	 * show action when there is one
 	 * */
 	class ReceivingThread extends Thread{
-		ObjectInputStream myois=null;
-		int clientIndex;
+		String playerName;
+		ObjectInputStream myois;
 		boolean enable;
-		public ReceivingThread(int index) {
-			myois=ois.get(index);
-			clientIndex=index;
+		public ReceivingThread(String playerName, ObjectInputStream ois) {
+			this.playerName = playerName;
+			this.myois = ois;
 			enable = true;
 		}
 		public void run(){
@@ -127,10 +179,9 @@ public class HostMessageHandler {
 					synchronized(host){
 						host.notify();
 					}
-					System.out.println("Host receives an object from Client "+clientIndex);
+					System.out.println("Host receives an object from Client "+playerName);
 				}catch(IOException e){
-					System.out.println("Session end for client "+clientIndex);
-					//e.printStackTrace();
+					System.out.println("Session end for client "+playerName);
 					break;
 				}catch(ClassNotFoundException e){
 					System.out.println("ClassNotFound");
@@ -147,11 +198,11 @@ public class HostMessageHandler {
 	
 	// call this function will send game state to specific client,
 	// which are arguments
-	public synchronized void send(int index,Gamestate gs){
-		gs.setIndex(index);
+	public synchronized void send(String playerName, Gamestate gs){
+		ObjectOutputStream oos= clientConnections.get(playerName).oos;
 		try{
-			oos.get(index).writeObject(gs);
-			oos.get(index).flush();
+			oos.writeObject(gs);
+			oos.flush();
 		}catch(IOException e){
 			System.out.println("Cannot send object");
 			e.printStackTrace();
@@ -160,10 +211,8 @@ public class HostMessageHandler {
 	
 	// call this function will send game state to all clients
 	public synchronized void sendAll(Gamestate gs){
-
-		for(int i=1;i<=clientIndex;i++){
-			send(i,gs);
-		}
+		for (String playerName : clientConnections.keySet())
+			send(playerName, gs);
 	}
 	
 	

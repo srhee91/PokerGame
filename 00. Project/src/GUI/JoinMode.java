@@ -18,6 +18,7 @@ public class JoinMode extends Mode {
 	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS"};//, "PLAYERS"};
 	private final int[] joinListColumnWidths = {220, 180};//, 120};
 	
+	private final String nameTakenString = "The entered player name is already being used.";
 	private final String failedJoinString = "Selected game lobby is no longer availabe.";
 	
 		
@@ -25,6 +26,7 @@ public class JoinMode extends Mode {
 	private JoinList joinList;
 	
 	private PopupMessageOneButton popupFailedJoin;
+	private PopupMessageOneButton popupNameTaken;
 	
 	protected List<String[]> gamesInfo;
 	protected List<Boolean>  gamesJoinable;
@@ -34,6 +36,7 @@ public class JoinMode extends Mode {
 	
 	// status flags
 	public boolean joinHostSuccess_flag;
+	public boolean joinHostNameTaken_flag;
 	public boolean joinHostError_flag;
 		
 	
@@ -49,14 +52,24 @@ public class JoinMode extends Mode {
 				
 		popupFailedJoin = new PopupMessageOneButton(container, failedJoinString,
 				new ComponentListener() {
-					
 					@Override
 					public void componentActivated(AbstractComponent source) {	// ok action
 						updateGamesList();
 						joinList.setVisible(true);
 					}
 				});
-		
+		popupNameTaken = new PopupMessageOneButton(container, nameTakenString,
+				new ComponentListener() {					
+					@Override
+					public void componentActivated(AbstractComponent source) {	// ok action
+						updateGamesList();
+						joinList.setVisible(true);
+						
+						// go to name prompt in startmode
+						GUI.startMode.showPopupEnterName(source);
+						game.enterState(1);
+					}
+				});
 		
 		joinList = new JoinList(container, true,
 				joinListColumnNames, joinListColumnWidths,
@@ -121,11 +134,14 @@ public class JoinMode extends Mode {
 		joinList.setVisible(false);
 		popupLoading.setVisible(source);
 	}
+	private void showPopupNameTaken(AbstractComponent source) {
+		joinList.setVisible(false);
+		popupNameTaken.setVisible(source);
+	}
 	private void showPopupFailedJoin(AbstractComponent source) {
 		joinList.setVisible(false);
 		popupFailedJoin.setVisible(source);
 	}
-	
 	
 	
 	
@@ -155,6 +171,9 @@ public class JoinMode extends Mode {
 				System.out.println("connection to host established... going to lobby");
 				game.enterState(3);
 				
+			} else if (joinHostNameTaken_flag) {
+				popupLoading.setInvisible();
+				showPopupNameTaken(popupLoading.getPopupSource());
 			} else if (joinHostError_flag) {
 				popupLoading.setInvisible();
 				showPopupFailedJoin(popupLoading.getPopupSource());
@@ -181,6 +200,7 @@ public class JoinMode extends Mode {
 		joinList.render(container, g);
 		
 		popupLoading.render(container, g);
+		popupNameTaken.render(container, g);
 		popupFailedJoin.render(container, g);
 	}
 

@@ -211,7 +211,7 @@ public class StartMode extends Mode
 		setMenuEnable(false);
 		popupLoading.setVisible(source);
 	}
-	private void showPopupEnterName(AbstractComponent source) {
+	protected void showPopupEnterName(AbstractComponent source) {
 		setMenuEnable(false);
 		popupEnterName.setVisible(source);
 	}

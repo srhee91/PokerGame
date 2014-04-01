@@ -6,13 +6,14 @@ import java.net.*;
 import GUI.GUI;
 import Host.Host;
 import Network.ClientMessageHandler;
+import Network.ClientMessageHandler.NameTakenException;
 
 public class StartHostThread extends Thread {
 	
-	private String hostName;
+	private String playerName;
 	
-	public StartHostThread(String hostName) {
-		this.hostName = hostName;
+	public StartHostThread(String playerName) {
+		this.playerName = playerName;
 	}
 	
 	
@@ -63,10 +64,9 @@ public class StartHostThread extends Thread {
 		InetAddress myIP = null;
 		try {
 			myIP = InetAddress.getLocalHost();
-			GUI.cmh = new ClientMessageHandler(myIP, 4321);
-			GUI.cmh.send(hostName);
+			GUI.cmh = new ClientMessageHandler(myIP, 4321, playerName);
 			GUI.startMode.startHostSuccess_flag = true;
-		} catch (IOException e) {
+		} catch (IOException | ClassNotFoundException | NameTakenException e) {
 			//e.printStackTrace();
 			p.destroy();
 			GUI.startMode.startHostError_flag = true;

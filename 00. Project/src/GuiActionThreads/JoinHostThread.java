@@ -5,6 +5,7 @@ import java.net.InetAddress;
 
 import GUI.GUI;
 import Network.ClientMessageHandler;
+import Network.ClientMessageHandler.NameTakenException;
 
 public class JoinHostThread extends Thread {
 	
@@ -20,17 +21,20 @@ public class JoinHostThread extends Thread {
 	public void run() {
 		
 		GUI.joinMode.joinHostSuccess_flag = false;
+		GUI.joinMode.joinHostNameTaken_flag = false;
 		GUI.joinMode.joinHostError_flag = false;
 		
 		try {
 			// connect to host, send playername
 			GUI.cmh = new ClientMessageHandler(
-					InetAddress.getByName(hostIp), 4321);
-			GUI.cmh.send(playerName);
-			GUI.joinMode.joinHostSuccess_flag = true;	
-		} catch (IOException e) {
+					InetAddress.getByName(hostIp), 4321, playerName);
+			GUI.joinMode.joinHostSuccess_flag = true;
+		} catch (NameTakenException e) {
+			GUI.cmh = null;
+			GUI.joinMode.joinHostNameTaken_flag = true;
+		} catch (IOException | ClassNotFoundException e) {
 			// failed to join
-			//e.printStackTrace();
+			GUI.cmh = null;
 			GUI.joinMode.joinHostError_flag = true;
 		}	
 	}

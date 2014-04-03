@@ -129,42 +129,39 @@ public class Rank {
 		return null;
 	}
 	public int[] isStraightFlush(Card cards[]){
-		if(isFlush(cards)!=null&&isStraight(cards)!=null){
 			int temp[]=new int[7];
 			int temp_1[]=new int[7];
 			int count;
-			int best_set[]=new int[7];
+			int best_set[]=new int[5];
 			int kind=isSameKind(cards);
 			if(kind!=0){
-			for(int i=0; i<7; i++){
-				if(cards[i].getKind()==kind){
-					temp[i]=cards[i].getNumber();
+				for(int i=0; i<7; i++){
+					if(cards[i].getKind()==kind){
+						temp[i]=cards[i].getNumber();
+					}
 				}
-			}
-			Arrays.sort(temp);
-			for(int j=0,k=6;j<7;j++,k--){
-				temp_1[k]=temp[j];
-			}
-			
-			  for(int i=2; i>=0;i--){
+				Arrays.sort(temp);
+				for(int j=0,k=6;j<7;j++,k--){
+					temp_1[k]=temp[j];
+				}
+
+				for(int i=2; i>=0;i--){
 			        count=0;
 			        int k=i;
-			        best_set[count++] = temp_1[i+4];
+			        best_set[count++] = temp[i+4];
 			        for(int j=i+4;j>k;j--){
-			            if (temp_1[j-1] + 1 == temp_1[j]) {
-			                best_set[count++] = temp_1[j-1];
-			            }else if (temp_1[j-1] == temp_1[j]) {
+			            if (temp[j-1] + 1 == temp[j]) {
+			                best_set[count++] = temp[j-1];
+			            }else if (temp[j-1] == temp[j]) {
 			            	k--;
 			            }
-			            
 			            if (k < 0) break;
 			        }
 			        if(count==5){
 			        	return best_set;
 			        }
 			    }
-		}
-		}
+		    }
 		
 		return null;
 	}
@@ -229,7 +226,7 @@ public class Rank {
 			for(int i=0;i<6;i++){
 				if((temp[i]==temp[i+1])&&(temp[i]!=pop_num1)){
 					pop_num2=temp[i];
-					if(temp[i+2]==temp[i+3]){
+					if(temp[i+1]==temp[i+2]){
 						pop_num3=temp[i+2];
 					}
 					break;
@@ -268,27 +265,30 @@ public class Rank {
 		return null;
 	}
 	public int[] isFlush(Card[]card){
-		int kind = isSameKind(card);
-		int valid;
-		int best_set[]=new int[7];
-		int temp[]= new int[5];
-		if(kind>0&&kind<5){
-			for(int i=0; i<7; i++){
-				if(card[i].getKind()==kind){
-					valid =card[i].getNumber();
-					best_set[i]=valid;
+
+			int kind = isSameKind(card);
+			int valid;
+			int best_set[]=new int[7];
+			int temp[]= new int[5];
+			if(kind>0&&kind<5){
+				for(int i=0; i<7; i++){
+					if(card[i].getKind()==kind){
+						valid =card[i].getNumber();
+						best_set[i]=valid;
+					}
 				}
+				Arrays.sort(best_set);
+				for(int j=2,k=4;j<7;j++,k--){
+					temp[k]=best_set[j];
+				}
+				return temp;
 			}
-			Arrays.sort(best_set);
-			for(int j=2,k=4;j<7;j++,k--){
-				temp[k]=best_set[j];
+			else{
+				return null;
 			}
-			return temp;
 		}
-		else{
-			return null;
-		}
-	}
+	
+	
 	public int isSameKind(Card[]card){
 		
 		int isSameKind=0;					

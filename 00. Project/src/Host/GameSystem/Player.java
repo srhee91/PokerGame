@@ -3,6 +3,7 @@ package Host.GameSystem;
 public class Player {
 
 	public String name;
+	public static final int hand_rank = 0;
 	public Card hand[];
 	public int totalChip;
 	public int betAmount;

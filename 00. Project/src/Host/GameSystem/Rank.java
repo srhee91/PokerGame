@@ -9,7 +9,7 @@ public class Rank {
 	public static Card[][] merge_arr;
 	public static final int PLAYER_MAX=3;		//temporary exist for player number
 	public static int final_rank = 0; 
-	public static boolean Ace;
+	public static boolean Ace = false;
 	public static boolean Ace_Pair;
 	
 	
@@ -38,11 +38,17 @@ public class Rank {
 	}
 
 	//finds the best hand out of all players
-	public int findWinner(Card[] flop, Player[] player){
+	public int findWinner(int numberOfplayer, Player[] player){
+		int player_rank =0;
+		for(int i=1;i<numberOfplayer+1;i++){
+			
+		}
+		//algorithm
+		//if two or more player ranks are equal call comparehands 
 		return 0;
 	}
 	//compare hands between two players?
-	public int compareHands(Card[]card){
+	public int compareHands(Card[] card){
 		int rank=0;						//See the Rank.java
 		return rank;
 	}
@@ -226,11 +232,17 @@ public class Rank {
 			for(int i=0;i<6;i++){
 				if((temp[i]==temp[i+1])&&(temp[i]!=pop_num1)){
 					pop_num2=temp[i];
-					if(temp[i+1]==temp[i+2]){
-						pop_num3=temp[i+2];
-					}
 					break;
 				}
+			}
+			for(int i=0;i<6;i++){
+				if(temp[i]==1){
+					pop_num3++;
+				}
+			}
+			if(pop_num3==3){
+				pop_num2=pop_num1;
+				pop_num1=1;
 			}
 			if(pop_num2==1||pop_num3==1){
 				Ace_Pair = true;
@@ -568,15 +580,17 @@ public class Rank {
 	public int[] noPair(Card cards[]){
 		 if(findPair(cards)==0){
 			 int temp[];
+			 boolean test=false;
 			 int best_set[]=new int[5];
 			 temp=sort_toIntArray(cards);
 			 for(int i=6;i>=0;i--){
 				 if(temp[i]==1){
-					 Ace = true;
+					 test=true;
 					 best_set[0]=temp[i];
+					 break;
 				 }
 			 }
-			 if(Ace != true){
+			 if(test == false){
 				 for(int i=6,j=0;j<5;i--,j++){
 					 best_set[j]=temp[i];
 				 }

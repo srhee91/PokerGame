@@ -34,6 +34,7 @@ public class Rank {
     }
 	
 	public void printMerge(){			//exist for debugging
+		
 		for(int i=0;i<PLAYER_MAX;i++){
 			if(merge_arr[i]!=null){
 				for(int j=0;j<7;j++){
@@ -47,21 +48,45 @@ public class Rank {
 	}
 
 	//split pot winner not handled yet.
-	public int findWinner(Card[] flop, Card[][]hand){
+	public boolean[] findWinner(Card[] flop, Card[][]hand){
 		int rank[]=new int[8];
+		boolean winner[]=new boolean[8];
+		int max_rank=0;
+		int max_rank_count=0;  //number of players who is max_rank
 		merge(flop,hand);
 		//printMerge();
-		for(int i=0;i<PLAYER_MAX;i++){
+		for(int i=0;i<PLAYER_MAX;i++){			//find players rank and store their rank to the rank array
 			if(merge_arr[i]!=null){
-			findBestHand(merge_arr[i]);
+				findBestHand(merge_arr[i]);
 				rank[i]=final_rank;
 			}
 		}
 		
-		return 0;
+		for(int i=0;i<7;i++){			//gets max_rank
+			if(rank[i]>max_rank){
+				max_rank=rank[i];
+			}
+		}
+		
+		for(int i=0;i<PLAYER_MAX;i++){
+			if(rank[i]!=max_rank){
+				max_rank_count++;
+				merge_arr[i]=null;
+				winner[i]=false;
+			}else{
+				winner[i]=true;
+			}
+		}
+		//printMerge();
+		if(max_rank_count>1){
+			winner = compareHands(merge_arr,max_rank);
+			return winner;
+		}else{
+			return winner;
+		}
 	}
 	//compare hands between two players?
-	public int compareHands(Card[] flop, Player[] player, int p1, int p2){
+	public boolean[] compareHands(Card[][]merge_arr,int max_rank){
 
 	
 

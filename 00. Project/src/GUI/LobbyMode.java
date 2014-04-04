@@ -170,7 +170,7 @@ public class LobbyMode extends TableMode {
 			if (i==hostIndexLocal) {
 				
 				g.setColor(Color.white);
-				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[i], playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 				
 				drawPlayerLabel(g, i, "Host", Color.white, hostLabelColor);

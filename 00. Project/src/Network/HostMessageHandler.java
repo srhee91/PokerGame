@@ -154,7 +154,8 @@ public class HostMessageHandler {
 					
 					host.players[host.numPlayers++] = playerName;
 					
-					sendAll(host.players);
+					
+					sendAll(host.players.clone());
 					
 				}catch(NullPointerException e){
 					System.out.println("Cannot listen on port listening()");

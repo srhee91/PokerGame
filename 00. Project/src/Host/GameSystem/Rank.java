@@ -7,26 +7,34 @@ import java.util.*;
 //For debugging Goto Deck.java
 public class Rank {
 	
-	public static final int PLAYER_MAX=8;		//temporary exist for player number
+	
 	public static int final_rank = 0; 
 	public static boolean Ace = false;
 	public static boolean Ace_Pair;
 	
 	
+	public static final int ROYAL_STRAIGHT_FLUSH = 9;
+	public static final int STRAIGHT_FLUSH = 8;
+	public static final int FOURCARD = 7;
+	public static final int FULLHOUSE = 6;
+	public static final int FLUSH = 5;
+	public static final int STRAIGHT = 4;
+	public static final int THREEPAIR = 3;
+	public static final int TWOPAIR = 2;
+	public static final int ONEPAIR = 1;
+	public static final int NOPAIR = 0;
+	
 	public Rank(){
 	}
 	
 	public Card[][] merge(Card[]flop, Card[][]hand){		//merge player array and flop array. [0-1] will be player card [2-6] will be flop card (same with other player)
-		Card[][] merge_arr=new Card[PLAYER_MAX][7];
-		for(int i=0;i<PLAYER_MAX;i++){
+		Card[][] merge_arr=new Card[GameSystem.MAXPLAYER][7];
+		for(int i=0;i<GameSystem.MAXPLAYER;i++){
 			if(hand[i]!=null){
 				for(int j=0;j<2;j++){
-					//System.out.println("i:"+i+"j:"+j);
-					//System.out.println("hand["+i+"]["+j+"]:"+hand[i][j]);
 					merge_arr[i][j]=hand[i][j];
 				}
 				for(int j=2,m=0;j<7;j++,m++){
-					//System.out.println("i:"+i+"j:"+j);
 					merge_arr[i][j]=flop[m];
 				}
 			}
@@ -39,11 +47,9 @@ public class Rank {
 	
 	public void printMerge(Card[][]merge_arr){			//exist for debugging
 		
-		for(int i=0;i<PLAYER_MAX;i++){
+		for(int i=0;i<GameSystem.MAXPLAYER;i++){
 			if(merge_arr[i]!=null){
 				for(int j=0;j<7;j++){
-					
-					//System.out.println("i:"+i+"j:"+j);
 					System.out.println("merge_arr["+i+"]["+j+"]: "+merge_arr[i][j].toString());
 				}
 			}
@@ -57,11 +63,12 @@ public class Rank {
 		int rank[]=new int[8];
 		Card[][] merge_arr=merge(flop,hand);
 		//printMerge(merge_arr);
-		
-		for(int i=0;i<PLAYER_MAX;i++){			//find players rank and store their rank to the rank array
+		System.out.println("ROYAL_STRAIGHT_FLUSH(9) STRAIGHT_FLUSH(8) FOURCARD(7) FULLHOUSE(6) FLUSH(5) STRAIGHT(4) THREEPAIR(3) TWOPAIR(2) ONEPAIR(1) NOPAIR(0)");
+		for(int i=0;i<GameSystem.MAXPLAYER;i++){			//find players rank and store their rank to the rank array
 			if(merge_arr[i]!=null){
 				findBestHand(merge_arr[i]);
 				rank[i]=final_rank;
+				System.out.println("player "+(i+1)+" rank is "+ final_rank);
 			}
 		}
 		
@@ -74,7 +81,7 @@ public class Rank {
 		
 		int max_rank_count=0;  //number of players who is max_rank
 		boolean winner[]=new boolean[8];
-		for(int i=0;i<PLAYER_MAX;i++){
+		for(int i=0;i<GameSystem.MAXPLAYER;i++){
 			if(rank[i]==max_rank){
 				max_rank_count++;
 				winner[i]=true;
@@ -83,12 +90,27 @@ public class Rank {
 				winner[i]=false;
 			}
 		}
-		//printMerge();
+		//temporary exist for debug (
+		for(int i=0;i<8;i++){
+			if(merge_arr[i]!=null){
+			int[] rank1 = findBestHand(merge_arr[i]);
+			System.out.println("Player "+(i+1)+" best set is "+Arrays.toString(rank1));
+			}
+		}
+		//)
 		if(max_rank_count>1){
 			winner = compareHands(merge_arr,max_rank);
 		}
 		//debugging purpose
-	  System.out.println(Arrays.toString(winner));
+		
+	  //System.out.println(Arrays.toString(winner));
+	  System.out.print("From player[1-8], The WINNER IS PLAYER ");
+	  for(int i=0;i<8;i++){
+		  if(winner[i]==true){
+			  System.out.print((i+1)+" ");
+		  }
+	  }
+	  System.out.println("!");
 		return winner;
 	}
 	//compare hands between two players?
@@ -141,52 +163,52 @@ public class Rank {
 		//find the best hand
 		int highHand[] = null;
 		if(isRoyalStraightFlush(cards)!=null){
-			System.out.println("RoyalStraightFlush");
+			//System.out.println("RoyalStraightFlush");
 			highHand = isRoyalStraightFlush(cards);
 			final_rank = 9;
 		}
 		else if(isStraightFlush(cards)!=null){
-			System.out.println("StraightFlush");
+			//System.out.println("StraightFlush");
 			highHand = isStraightFlush(cards);
 			final_rank = 8;
 		}
 		else if(isFourCard(cards)!=null){
-			System.out.println("FourCard");
+			//System.out.println("FourCard");
 			highHand = isFourCard(cards);
 			final_rank = 7;
 		}
 		else if(isFullHouse(cards)!=null){
-			System.out.println("FullHouse");
+			//System.out.println("FullHouse");
 			highHand = isFullHouse(cards);
 			final_rank = 6;
 		}
 		else if(isFlush(cards)!=null){
-			System.out.println("Flush");
+			//System.out.println("Flush");
 			highHand = isFlush(cards);
 			final_rank = 5;
 		}
 		else if(isStraight(cards)!=null){
-			System.out.println("Straight");
+			//System.out.println("Straight");
 			highHand = isStraight(cards);
 			final_rank = 4;
 		}
 		else if(isThreeOfKind(cards)!=null){
-			System.out.println("ThreeOfKind");
+			//System.out.println("ThreeOfKind");
 			highHand = isThreeOfKind(cards);
 			final_rank = 3;
 		}
 		else if(isTwoPair(cards)!=null){
-			System.out.println("TwoPair");
+			//System.out.println("TwoPair");
 			highHand = isTwoPair(cards);
 			final_rank = 2;
 		}
 		else if(isOnePair(cards)!=null){
-			System.out.println("OnePair");
+			//System.out.println("OnePair");
 			highHand = isOnePair(cards);
 			final_rank = 1;
 		}
 		else{	//No Pair
-			System.out.println("noPair");
+			//System.out.println("noPair");
 			highHand=noPair(cards);
 			final_rank = 0;
 		}
@@ -696,15 +718,6 @@ public class Rank {
 	    return temp;
 	}
     
-	public static final int ROYAL_STRAIGHT_FLUSH = 9;
-	public static final int STRAIGHT_FLUSH = 8;
-	public static final int FOURCARD = 7;
-	public static final int FULLHOUSE = 6;
-	public static final int FLUSH = 5;
-	public static final int STRAIGHT = 4;
-	public static final int THREEPAIR = 3;
-	public static final int TWOPAIR = 2;
-	public static final int ONEPAIR = 1;
-	public static final int NOPAIR = 0;
+	
     
 }

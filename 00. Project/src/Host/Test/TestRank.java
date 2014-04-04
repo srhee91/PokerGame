@@ -12,25 +12,28 @@ public class TestRank {
 		
 		System.out.println("Testing Fullhouse");
 		Card[]flop=new Card[5];
-		flop[0]=new Card(4,7);
+		flop[0]=new Card(4,1);
 		flop[1]=new Card(3,7);
 		flop[2]=new Card(1,7);
 		flop[3]=new Card(2,10);
 		flop[4]=new Card(1,10);
 		Card[][]hand=new Card[8][2];
 		hand[0][0]=new Card(1,10);
-		hand[0][1]=new Card(1,2);
-		hand[1]=null;
-		hand[2][0]=new Card(1,11);
-		hand[2][1]=new Card(3,4);
-		hand[3][0]=new Card(1,2);
-		hand[3][1]=new Card(2,5);
+		hand[0][1]=new Card(1,1);
+		hand[1][0]=new Card(1,10);
+		hand[1][1]=new Card(3,7);
+		hand[2][0]=new Card(1,10);
+		hand[2][1]=new Card(3,1);
+		hand[3][0]=new Card(1,7);
+		hand[3][1]=new Card(2,10);
 		hand[4][0]=new Card(4,1);
-		hand[4][1]=new Card(1,5);
-		hand[5][0]=new Card(4,2);
-		hand[5][1]=new Card(3,5);
-		hand[6]=null;
-		hand[7]=null;
+		hand[4][1]=new Card(1,7);
+		hand[5][0]=new Card(4,1);
+		hand[5][1]=new Card(3,7);
+		hand[6][0]=new Card(3,5);
+		hand[6][1]=new Card(3,7);
+		hand[7][0]=new Card(4,5);
+		hand[7][1]=new Card(3,4);
 		
 		
 		calrank.findWinner(flop, hand);
@@ -66,23 +69,23 @@ public class TestRank {
 	public static void straightflush_check(Rank calrank){
 		System.out.println("Testing StraightFlush");
 		Card[]flop=new Card[5];
-		flop[0]=new Card(4,7);
-		flop[1]=new Card(1,2);
+		flop[0]=new Card(1,5);
+		flop[1]=new Card(1,4);
 		flop[2]=new Card(1,3);
-		flop[3]=new Card(1,4);
-		flop[4]=new Card(1,5);
+		flop[3]=new Card(1,2);
+		flop[4]=new Card(1,1);
 		Card[][]hand=new Card[8][2];
-		hand[0][0]=new Card(1,10);
-		hand[0][1]=new Card(1,1);
+		hand[0][0]=new Card(1,6);
+		hand[0][1]=new Card(1,10);
 		hand[1]=null;
 		hand[2][0]=new Card(1,6);
-		hand[2][1]=new Card(3,4);
-		hand[3][0]=new Card(1,13);
-		hand[3][1]=new Card(2,5);
-		hand[4][0]=new Card(4,1);
-		hand[4][1]=new Card(1,7);
-		hand[5][0]=new Card(4,1);
-		hand[5][1]=new Card(3,5);
+		hand[2][1]=new Card(1,10);
+		hand[3][0]=new Card(1,6);
+		hand[3][1]=new Card(1,7);
+		hand[4][0]=new Card(1,6);
+		hand[4][1]=new Card(1,10);
+		hand[5][0]=new Card(1,6);
+		hand[5][1]=new Card(1,7);
 		hand[6]=null;
 		hand[7]=null;
 		
@@ -200,24 +203,24 @@ public class TestRank {
 	public static void onepair_check(Rank calrank){
 		System.out.println("Testing OnePair");
 		Card[]flop=new Card[5];
-		flop[0]=new Card(4,7);
-		flop[1]=new Card(3,7);
-		flop[2]=new Card(1,7);
-		flop[3]=new Card(2,10);
+		flop[0]=new Card(4,2);
+		flop[1]=new Card(3,4);
+		flop[2]=new Card(1,6);
+		flop[3]=new Card(2,8);
 		flop[4]=new Card(1,10);
 		Card[][]hand=new Card[8][2];
-		hand[0][0]=new Card(1,10);
+		hand[0][0]=new Card(1,1);
 		hand[0][1]=new Card(1,2);
 		hand[1]=null;
 		hand[2][0]=new Card(1,1);
 		hand[2][1]=new Card(3,4);
-		hand[3][0]=new Card(1,2);
-		hand[3][1]=new Card(2,5);
+		hand[3][0]=new Card(1,1);
+		hand[3][1]=new Card(2,6);
 		hand[4][0]=new Card(4,1);
-		hand[4][1]=new Card(1,5);
-		hand[5][0]=new Card(4,1);
-		hand[5][1]=new Card(3,5);
-		hand[6]=null;
+		hand[4][1]=new Card(1,8);
+		hand[5]=null;
+		hand[6][0]=new Card(4,1);
+		hand[6][1]=new Card(3,10);
 		hand[7]=null;
 		
 		
@@ -227,23 +230,23 @@ public class TestRank {
 	public static void highcard_check(Rank calrank){
 		System.out.println("Testing HighCard");
 		Card[]flop=new Card[5];
-		flop[0]=new Card(4,7);
-		flop[1]=new Card(3,7);
-		flop[2]=new Card(1,7);
-		flop[3]=new Card(2,10);
+		flop[0]=new Card(4,2);
+		flop[1]=new Card(3,4);
+		flop[2]=new Card(1,6);
+		flop[3]=new Card(2,8);
 		flop[4]=new Card(1,10);
 		Card[][]hand=new Card[8][2];
-		hand[0][0]=new Card(1,10);
-		hand[0][1]=new Card(1,2);
+		hand[0][0]=new Card(1,11);
+		hand[0][1]=new Card(1,12);
 		hand[1]=null;
-		hand[2][0]=new Card(1,1);
-		hand[2][1]=new Card(3,4);
-		hand[3][0]=new Card(1,2);
-		hand[3][1]=new Card(2,5);
-		hand[4][0]=new Card(4,1);
-		hand[4][1]=new Card(1,5);
-		hand[5][0]=new Card(4,1);
-		hand[5][1]=new Card(3,5);
+		hand[2][0]=new Card(1,11);
+		hand[2][1]=new Card(3,12);
+		hand[3][0]=new Card(1,12);
+		hand[3][1]=new Card(2,13);
+		hand[4][0]=new Card(4,12);
+		hand[4][1]=new Card(1,13);
+		hand[5][0]=new Card(4,11);
+		hand[5][1]=new Card(3,12);
 		hand[6]=null;
 		hand[7]=null;
 		
@@ -252,15 +255,21 @@ public class TestRank {
 	}
 	public static void main(String[] args){
 		Rank obj1=new Rank();
-		highcard_check(obj1);
+		straightflush_check(obj1);
+		fullhouse_check(obj1);
 		fourcard_check(obj1);
-		onepair_check(obj1);
-		twopair_check(obj1);
-		threeofkind_check(obj1);
 		straight_check(obj1);
 		flush_check(obj1);
-		fullhouse_check(obj1);
-		straightflush_check(obj1);
+		threeofkind_check(obj1);
+		twopair_check(obj1);
+		onepair_check(obj1);
+		highcard_check(obj1);
+		
+		
+		
+		
+		
+		
 
 	}
 }

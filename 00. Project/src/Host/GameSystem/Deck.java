@@ -134,55 +134,21 @@ public class Deck {
 	public static void main(String[] args){
 //<<<<<<< HEAD:00. Project/src/Host/Deck.java
 		Deck obj=new Deck();
+		Player player= new Player("Bo");
+		Player player2= new Player("Somi");
+		Player player3= new Player("Sang");
+		Player player4= new Player("Wang");
 		obj.shuffle();
 		obj.drawcardsToPlayer(8);
 		Rank obj1=new Rank();
 		obj1.merge();
 		Rank calrank=new Rank();
 		for(int i=0; i<5;i++){
-			System.out.println(flop[i]);
 			player_1[i+2]=flop[i];
 			player_2[i+2]=flop[i];
 			player_3[i+2]=flop[i];
 			player_4[i+2]=flop[i];
-			player_5[i+2]=flop[i];
-			player_6[i+2]=flop[i];
-			player_7[i+2]=flop[i];
-			player_8[i+2]=flop[i];
 		}
-		System.out.println("Player 1");
-		for(int i=0;i<7;i++){
-			System.out.print(player_1[i] + " ");
-		}
-		System.out.println(" ");
-		System.out.println("Player 2");
-		for(int i=0;i<7;i++){
-			System.out.print(player_2[i]+ " ");
-		}
-		System.out.println(" ");
-		System.out.println("Player 3");
-		for(int i=0;i<7;i++){
-			System.out.print(player_3[i]+ " ");
-		}
-		System.out.println(" ");
-		System.out.println("Player 4");
-		for(int i=0;i<7;i++){
-			System.out.print(player_4[i]+ " ");
-		}
-		System.out.println(" ");
-		calrank.findBestHand(player_1);
-		int player_1_has = calrank.final_rank;
-	
-		System.out.println(player_1_has);
-		calrank.findBestHand(player_2);
-		int player_2_has = calrank.final_rank;
-		System.out.println(player_2_has);
-		calrank.findBestHand(player_3);
-		int player_3_has = calrank.final_rank;
-		System.out.println(player_3_has);
-		calrank.findBestHand(player_4);
-		int player_4_has = calrank.final_rank;
-		System.out.println(player_4_has);
 		
 	}
 }

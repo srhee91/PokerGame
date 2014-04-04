@@ -11,24 +11,24 @@ public class TestRank {
 		System.out.println("Testing Fullhouse");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,1);
-		temp[1]=new Card(2,13);
-		temp[2]=new Card(3,9);
-		temp[3]=new Card(4,6);
+		temp[1]=new Card(2,2);
+		temp[2]=new Card(3,13);
+		temp[3]=new Card(4,1);
 		temp[4]=new Card(1,13);
 		temp[5]=new Card(1,1);
-		temp[6]=new Card(1,13);
+		temp[6]=new Card(1,2);
 		calrank.findBestHand(temp);
 	}
 	public static void fourcard_check(Rank calrank){
 		System.out.println("Testing FourCard");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(1,3);
-		temp[1]=new Card(2,3);
-		temp[2]=new Card(3,3);
+		temp[0]=new Card(1,1);
+		temp[1]=new Card(2,2);
+		temp[2]=new Card(3,4);
 		temp[3]=new Card(4,3);
-		temp[4]=new Card(4,9);
-		temp[5]=new Card(3,2);
-		temp[6]=new Card(2,10);
+		temp[4]=new Card(4,3);
+		temp[5]=new Card(3,3);
+		temp[6]=new Card(2,3);
 		calrank.findBestHand(temp);
 	}
 	
@@ -76,12 +76,12 @@ public class TestRank {
 		System.out.println("Testing Three of Kinds");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,10);
-		temp[1]=new Card(1,5);
-		temp[2]=new Card(4,5);
-		temp[3]=new Card(2,5);
+		temp[1]=new Card(1,2);
+		temp[2]=new Card(4,11);
+		temp[3]=new Card(2,13);
 		temp[4]=new Card(3,1);
-		temp[5]=new Card(1,11);
-		temp[6]=new Card(1,2);
+		temp[5]=new Card(1,1);
+		temp[6]=new Card(1,1);
 		calrank.findBestHand(temp);
 	}
 	// two pairs

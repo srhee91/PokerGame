@@ -3,16 +3,19 @@ package Host.GameSystem;
 public class Player {
 
 	public String name;
-	public static final int hand_rank = 0;
-	public Card hand[];
+	public int player_count=0;
+	public int hand_rank = 0;
+	public static Card hand[];
 	public int totalChip;
 	public int betAmount;
 	
 	public boolean hasFolded, hasLeft;
+	public int count;
 
 	//Constructor
 	public Player(String playerName) {
 		name = playerName;
+		player_count++;
 		totalChip = GameSystem.INIT_CHIP;
 		hasLeft = false;
 		betAmount = 0;
@@ -48,7 +51,11 @@ public class Player {
 		this.hand = hand;
 		hasFolded = false;
 	}
-	
+	public Card[] player_hand(Card hand[]){
+		this.hand = hand;
+		return hand;
+		
+	}
 	//setter
 	public void fold(){ hasFolded = true; }
 	

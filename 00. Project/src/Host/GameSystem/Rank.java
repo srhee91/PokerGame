@@ -38,12 +38,17 @@ public class Rank {
 	}
 
 	//finds the best hand out of all players
-	public int findWinner(int numberOfplayer, Player[] player){
-		int player_rank =0;
-		for(int i=1;i<numberOfplayer+1;i++){
-			
-		}
+	public int findWinner(Card[] flops, Player[] player){
 		//algorithm
+		int k=0;
+		for(int i=0;i<PLAYER_MAX;i++){
+			for(int j=0;j<2;j++,k++){
+				merge_arr[i][j]=Player.hand[k];		
+			}
+			for(int j=2,m=0;j<7;j++,m++){
+				merge_arr[i][j]=Deck.flop[m];
+			}
+		}
 		//if two or more player ranks are equal call comparehands 
 		return 0;
 	}
@@ -177,18 +182,19 @@ public class Rank {
 		 int high_num;
 		 int pop_num;
 		 temp=sort_toIntArray(cards);
-		 
 		if(findPair(cards)>=4){
 			pop_num=getMostPopularElement(temp);
 			if(pop_num==1){
 				Ace_Pair=true;
 			}
+			else{
+				Ace_Pair=false;
+			}
 			for(int i=6;i>=0;i--){
-				 if(temp[i]==1&&Ace_Pair==false){
+				 if(temp[i]==1&&Ace_Pair!=true){
 					 Ace = true;
 				 }
 			 }
-			
 			int i;
 			for(i=6;temp[i]==pop_num;i--){}
 				
@@ -196,25 +202,18 @@ public class Rank {
 			
 			if(high_num>pop_num){
 				for(int j=0;j<4;j++){
-					if(Ace_Pair==true){
-						best_set[j]=14;
-					}
 					best_set[j]=pop_num;
 				}
 				if(Ace==false){
 					best_set[4]=high_num;
 				}
 				else if(Ace==true){
-					best_set[4]=14;
+					best_set[4]=1;
 				}
 			}else{
 				best_set[0]=high_num;
 				for(int j=1;j<5;j++){
-					if(Ace_Pair==true){
-						best_set[j]=14;
-					}
 					best_set[j]=pop_num;
-					
 				}
 			}
 			return best_set;
@@ -240,7 +239,7 @@ public class Rank {
 					pop_num3++;
 				}
 			}
-			if(pop_num3==3){
+			if(pop_num3==3&&pop_num1!=1){
 				pop_num2=pop_num1;
 				pop_num1=1;
 			}
@@ -265,10 +264,11 @@ public class Rank {
 				}
 				else if(Ace_Pair==true){
 					for(int j=0;j<3;j++){
-						best_set[j]=pop_num1;
+						best_set[j]=1;
 					}
 					for(int j=3;j<5;j++){
-						best_set[j]=1;
+						System.out.println("inside");
+						best_set[j]=pop_num2;
 					}
 				}
 				return best_set;

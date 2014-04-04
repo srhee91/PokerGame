@@ -2,6 +2,7 @@ package GUI;
 
 
 import java.awt.Font;
+import java.io.IOException;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -14,6 +15,9 @@ import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
+import GameState.Gamestate;
+import Host.GameSystem.Player;
+import Network.UserAction;
 
 public class OngoingMode extends TableMode {
 	
@@ -49,8 +53,6 @@ public class OngoingMode extends TableMode {
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont allInButtonFont;
 	
-
-	
 	Button foldButton;
 	Button checkButton;
 	Button raiseButton;
@@ -58,6 +60,11 @@ public class OngoingMode extends TableMode {
 	
 	RaiseTextField raiseTextField;
 
+	
+	private String[] playerNamesLocal;
+	
+	private Gamestate gameState;
+	
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game)throws SlickException {
@@ -121,7 +128,13 @@ public class OngoingMode extends TableMode {
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {
-						System.out.println("checked/called!");					
+						System.out.println("checked/called!");
+						
+						try {
+							GUI.cmh.send(new UserAction(UserAction.Action.CHECK_CALL, 0));
+						} catch (IOException e) {
+							System.out.println("Failed to send user action");
+						}
 					}
 		});
 		
@@ -132,6 +145,12 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						System.out.println("folded!");
+						
+						try {
+							GUI.cmh.send(new UserAction(UserAction.Action.FOLD, 0));
+						} catch (IOException e) {
+							System.out.println("Failed to send user action");
+						}
 					}
 		});
 				
@@ -142,6 +161,14 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						System.out.println("raised!");
+						
+						try {
+							String raiseAmtString = raiseTextField.getText();
+							GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET,
+									Integer.parseInt(raiseAmtString)));
+						} catch (IOException e) {
+							System.out.println("Failed to send user action");
+						}
 					}
 		});
 		
@@ -152,12 +179,21 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						System.out.println("all in!");
+						
+						try {
+							GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, 
+									100));		// TODO: CHANGE THIS
+						} catch (IOException e) {
+							System.out.println("Failed to send user action");
+						}
 					}
 		});
 	
 	}
 	
-	
+	protected void setPlayerNamesLocal(String[] names) {
+		this.playerNamesLocal = names;
+	}
 	
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
@@ -173,6 +209,21 @@ public class OngoingMode extends TableMode {
 			game.enterState(3);
 
 		
+		// check for received gamestates from host
+		Object receivedObject = GUI.cmh.getReceivedObject();
+		if (receivedObject!=null) {
+			
+			gameState = (Gamestate)receivedObject;
+			
+			if (gameState.whoseTurn==GUI.playerIndexInHost) {
+				setButtonsEnable(true); 
+			} else {
+				setButtonsEnable(false); 
+			}
+		}
+		
+		
+		
 		// TEST!!!
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
 			
@@ -180,7 +231,7 @@ public class OngoingMode extends TableMode {
 			
 			boolean[] existPlayer = new boolean[8];
 			for (int i=0; i<8; ++i) {
-				existPlayer[i] = Math.random() < 0.75;
+				existPlayer[i] = playerNamesLocal[i]!=null;
 			}
 			
 			cards.dealCards((int)(Math.random()*8.0), existPlayer);
@@ -239,6 +290,15 @@ public class OngoingMode extends TableMode {
 		dealerChip.update(delta);
 	}
 	
+	
+	private void setButtonsEnable(boolean enable) {
+		checkButton.setEnable(enable);
+		foldButton.setEnable(enable);
+		raiseButton.setEnable(enable);
+		allInButton.setEnable(enable);
+		raiseTextField.setEnable(enable);
+	}
+	
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		
@@ -268,18 +328,20 @@ public class OngoingMode extends TableMode {
 
 	private void drawLabels(Graphics g) {
 		for (int i=0; i<8; ++i) {
-			if (i==0)
-				drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
-			else if (i==1)
-				drawPlayerLabel(g, i, "Fold", Color.white, foldLabelColor);
-			else if (i==2)
-				drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
-			else if (i==3)
-				drawPlayerLabel(g, i, "Call", Color.white, checkLabelColor);
-			else if (i==4)
-				drawPlayerLabel(g, i, "All in", Color.white, allInLabelColor);
-			else if (i==5)
-				drawPlayerLabel(g, i, "Thinking...", Color.white, thinkingLabelColor);
+			if (playerNamesLocal[i] != null) {
+				if (i==0)
+					drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
+				else if (i==1)
+					drawPlayerLabel(g, i, "Fold", Color.white, foldLabelColor);
+				else if (i==2)
+					drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
+				else if (i==3)
+					drawPlayerLabel(g, i, "Call", Color.white, checkLabelColor);
+				else if (i==4)
+					drawPlayerLabel(g, i, "All in", Color.white, allInLabelColor);
+				else if (i==5)
+					drawPlayerLabel(g, i, "Thinking...", Color.white, thinkingLabelColor);
+			}
 		}
 	}
 	
@@ -300,12 +362,14 @@ public class OngoingMode extends TableMode {
 	private void drawPlayerNames(Graphics g) {
 		g.setColor(Color.white);
 
-		GUI.drawStringCenter(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[0], mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
-			GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
-					playerPanelPositions[i][1]+playerNameOffset[1]);
+			if (playerNamesLocal[i] != null) {
+				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+						playerPanelPositions[i][1]+playerNameOffset[1]);
+			}
 		}
 	}
 		

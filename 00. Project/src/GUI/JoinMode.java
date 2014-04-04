@@ -30,9 +30,7 @@ public class JoinMode extends Mode {
 	
 	protected List<String[]> gamesInfo;
 	protected List<Boolean>  gamesJoinable;
-	
-	protected String playerName;	// passed from StartMode
-	
+		
 	
 	// status flags
 	public boolean joinHostSuccess_flag;
@@ -80,7 +78,7 @@ public class JoinMode extends Mode {
 						
 						// JOIN GAME
 						String ipString = gamesInfo.get(index)[1];
-						JoinHostThread jht = new JoinHostThread(ipString, playerName);
+						JoinHostThread jht = new JoinHostThread(ipString, GUI.playerName);
 						jht.start();
 						
 						showPopupLoading(source);

@@ -103,6 +103,7 @@ public class StartMode extends Mode
 							// START HOST							
 							// start thread to start host process and connect to it
 							String hostName = popupEnterName.getText();
+							GUI.playerName = hostName;
 							StartHostThread sht = new StartHostThread(hostName);
 							sht.start();
 							System.out.println("HostSetup thread started!");
@@ -113,7 +114,7 @@ public class StartMode extends Mode
 							System.out.println("Player "+popupEnterName.getText()+" will join");
 							
 							// GO TO JOIN MODE
-							GUI.joinMode.playerName = popupEnterName.getText();
+							GUI.playerName = popupEnterName.getText();
 							GUI.joinMode.updateGamesList();
 							game.enterState(2);	
 							setMenuEnable(true);

@@ -23,7 +23,8 @@ public class GUI extends StateBasedGame
 	
 	public static ClientMessageHandler cmh;
 	
-	
+	protected static String playerName;
+	protected static int playerIndexInHost = -1;
 	
 	
 	public GUI(String name) {

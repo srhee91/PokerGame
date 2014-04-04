@@ -1,6 +1,7 @@
 package GUI;
 
 import java.awt.Font;
+import java.io.IOException;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
@@ -15,6 +16,8 @@ import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
+import Network.HostSearcher;
+
 public class LobbyMode extends TableMode {
 
 	private TrueTypeFont mainStatusFont;
@@ -27,16 +30,19 @@ public class LobbyMode extends TableMode {
 	private final Color hostLabelColor = new Color(85, 163, 217, 242);
 	private final Color joinedLabelColor = new Color(128, 128, 128, 242);
 
-	
-	
 	private Animation[] waitingAnimations;
 	private final int NUM_ANIMATIONS = 4;
 	
 	private Button startButton;
 	
 	
+	private String[] playerNamesLocal;
+	private int numPlayers;
+	private int hostIndexLocal;
+	
+	
 	@Override
-	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+	public void init(GameContainer container, final StateBasedGame game) throws SlickException {
 		
 		super.init(container, game);
 		
@@ -54,6 +60,15 @@ public class LobbyMode extends TableMode {
 						
 						System.out.println("started game!");
 						
+						// send start signal to host
+						try {
+							GUI.cmh.send("start");
+							// go to ongoing mode
+							GUI.ongoingMode.setPlayerNamesLocal(playerNamesLocal);
+							game.enterState(4);
+						} catch (IOException e) {
+							System.out.println("Failed to send start signal!");
+						}
 					}
 				});
 		startButton.setEnable(false);
@@ -70,12 +85,22 @@ public class LobbyMode extends TableMode {
 			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/NUM_ANIMATIONS));
 		}
 		
+		
+		playerNamesLocal = new String[8];
+		for (int i=0; i<8; ++i)
+			playerNamesLocal[i] = null;
+		numPlayers = 0;
+		hostIndexLocal = -1;
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		
 		super.update(container, game, delta);
+		
+		// if HostSearcher is running, stop it
+		if (HostSearcher.isRunning())
+			HostSearcher.stop();
 		
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
@@ -84,6 +109,32 @@ public class LobbyMode extends TableMode {
 			game.enterState(2);
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
+		
+		
+		// check for new player list, convert to local order
+		Object receivedObject = GUI.cmh.getReceivedObject();
+		if (receivedObject!=null) {
+			
+			String[] playerNames = (String[])receivedObject;
+			
+			// find out which place we are in the server player list
+			numPlayers = 0;
+			GUI.playerIndexInHost = -1;
+			for (int i=0; i<8; ++i) {
+				if (playerNames[i] != null) {
+					numPlayers++;
+					if (playerNames[i].equals(GUI.playerName)) {
+						GUI.playerIndexInHost = i;
+					}
+				}
+			}
+			
+			// update local players list
+			for (int i=0; i<8; ++i) {
+				playerNamesLocal[i] = playerNames[(i + GUI.playerIndexInHost)%8];
+			}
+			hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
+		}
 	}
 	
 	
@@ -100,19 +151,16 @@ public class LobbyMode extends TableMode {
 	
 	private void drawPlayerNamesAndStatuses(GUIContext container, Graphics g) {
 		
-		// for testing!!!!!!!
-		boolean playerJoined[] = {false, false, false, true, true, true, true, true};
-		int hostIndex = 4;
-		boolean isHost = true;
-		boolean enoughPlayers = true;
+		boolean isHost = (hostIndexLocal==0);
+		boolean enoughPlayers = numPlayers >= 2;
 		
 		g.setColor(Color.white);
-		GUI.drawStringCenter(g, infoFont, Color.white, "Player0", mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCenter(g, infoFont, Color.white, GUI.playerName, mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
 			
-			if (i==hostIndex) {
+			if (i==hostIndexLocal) {
 				
 				g.setColor(Color.white);
 				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
@@ -121,10 +169,10 @@ public class LobbyMode extends TableMode {
 				drawPlayerLabel(g, i, "Host", Color.white, hostLabelColor);
 				
 			}
-			else if (playerJoined[i]) {
+			else if (playerNamesLocal[i] != null) {
 				
 				g.setColor(Color.white);
-				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[i], playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 						
 				drawPlayerLabel(g, i, "Joined", Color.white, joinedLabelColor);
@@ -144,6 +192,7 @@ public class LobbyMode extends TableMode {
 		}
 		else {
 			if (!isHost) {
+				startButton.setEnable(false);
 				GUI.drawStringCenter(g, mainStatusFont, Color.white, "Waiting for host to start game ...", 
 						mainPanelPosition[0]+mainTextOffset[0],
 						mainPanelPosition[1]+mainTextOffset[1]);

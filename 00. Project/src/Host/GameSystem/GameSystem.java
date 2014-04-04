@@ -73,6 +73,7 @@ public class GameSystem{
 		
 		flops = deck.drawFlops();
 		potTotal = new Pot(leftover);
+		leftover = 0;
 
 		whoseTurn = dealer;
 		highestBet = blind;
@@ -86,10 +87,10 @@ public class GameSystem{
 		whoseTurn = dealer;
 	}
 	public void updateHand(){
+
 		//find winner
-		int winner = (new Rank()).findWinner(flops, player);
-		
 		//pot to winner
+		potTotal.potToWinner(this);
 		
 		//update dealer
 		dealer = nextPlayer(dealer);

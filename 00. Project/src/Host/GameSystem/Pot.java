@@ -1,5 +1,7 @@
 package Host.GameSystem;
 
+import Host.*;
+
 public class Pot {
 
 	public Pot splitPot;
@@ -81,6 +83,30 @@ public class Pot {
 			}
 			
 		}
+	}
+
+	public void potToWinner(GameSystem game)
+	{
+		if(splitPot != null)	splitPot.potToWinner(game);
+		
+		Card hands[][] = new Card[GameSystem.MAXPLAYER][2];
+		
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			if(playerInvolved[i])
+				hands[i] = game.player[i].hand;
+			else
+				hands[i] = null;
+		}
+		
+		int[] winner = (new Rank()).findWinner(game.flops, hands);
+		
+		totalPot += game.leftover;
+		
+		for(int i=0; i<winner.length; i++)
+		{
+			game.player[winner[i]].totalChip += (int) (totalPot/winner.length);
+		}
+		game.leftover = totalPot%winner.length;
 	}
 	
 	public void printPot()

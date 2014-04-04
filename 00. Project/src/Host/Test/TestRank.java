@@ -6,8 +6,27 @@ import Host.GameSystem.Rank;
 public class TestRank {
 	public TestRank(){
 	}
+	
 	// fullhouse check
+	public static void test_winner(Rank calrank){
+		System.out.println("test winner");
+		Card[]flop=new Card[5];
+		flop[0]=new Card(1,7);
+		flop[1]=new Card(1,8);
+		flop[2]=new Card(1,9);
+		flop[3]=new Card(1,10);
+		flop[4]=new Card(1,11);
+		Card[][]hand=new Card[8][2];
+		hand[0][0]=new Card(1,1);
+		hand[0][1]=new Card(1,2);
+		hand[1]=null;
+		hand[2][0]=new Card(1,5);
+		hand[2][1]=new Card(1,6);
+		
+		calrank.findWinner(flop, hand);
+	}
 	public static void fullhouse_check(Rank calrank){
+		
 		System.out.println("Testing Fullhouse");
 		Card[]temp=new Card[7];
 		for(int i=1;i<14;i++){			
@@ -20,6 +39,7 @@ public class TestRank {
 				temp[4]=new Card(1,j);
 				temp[5]=new Card(1,0);
 				temp[6]=new Card(1,0);
+				
 				//calrank.findBestHand(temp);
 				}
 			}
@@ -125,7 +145,7 @@ public class TestRank {
 					temp[4]=new Card(1,j);
 					temp[5]=new Card(1,0);
 					temp[6]=new Card(1,0);
-					calrank.findBestHand(temp);
+					//calrank.findBestHand(temp);
 					}
 				}
 			}
@@ -159,6 +179,7 @@ public class TestRank {
 	}
 	public static void main(String[] args){
 		Rank obj1=new Rank();
+		test_winner(obj1);
 		fullhouse_check(obj1); // fullhouse
 		fourcard_check(obj1); // four_card
 		straightflush_check(obj1); // straightflush		

@@ -270,7 +270,7 @@ public class Rank {
 					break;
 				}
 			}
-			for(int i=0;i<6;i++){
+			for(int i=0;i<7;i++){
 				if(temp[i]==1){
 					pop_num3++;
 				}
@@ -282,15 +282,14 @@ public class Rank {
 				Ace_Pair = true;
 			}
 			if(pop_num2!=0){
-				if(pop_num3>pop_num2&&Ace_Pair==false){
-					System.out.println(Ace_Pair);
+				if(pop_num1>pop_num2&&Ace_Pair==false){
 					for(int j=0;j<3;j++){
 						best_set[j]=pop_num1;
 					}
 					for(int j=3;j<5;j++){
 						best_set[j]=pop_num2;
 					}
-				}else if(pop_num3<pop_num2&&Ace_Pair==false) {
+				}else if(pop_num1<pop_num2&&Ace_Pair==false) {
 					for(int j=0;j<3;j++){
 						best_set[j]=pop_num1;
 					}
@@ -299,7 +298,6 @@ public class Rank {
 					}
 				}
 				else if(Ace_Pair==true){
-					System.out.println(Ace_Pair);
 					for(int j=0;j<3;j++){
 						best_set[j]=1;
 					}

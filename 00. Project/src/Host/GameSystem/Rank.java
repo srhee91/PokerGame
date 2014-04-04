@@ -78,15 +78,125 @@ public class Rank {
 		card2[5] = player[p2].hand[0];
 		card2[6] = player[p2].hand[1];
 
+
 		int[] rank1 = findBestHand(card1);
+		int rank_1 = final_rank;
 		int[] rank2 = findBestHand(card2);
+		int rank_2 = final_rank;
 		
-		if(rank1[5] > rank2[5])	return p1;
-		else if(rank1[5] < rank2[5])	return p2;
+		if(rank_1 > rank_2)	return p1;
+		else if(rank_1 < rank_2)	return p2;
 		else{
 			//if they have same rank, compare 5 best cards 
-			
-			return p1;
+			if(rank_1==STRAIGHT_FLUSH){
+				if(rank1[0]>rank2[0]){
+					return p1;
+				}
+			}
+			else if(rank_1==STRAIGHT_FLUSH){
+				if(rank1[0]>rank2[0]){
+					return p1;
+				}
+			}
+			else if(rank_1==FOURCARD){
+				if(rank1[0]>rank2[0]){
+					return p1;
+				}
+				else if(rank1[0]==rank2[0] && rank1[4]>rank2[4]){
+					return p1;
+				}
+			}
+			else if(rank_1==FULLHOUSE){
+				if(rank1[0]>rank2[0]){
+					return p1;
+				}
+				else if(rank1[0]==rank2[0] && rank1[3]>rank2[3]){
+					return p1;
+				}
+				else{
+					//players have same hand
+				}
+				
+			}
+			else if(rank_1==FLUSH){
+				for(int i=0;i<5;i++){
+					if(rank1[i]>rank2[i]){
+						return p1;
+					}
+					else if(rank1[i]<rank2[i]){
+						return p2;
+					}
+					else{
+						if(i==4){
+							//players have same hands.
+						}
+					}
+				}
+			}
+			else if(rank_1==STRAIGHT){
+				if(rank1[0]>rank2[0]){
+					return p1;
+				}
+			}
+			else if(rank_1==THREEPAIR){
+				for(int i=0;i<=2;i++){
+					if(rank1[i]>rank2[i]){
+						return p1;
+					}
+					else if(rank1[i]<rank2[i]){
+						return p2;
+					}
+					else{
+						if(i==4){
+							// player has same hand.
+						}
+					}
+				}
+			}
+			else if(rank_1==TWOPAIR){
+				for(int i=0;i<=4;i=i+2){
+					if(rank1[i]>rank2[i]){
+						return p1;
+					}
+					else if(rank1[i]<rank2[i]){
+						return p2;
+					}
+					else{
+						if(i==4){
+							// player has same hand.
+						}
+					}
+				}
+			}
+			else if(rank_1==ONEPAIR){
+				if(rank1[0]>rank2[0]){
+					return p1;
+				}
+				else if(rank1[0]==rank2[0]){
+					for(int i=2;i<5;i++){
+						if(rank1[i]>rank2[i]){
+							return p1;
+						}
+						else if(rank1[i]<rank2[i]){
+							return p2;
+						}
+					}
+					//player have same hands.
+				}
+				return p2;
+			}
+			else if(rank_1==NOPAIR){
+				for(int i=0; i<5; i++){
+					if(rank1[i]>rank2[i]){
+						return p1;
+					}
+					else if(rank1[i]<rank2[i]){
+						return p2;
+					}
+				}
+				//player have same hands.
+			}
+			return p2;
 		}
 	}
 	

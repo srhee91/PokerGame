@@ -260,6 +260,8 @@ public class OngoingMode extends TableMode {
 					if (!playerCardsDealt) {
 						Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
 						
+						for(int i=0; i<8; i++)if(gameState.player[i]!=null) System.out.println("player " + i + "cards"+gameState.player[i].hand);
+						
 						cards.playerCards[0][0].setFaceImage(hand[0]);
 						cards.playerCards[0][1].setFaceImage(hand[1]);
 						

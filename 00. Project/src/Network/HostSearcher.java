@@ -25,9 +25,9 @@ public abstract class HostSearcher {
 			System.out.println("Cannot get local IP");
 			return;
 		}
-		IP1=myIP.getAddress()[0];
-		IP2=myIP.getAddress()[1];
-		IP3=myIP.getAddress()[2];
+		IP1=192;
+		IP2=168;
+		IP3=1;
 		
 		
 		for(int i=0;i<255;i++) IP4[i]=null;

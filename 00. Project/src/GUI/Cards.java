@@ -60,11 +60,11 @@ public class Cards {
 	private int[][][] playerCardPositions;
 	
 	
-	private Image[][] cardFaces;
-	private Image cardBack;
+	protected static Image[][] cardFaces;
+	private static Image cardBack;
 	
-	private Card[] centerCards;
-	private Card[][] playerCards;
+	protected Card[] centerCards;
+	protected Card[][] playerCards;
 	
 
 	private Card[] playerCardsDealOrder;
@@ -84,8 +84,8 @@ public class Cards {
 		for (int i=1; i<=13; ++i) {
 			indexStr = String.format("%02d", i);
 			cardFaces[0][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"c"+indexStr+".png");
-			cardFaces[1][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"d"+indexStr+".png");
-			cardFaces[2][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"h"+indexStr+".png");
+			cardFaces[1][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"h"+indexStr+".png");
+			cardFaces[2][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"d"+indexStr+".png");
 			cardFaces[3][i] = new Image(GUI.RESOURCES_PATH+GUI.CARDSPRITES_FOLDER+"s"+indexStr+".png");
 		}
 		// load card back
@@ -157,10 +157,10 @@ public class Cards {
 	}
 	
 	
-	public void dealCards(int dealer, boolean[] existPlayer) {
+	public void dealCards(int dealer, String[] playerName) {
 		// set non-existant players' cards invisible (instant)
 		for (int i=0; i<8; ++i) {
-			if (!existPlayer[i]) {
+			if (playerName[i]==null) {
 				actionQueue.add(new QueuedAction(playerCards[i][0], 
 						null, false, null, true, 0.0, i==0));
 				actionQueue.add(new QueuedAction(playerCards[i][1], 
@@ -172,7 +172,7 @@ public class Cards {
 		for (int i=0; i<8; ++i) {
 			player %= 8;
 			Card card = playerCards[player][0];
-			if (existPlayer[player]) {
+			if (playerName[i]!=null) {
 				actionQueue.add(new QueuedAction(card,
 						playerCardPositions[player][0], null, null, false, 100.0, i==0));
 			}
@@ -182,7 +182,7 @@ public class Cards {
 		for (int i=0; i<8; ++i) {
 			player %= 8;
 			Card card = playerCards[player][1];
-			if (existPlayer[player]) {
+			if (playerName[i]!=null) {
 				actionQueue.add(new QueuedAction(card,
 						playerCardPositions[player][1], null, null, false, 100.0, false));
 			}

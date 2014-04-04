@@ -67,6 +67,12 @@ public class OngoingMode extends TableMode {
 	private Gamestate gameState;
 	
 	
+	// game state flags
+	private boolean playerCardsDealt = false;
+	private boolean flopDealt = false;
+	private boolean turnDealt = false;
+	private boolean riverDealt = false;
+	
 	@Override
 	public void init(GameContainer container, StateBasedGame game)throws SlickException {
 		
@@ -91,7 +97,7 @@ public class OngoingMode extends TableMode {
 			playerCardPositions[i][1][1] = playerPanelPositions[i][1]+playerCardOffsets[1][1];
 		}
 		cards = new Cards(playerCardPositions);
-		
+		cards.resetCards();
 		
 		// initialize chip amounts
 		int[][] playerAmountPositions = new int[8][2];
@@ -208,6 +214,11 @@ public class OngoingMode extends TableMode {
 		this.playerNamesLocal = names;
 	}
 	
+	
+	private int hostToLocalIndex(int hostIndex) {
+		return (hostIndex + 8 - GUI.playerIndexInHost) % 8;
+	}
+	
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		
@@ -233,6 +244,85 @@ public class OngoingMode extends TableMode {
 				
 				gameState = (Gamestate)receivedObject;
 				
+				int hostDealerIndex = gameState.dealer;
+				int localDealerIndex = hostToLocalIndex(hostDealerIndex);
+				Host.GameSystem.Card[] flop = gameState.flops;
+				
+				
+				// update dealer chip position
+				dealerChip.moveTo(localDealerIndex);
+				
+				switch (gameState.flopState) {
+				
+				case 0:
+					
+					// deal if cards haven't been dealt
+					if (!playerCardsDealt) {
+						Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
+						
+						cards.playerCards[0][0].setFaceImage(hand[0]);
+						cards.playerCards[0][1].setFaceImage(hand[1]);
+						
+						cards.dealCards(hostToLocalIndex(hostDealerIndex), playerNamesLocal);
+						cards.showPlayerCards(0);
+						
+						playerCardsDealt = true;
+					}
+					else {
+						
+					}
+					break;
+					
+				case 1:
+					
+					if (!flopDealt) {
+						
+						
+						for (int i=0; i<3; ++i) {
+							cards.centerCards[i].setFaceImage(flop[i]);
+						}
+						
+						cards.dealFlop();
+						
+						flopDealt = true;
+					}
+					else {
+						
+					}
+					break;
+				case 2:
+					
+					if (!turnDealt) {
+						
+
+						cards.centerCards[3].setFaceImage(flop[3]);
+
+						
+						cards.dealTurn();
+						
+						turnDealt = true;
+					}
+					else {
+						
+					}
+					break;
+				case 3:
+					
+					if (!riverDealt) {
+						cards.centerCards[4].setFaceImage(flop[4]);
+
+						
+						cards.dealRiver();
+						
+						riverDealt = true;
+					}
+					else {
+						
+					}
+					break;
+				}
+				
+				
 				if (gameState.whoseTurn==GUI.playerIndexInHost) {
 					setButtonsEnable(true); 
 				} else {
@@ -252,7 +342,13 @@ public class OngoingMode extends TableMode {
 				existPlayer[i] = playerNamesLocal[i]!=null;
 			}
 			
-			cards.dealCards((int)(Math.random()*8.0), existPlayer);
+			//cards.dealCards((int)(Math.random()*8.0), playerNamesLocal);
+			String[] t = new String[8];
+			for (int i=0; i<8; ++i) {
+				if (Math.random()<0.5)
+				t[i] = "e";
+			}
+			cards.dealCards((int)(Math.random()*8.0), t);
 			cards.showPlayerCards(0);
 			
 			cards.dealFlop();

@@ -62,6 +62,12 @@ public class Card {
 	}
 	
 	
+	public void setFaceImage(Host.GameSystem.Card card) {
+		int suit = card.getKind()-1;
+		int value = card.getNumber();
+		setFaceImage(Cards.cardFaces[suit][value]);
+	}
+	
 	// to animate card
 	public void setState(int[] destPosition, Boolean visible, Boolean faceUp,
 			boolean instant) {

@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Player implements Serializable {
 
 	public int hand_rank = 0;
-	public static Card hand[];
+	public Card hand[];
 	public int totalChip;
 	public int betAmount;
 	

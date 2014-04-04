@@ -11,8 +11,8 @@ public class TestRank {
 		System.out.println("Testing Fullhouse");
 		Card[]temp=new Card[7];
 		for(int i=2;i<12;i++){
-		temp[0]=new Card(1,13);
-		temp[1]=new Card(2,12);
+		temp[0]=new Card(1,4);
+		temp[1]=new Card(2,4);
 		temp[2]=new Card(3,i);
 		temp[3]=new Card(4,i);
 		temp[4]=new Card(1,1);

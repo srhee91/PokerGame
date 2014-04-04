@@ -12,6 +12,9 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import com.sun.corba.se.pept.transport.Acceptor;
+import com.sun.corba.se.pept.transport.ListenerThread;
+
 import GameState.LobbyState;
 
 public abstract class HostSearcher {
@@ -41,6 +44,8 @@ public abstract class HostSearcher {
 		stop=false;
 		
 		new SearchSuperThread().start();
+		new SearcherListening().start();
+		
 	}
 	
 	
@@ -70,34 +75,6 @@ public abstract class HostSearcher {
 		start(4320);
 	}
 	
-	/*
-	static class SearchSuperThread extends Thread{
-		public void run(){
-			while(!stop){
-				for (int i=1;i<255;i++){
-					try {
-						Socket socket = new Socket();
-						socket.connect(new InetSocketAddress(InetAddress.getByName(""+IP1+"."+IP2+"."+IP3+"."+i), port),
-								30);
-						ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());
-						LobbyState lobbyState=(LobbyState)ois.readObject();
-						System.out.println("HostNickName: "+lobbyState.hostName);
-						IP4[i]=lobbyState.hostName;
-						ois.close();
-						socket.close();
-						System.out.println("Connecting successfully: 192.168.1."+i);
-					
-					} catch (IOException e) {
-						//e.printStackTrace();
-						HostSearcher.IP4[i] = null;
-					
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}*/
 }
 
 
@@ -105,7 +82,7 @@ public abstract class HostSearcher {
 class SearchSuperThread extends Thread{
 	public void run(){
 		while(!HostSearcher.stop){
-			for (int i=4;i<5;i++){
+			for (int i=1;i<255;i++){
 				new SearchThread(i).start();
 			}
 			break;
@@ -128,7 +105,7 @@ class SearchThread extends Thread{
 		if (HostSearcher.IP4[i]!=null) return;
 		DatagramSocket socket=null;
 		try {
-			socket = new DatagramSocket(HostSearcher.port-1);
+			socket = new DatagramSocket();
 		} catch (SocketException e1) {
 			e1.printStackTrace();
 		}
@@ -136,22 +113,32 @@ class SearchThread extends Thread{
 		try {
 			packet=new DatagramPacket("0".getBytes(),1,InetAddress.getByName(""+HostSearcher.IP1+"."+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port);
 			socket.send(packet);
-			socket.setSoTimeout(5000);
-			socket.receive(packet);
-			System.out.println(new String(packet.getData()));
-			/*socket.connect(new InetSocketAddress(InetAddress.getByName(""+HostSearcher.IP1+"."
-					+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 10000);*/
-			/*synchronized(mutex){
-				System.out.println("Connecting successfully: 192.168.1."+i);
-				ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());
-				LobbyState lobbyState=(LobbyState)ois.readObject();
-				System.out.println("HostNickName: "+lobbyState.hostName);
-				HostSearcher.IP4[i]=lobbyState.hostName;
-			}*/
-		} catch(SocketTimeoutException e){
 		} catch(Exception e){
 			e.printStackTrace();
 		}
 	}
 }
 
+class SearcherListening extends Thread{
+	DatagramSocket socket;
+	boolean enable = true;
+	public void run(){
+		try {
+			socket=new DatagramSocket(HostSearcher.port-1);
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+			return;
+		}
+		while(enable){
+			byte[] recvBuf = new byte[100];
+	        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
+			try {
+				socket.receive(recvPacket);
+				InetAddress IP=recvPacket.getAddress();
+				System.out.println("Receive from IP "+IP.getHostAddress()+ " with name: "+ new String(recvPacket.getData()));
+			} catch (IOException e) {
+			}
+			
+		}
+	}
+}

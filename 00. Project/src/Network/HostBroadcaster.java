@@ -24,27 +24,15 @@ import sun.net.ConnectionResetException;
 public class HostBroadcaster {
 	ObjectOutputStream oos=null;
 	DatagramSocket socket=null;
-	//ServerSocket server=null;
 	int port;
-	//public LobbyState lobbyState;
 	Listening listeningThread;
 	String hostname;
 	
 	public HostBroadcaster(int port, String hostname){
 		this.port=port;
 		this.hostname=hostname;
-		//lobbyState=new LobbyState(hostname);
-		/*try{
-			server=new ServerSocket(port);
-			listeningThread = new Listening();
-			listeningThread.start();
-			System.out.println("Host Broadcaster is Listening on port ["+port+"] Waiting for client to connect...");
-		}catch(IOException e){
-			System.out.println("Cannot listen on port");
-			System.exit(0);
-		}*/
 		try {
-			socket=new DatagramSocket(4320);
+			socket=new DatagramSocket(port);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -77,6 +65,7 @@ public class HostBroadcaster {
 					socket.receive(recvPacket);
 					InetAddress IP=recvPacket.getAddress();
 					System.out.println("Receive from IP "+IP.getHostAddress());
+					recvPacket.setPort(port-1);
 					recvPacket.setData(hostname.getBytes());
 					socket.send(recvPacket);
 				} catch (IOException e) {

@@ -1,18 +1,10 @@
 package Network;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Scanner;
-import GameState.LobbyState;
 
 
 public class HostBroadcaster {
@@ -53,10 +45,11 @@ public class HostBroadcaster {
 		boolean enable = true;
 		public void run(){
 			while(enable){
-				byte[] recvBuf = new byte[100];
+				byte[] recvBuf = new byte[10];
 		        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 				try {
 					socket.receive(recvPacket);
+					if (enable==false) return;
 					InetAddress IP=recvPacket.getAddress();
 					System.out.println("Receive from IP "+IP.getHostAddress());
 					recvPacket.setPort(port-1);

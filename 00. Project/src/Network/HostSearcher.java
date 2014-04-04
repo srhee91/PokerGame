@@ -1,21 +1,12 @@
 package Network;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
-import com.sun.corba.se.pept.transport.Acceptor;
-import com.sun.corba.se.pept.transport.ListenerThread;
-
-import GameState.LobbyState;
 
 public abstract class HostSearcher {
 	
@@ -26,19 +17,18 @@ public abstract class HostSearcher {
 	
 	
 	public static void start(int port){
-		String myIP;
+		InetAddress myIP;
 		HostSearcher.port=port;
 		try {
-			myIP=InetAddress.getLocalHost().getHostAddress();
+			myIP=InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
 			System.out.println("Cannot get local IP");
 			return;
 		}
-		IP1=Integer.parseInt(myIP.substring(0,myIP.indexOf('.')));
-		myIP=myIP.substring(myIP.indexOf('.')+1);
-		IP2=Integer.parseInt(myIP.substring(0,myIP.indexOf('.')));
-		myIP=myIP.substring(myIP.indexOf('.')+1);
-		IP3=Integer.parseInt(myIP.substring(0,myIP.indexOf('.')));
+		IP1=myIP.getAddress()[0];
+		IP2=myIP.getAddress()[1];
+		IP3=myIP.getAddress()[2];
+		
 		
 		for(int i=0;i<255;i++) IP4[i]=null;
 		stop=false;
@@ -96,12 +86,17 @@ class SearchSuperThread extends Thread{
 
 class SearchThread extends Thread{
 	int i;
-	static Object mutex = new Object();
 	public SearchThread(int i){
 		this.i=i;
 	}
 	public void run(){
 		if (HostSearcher.IP4[i]!=null) return;
+		byte IP[]=new byte[4];
+		IP[0]=(byte)HostSearcher.IP1;
+		IP[1]=(byte)HostSearcher.IP2;
+		IP[2]=(byte)HostSearcher.IP3;
+		IP[3]=(byte)i;
+		
 		DatagramSocket socket=null;
 		try {
 			socket = new DatagramSocket();
@@ -110,7 +105,7 @@ class SearchThread extends Thread{
 		}
 		DatagramPacket packet=null;
 		try {
-			packet=new DatagramPacket("0".getBytes(),1,InetAddress.getByName(""+HostSearcher.IP1+"."+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port);
+			packet=new DatagramPacket(IP,1,InetAddress.getByAddress(IP), HostSearcher.port);
 			socket.send(packet);
 		} catch(Exception e){
 			e.printStackTrace();
@@ -129,12 +124,15 @@ class SearcherListening extends Thread{
 			return;
 		}
 		while(enable){
-			byte[] recvBuf = new byte[100];
+			byte[] recvBuf = new byte[20];
 	        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 			try {
+				socket.setSoTimeout(1500);
 				socket.receive(recvPacket);
+				if (enable==false) return;
 				InetAddress IP=recvPacket.getAddress();
 				System.out.println("Receive from IP "+IP.getHostAddress()+ " with name: "+ new String(recvPacket.getData()));
+				HostSearcher.IP4[IP.getAddress()[3]]=new String(recvPacket.getData());
 			} catch (IOException e) {
 			}
 			

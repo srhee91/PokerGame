@@ -37,29 +37,61 @@ public class Rank {
 		}
 	}
 
-	//finds the best hand out of all players
-	public int findWinner(Card[] flops, Player[] player){
-		//algorithm
-		int k=0;
-		for(int i=0;i<PLAYER_MAX;i++){
-			for(int j=0;j<2;j++,k++){
-				merge_arr[i][j]=Player.hand[k];		
-			}
-			for(int j=2,m=0;j<7;j++,m++){
-				merge_arr[i][j]=Deck.flop[m];
+	//split pot winner not handled yet.
+	public int findWinner(Card[] flop, Player[] player){
+		
+		int winner = 0;
+		int i;
+		for(i=0; i<GameSystem.MAXPLAYER; i++){
+			if(player[i] != null && !player[i].hasFolded)
+			{
+				winner = i;
+				break;
 			}
 		}
-		//if two or more player ranks are equal call comparehands 
-		return 0;
+		
+		if(winner == GameSystem.MAXPLAYER-1)	return winner;
+		
+		for(i=winner+1; i< GameSystem.MAXPLAYER; i++)
+		{
+			
+			if(player[i] != null && !player[i].hasFolded)
+			{					
+				winner = compareHands(flop, player, winner, i);
+			}
+		}
+		
+		return winner;
 	}
+	
 	//compare hands between two players?
-	public int compareHands(Card[] card){
-		int rank=0;						//See the Rank.java
-		return rank;
+	public int compareHands(Card[] flop, Player[] player, int p1, int p2){
+
+		Card[] card1 = new Card[7];
+		Card[] card2 = new Card[7];
+		for(int j=0; j<5; j++){
+			card1[j] = flop[j];
+			card2[j] = flop[j];
+		}
+		card1[5] = player[p1].hand[0];
+		card1[6] = player[p1].hand[1];
+		card2[5] = player[p2].hand[0];
+		card2[6] = player[p2].hand[1];
+
+		int[] rank1 = findBestHand(card1);
+		int[] rank2 = findBestHand(card2);
+		
+		if(rank1[5] > rank2[5])	return p1;
+		else if(rank1[5] < rank2[5])	return p2;
+		else{
+			//if they have same rank, compare 5 best cards 
+			
+			return p1;
+		}
 	}
 	
 	//finds the best hands of the player
-	public void findBestHand(Card[] cards){
+	public int[] findBestHand(Card[] cards){
 		
 		//combine cards
 		
@@ -116,7 +148,11 @@ public class Rank {
 			final_rank = 0;
 		}
 		System.out.println(Arrays.toString(highHand));
+		
+		return highHand;
 	}
+
+	
 	public int[] isRoyalStraightFlush(Card cards[]){
 		int royal_flush_helper=0;
 		int[]best_set=new int[5];
@@ -495,7 +531,42 @@ public class Rank {
 			return null;
 		}
 	}
-	//debugged. Changed for-loop
+	
+	public int[] isOnePair(Card cards[]){
+
+		int best_set[] = new int[5];
+		int card[] = sort_toIntArrayAce(cards);
+		
+		boolean ch=false;
+		for(int i=0; i<6; i++)
+		{
+			for(int j=i+1; j<7; j++)
+			{
+				if(card[i] == card[j])
+				{
+					best_set[0] = card[i];
+					best_set[1] = best_set[0];
+					card[i] = 0;
+					card[j] = 0;
+					ch = true;
+					break;
+				}
+			}
+			if(ch)	break;
+		}
+
+		int index = 2;
+		for(int i=6; i>=0; i--)
+		{
+			int num = card[j];
+			if(num!=0)	best_set[index++] = num;
+			
+			if(index == 5)	break;
+		}
+		return best_set;
+	}
+
+/*	//debugged. Changed for-loop
 	public int[] isOnePair(Card cards[]){
 		 if(isTwoPair(cards)==null&&findPair(cards)==2){
 			 int temp[];
@@ -582,7 +653,7 @@ public class Rank {
 			return best_set;
 		}
 		return null;
-	}
+	}*/
 	public int[] noPair(Card cards[]){
 		 if(findPair(cards)==0){
 			 int temp[];
@@ -669,6 +740,16 @@ public class Rank {
 	    Arrays.sort(temp);
 	    return temp;
     }
+    
+	private static int[] sort_toIntArrayAce(Card[]cards){
+		int temp[]=new int[7];
+		for(int i=0;i<7;i++){
+	        temp[i]=cards[i].getNumber();
+	        if(temp[i] == 1) temp[i] = 14;
+	    }
+	    Arrays.sort(temp);
+	    return temp;
+	}
     
 	public static final int ROYAL_STRAIGHT_FLUSH = 9;
 	public static final int STRAIGHT_FLUSH = 8;

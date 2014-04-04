@@ -45,7 +45,7 @@ public class HostBroadcaster {
 		boolean enable = true;
 		public void run(){
 			while(enable){
-				byte[] recvBuf = new byte[10];
+				byte[] recvBuf = new byte[15];
 		        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 				try {
 					socket.setSoTimeout(5000);
@@ -54,7 +54,7 @@ public class HostBroadcaster {
 					InetAddress IP=recvPacket.getAddress();
 					System.out.println("Receive from IP "+IP.getHostAddress());
 					recvPacket.setPort(port-1);
-					recvPacket.setData(hostname.getBytes());
+					recvPacket.setData((hostname+"!|!").getBytes());
 					socket.send(recvPacket);
 				} catch (IOException e) {
 				}
@@ -63,6 +63,6 @@ public class HostBroadcaster {
 	}
 	
 	public static void main(String args[]){
-		HostBroadcaster hb=new HostBroadcaster(4320,"hostname");
+		HostBroadcaster hb=new HostBroadcaster(4320,"LHC");
 	}
 }

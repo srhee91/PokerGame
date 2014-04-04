@@ -124,15 +124,18 @@ class SearcherListening extends Thread{
 			return;
 		}
 		while(enable){
-			byte[] recvBuf = new byte[20];
+			byte[] recvBuf = new byte[15];
 	        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 			try {
 				socket.setSoTimeout(2000);
 				socket.receive(recvPacket);
 				if (enable==false) return;
 				InetAddress IP=recvPacket.getAddress();
-				System.out.println("Receive from IP "+IP.getHostAddress()+ " with name: "+ new String(recvPacket.getData()));
-				HostSearcher.IP4[IP.getAddress()[3]]=new String(recvPacket.getData());
+				String hostname=new String(recvPacket.getData());
+				hostname=hostname.substring(0, hostname.indexOf("!|!"));
+				System.out.println("Receive from IP "+IP.getHostAddress()+ " with name: "+ hostname);
+				HostSearcher.IP4[IP.getAddress()[3]]=hostname;
+				System.out.println(hostname.length());
 			} catch (IOException e) {
 			}
 			

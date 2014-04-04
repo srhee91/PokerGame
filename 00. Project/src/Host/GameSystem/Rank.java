@@ -88,10 +88,8 @@ public class Rank {
 		else if(rank_1 < rank_2)	return p2;
 		else{
 			//if they have same rank, compare 5 best cards 
-			if(rank_1==STRAIGHT_FLUSH){
-				if(rank1[0]>rank2[0]){
-					return p1;
-				}
+			if(rank_1==ROYAL_STRAIGHT_FLUSH){
+				//players have same rank
 			}
 			else if(rank_1==STRAIGHT_FLUSH){
 				if(rank1[0]>rank2[0]){

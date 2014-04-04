@@ -534,7 +534,7 @@ public class Rank {
 
 		int best_set[] = new int[5];
 		int card[] = sort_toIntArrayAce(cards);
-		
+				
 		boolean ch=false;
 		for(int i=0; i<6; i++)
 		{
@@ -552,6 +552,7 @@ public class Rank {
 			}
 			if(ch)	break;
 		}
+		if(!ch)	return null;
 
 		int index = 2;
 		for(int i=6; i>=0; i--)

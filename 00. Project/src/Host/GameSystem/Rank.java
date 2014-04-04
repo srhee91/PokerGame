@@ -69,7 +69,7 @@ public class Rank {
 		}
 		
 		for(int i=0;i<PLAYER_MAX;i++){
-			if(rank[i]!=max_rank){
+			if(rank[i]==max_rank){
 				max_rank_count++;
 				merge_arr[i]=null;
 				winner[i]=false;
@@ -78,24 +78,57 @@ public class Rank {
 			}
 		}
 		//printMerge();
+		System.out.println(max_rank_count);
 		if(max_rank_count>1){
 			winner = compareHands(merge_arr,max_rank);
+			for(int i=0;i<8;i++){
+				System.out.println("compare "+ winner[i]);
+			}
 			return winner;
 		}else{
+			for(int i=0;i<8;i++){
+				System.out.println("no compare " + winner[i]);
+			}
 			return winner;
 		}
 	}
 	//compare hands between two players?
 	public boolean[] compareHands(Card[][]merge_arr,int max_rank){
-
-	
-
-
-		int[] rank1 = findBestHand(card1);
-		int rank_1 = final_rank;
-		int[] rank2 = findBestHand(card2);
-		int rank_2 = final_rank;
-		
+		boolean tie[]=new boolean[8];
+		for(int i=0;i<8;i++){
+			tie[i]=false;
+		}
+		if(max_rank==STRAIGHT_FLUSH){
+			System.out.println("inside of SF");
+			for(int i=0;i<2;i++){
+				System.out.println("inside of i for loop");
+				System.out.println(merge_arr[i]);
+				if(merge_arr[i]!=null){
+					System.out.println("inside of i for loop null");
+					int[] rank1 = findBestHand(merge_arr[i]);
+					for(int l=i+1;l<3;l++){
+						System.out.println(merge_arr[l]);
+						if(merge_arr[l]!=null){
+							int[] rank2 = findBestHand(merge_arr[l]);
+							System.out.println("rank1 :" + rank1[0] + "rank2 : " + rank2[0]);
+							if(rank1[0]>rank2[0]){
+								tie[i]=true;
+							}else if(rank1[0]<rank2[0]){
+								tie[l]=true;
+							}else if(rank1[0]==rank2[0]){
+								tie[i]=true;
+								tie[l]=true;
+							}
+						}
+					}
+				}
+			}
+			return tie;
+		}
+		return tie;
+	}
+				//players have same rank
+/*
 		if(rank_1 > rank_2)	return p1;
 		else if(rank_1 < rank_2)	return p2;
 		else{
@@ -211,8 +244,9 @@ public class Rank {
 				//player have same hands.
 			}
 			return p2;
-		}
-	}
+		}*/
+		//return tie;
+	//}
 	
 	//finds the best hands of the player
 	public int[] findBestHand(Card[] cards){

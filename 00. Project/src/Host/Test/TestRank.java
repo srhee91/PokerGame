@@ -19,7 +19,8 @@ public class TestRank {
 		Card[][]hand=new Card[8][2];
 		hand[0][0]=new Card(1,1);
 		hand[0][1]=new Card(1,2);
-		hand[1]=null;
+		hand[1][0]=new Card(1,12);
+		hand[1][1]=new Card(1,13);
 		hand[2][0]=new Card(1,5);
 		hand[2][1]=new Card(1,6);
 		
@@ -180,7 +181,7 @@ public class TestRank {
 	public static void main(String[] args){
 		Rank obj1=new Rank();
 		test_winner(obj1);
-		fullhouse_check(obj1); // fullhouse
+		/*fullhouse_check(obj1); // fullhouse
 		fourcard_check(obj1); // four_card
 		straightflush_check(obj1); // straightflush		
 		flush_check(obj1); // flush
@@ -189,6 +190,6 @@ public class TestRank {
 		twopair_check(obj1); // two pair
 		onepair_check(obj1); // one pair
 		highcard_check(obj1); // high card
-		
+		*/
 	}
 }

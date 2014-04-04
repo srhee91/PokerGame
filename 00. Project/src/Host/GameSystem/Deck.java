@@ -131,25 +131,6 @@ public class Deck {
 		}
 	}
 
-	public static void main(String[] args){
-//<<<<<<< HEAD:00. Project/src/Host/Deck.java
-		Deck obj=new Deck();
-		Player player= new Player("Bo");
-		Player player2= new Player("Somi");
-		Player player3= new Player("Sang");
-		Player player4= new Player("Wang");
-		obj.shuffle();
-		obj.drawcardsToPlayer(8);
-		Rank obj1=new Rank();
-		obj1.merge();
-		Rank calrank=new Rank();
-		for(int i=0; i<5;i++){
-			player_1[i+2]=flop[i];
-			player_2[i+2]=flop[i];
-			player_3[i+2]=flop[i];
-			player_4[i+2]=flop[i];
-		}
-		
-	}
+
 }
 

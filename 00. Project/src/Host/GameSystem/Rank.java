@@ -558,7 +558,7 @@ public class Rank {
 		int index = 2;
 		for(int i=6; i>=0; i--)
 		{
-			int num = card[j];
+			int num = card[i];
 			if(num!=0)	best_set[index++] = num;
 			
 			if(index == 5)	break;

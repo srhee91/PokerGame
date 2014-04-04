@@ -88,9 +88,7 @@ public class Rank {
 			winner = compareHands(merge_arr,max_rank);
 		}
 		//debugging purpose
-	  for(int i=0;i<8;i++){
-			System.out.println(winner[i]);
-		}
+	  System.out.println(Arrays.toString(winner));
 		return winner;
 	}
 	//compare hands between two players?

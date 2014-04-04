@@ -48,7 +48,7 @@ public class GameSystem{
 		
 		player = new Player[MAXPLAYER];
 		for(int i=0; i<numPlayer; i++){
-			player[i] = new Player("");
+			player[i] = new Player();
 		}
 		for(int i=numPlayer; i<MAXPLAYER; i++){
 			player[i] = null;

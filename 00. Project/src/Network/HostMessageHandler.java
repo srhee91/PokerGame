@@ -152,7 +152,7 @@ public class HostMessageHandler {
 					
 					
 					
-					host.players[host.numPlayers++] = playerName;
+					host.players[host.playerCount++] = playerName;
 					
 					
 					sendAll(host.players.clone());

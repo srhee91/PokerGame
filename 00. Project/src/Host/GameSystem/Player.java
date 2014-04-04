@@ -2,8 +2,6 @@ package Host.GameSystem;
 
 public class Player {
 
-	public String name;
-	public int player_count=0;
 	public int hand_rank = 0;
 	public static Card hand[];
 	public int totalChip;
@@ -13,9 +11,7 @@ public class Player {
 	public int count;
 
 	//Constructor
-	public Player(String playerName) {
-		name = playerName;
-		player_count++;
+	public Player() {
 		totalChip = GameSystem.INIT_CHIP;
 		hasLeft = false;
 		betAmount = 0;

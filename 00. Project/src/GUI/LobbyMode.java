@@ -63,9 +63,6 @@ public class LobbyMode extends TableMode {
 						// send start signal to host
 						try {
 							GUI.cmh.send("start");
-							// go to ongoing mode
-							GUI.ongoingMode.setPlayerNamesLocal(playerNamesLocal);
-							game.enterState(4);
 						} catch (IOException e) {
 							System.out.println("Failed to send start signal!");
 						}
@@ -116,30 +113,42 @@ public class LobbyMode extends TableMode {
 			Object receivedObject = GUI.cmh.getReceivedObject();
 			if (receivedObject!=null) {
 				
-				String[] playerNames = (String[])receivedObject;
+				if (receivedObject instanceof String) {
+					
+					if (((String)receivedObject).equals("start")) {
+						// go to ongoing mode
+						GUI.ongoingMode.setPlayerNamesLocal(playerNamesLocal);
+						game.enterState(4);
+					}
 				
-				System.out.println("received player names:");
-				for (String s : playerNames) {
-					System.out.println("\t"+s);
-				}
 				
-				// find out which place we are in the server player list
-				numPlayers = 0;
-				GUI.playerIndexInHost = -1;
-				for (int i=0; i<8; ++i) {
-					if (playerNames[i] != null) {
-						numPlayers++;
-						if (playerNames[i].equals(GUI.playerName)) {
-							GUI.playerIndexInHost = i;
+				} else {
+					
+					String[] playerNames = (String[])receivedObject;
+					
+					System.out.println("received player names:");
+					for (String s : playerNames) {
+						System.out.println("\t"+s);
+					}
+					
+					// find out which place we are in the server player list
+					numPlayers = 0;
+					GUI.playerIndexInHost = -1;
+					for (int i=0; i<8; ++i) {
+						if (playerNames[i] != null) {
+							numPlayers++;
+							if (playerNames[i].equals(GUI.playerName)) {
+								GUI.playerIndexInHost = i;
+							}
 						}
 					}
+					
+					// update local players list
+					for (int i=0; i<8; ++i) {
+						playerNamesLocal[i] = playerNames[(i + GUI.playerIndexInHost)%8];
+					}
+					hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
 				}
-				
-				// update local players list
-				for (int i=0; i<8; ++i) {
-					playerNamesLocal[i] = playerNames[(i + GUI.playerIndexInHost)%8];
-				}
-				hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
 			}
 		}
 	}

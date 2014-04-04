@@ -25,9 +25,8 @@ public class Host{
 	public HostMessageHandler hmh;
 	
 	public GameSystem game;
-	public int playerCount;
 	
-	public int numPlayers;
+	public int playerCount;
 	public String players[];
 	
 	
@@ -40,7 +39,7 @@ public class Host{
 		hmh = new HostMessageHandler(port, this, Thread.currentThread());
 		
 		players = new String[GameSystem.MAXPLAYER];
-		numPlayers = 0;
+		playerCount = 0;
 	}
 			
 	
@@ -68,6 +67,8 @@ public class Host{
 				break;
 			}
 		}
+		
+		hmh.sendAll("start");
 	}
 	
 	

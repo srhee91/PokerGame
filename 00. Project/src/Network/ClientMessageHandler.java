@@ -9,7 +9,7 @@ public class ClientMessageHandler {
 	ObjectOutputStream oos=null;
 	ObjectInputStream ois=null;
 	Socket socket=null;
-	Gamestate gamestate=null;
+	Object receivedObj=null;
 	int ChildIndex=-1;
 	ReceivingThread receivingThread;
 	
@@ -53,12 +53,13 @@ public class ClientMessageHandler {
 		receivingThread.start();
 	}	
 	
-	public Gamestate getUpdatedGameState() {
-		if (gamestate==null)
+	
+	public Object getReceivedObject() {
+		if (receivedObj==null)
 			return null;
 		else{
-			Gamestate temp=gamestate;
-			gamestate=null;
+			Object temp=receivedObj;
+			receivedObj=null;
 			return temp;
 		}
 	}
@@ -98,8 +99,8 @@ public class ClientMessageHandler {
 		public void run(){
 			while(enable){
 				try{
-					gamestate=(Gamestate)ois.readObject();
-					System.out.println("Receive a game state from host\n\t: "+gamestate);
+					receivedObj=ois.readObject();
+					System.out.println("Receive a game state from host\n\t: "+receivedObj);
 				}catch(IOException | ClassNotFoundException e){
 					System.out.println("Lost connection to host!");
 					if (enable) {

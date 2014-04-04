@@ -134,10 +134,10 @@ public class GameSystem{
 		return count;
 	}
 	
-	public Gamestate getGamestate(int me){
+	public Gamestate getGamestate(){
 		Gamestate gamestate = new Gamestate();
 		
-		gamestate.me = me;
+		//gamestate.me = me;
 		gamestate.player = player;
 		gamestate.whoseTurn = whoseTurn;
 		gamestate.dealer = dealer;

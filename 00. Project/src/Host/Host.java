@@ -15,12 +15,22 @@ import Network.*;
 //   - uses methods in GameSystem
 public class Host{
 	
+	// for communicating with hmh
+	public boolean isWaiting = false;
+	public String objSender;
 	public Object objReceived;
+	
+	
 	public HostBroadcaster hb;
 	public HostMessageHandler hmh;
 	
 	public GameSystem game;
 	public int playerCount;
+	
+	public int numPlayers;
+	public String players[];
+	
+	
 	public int port;
 	
 	public String hostname;
@@ -28,16 +38,48 @@ public class Host{
 	public Host(int port){
 		this.port=port;
 		hmh = new HostMessageHandler(port, this, Thread.currentThread());
+		
+		players = new String[GameSystem.MAXPLAYER];
+		numPlayers = 0;
 	}
 			
+	
+	public void waitForHostClientConnection() {
+		// wait for connection from host client
+		while (hmh.getConnectedPlayerNames().isEmpty());
+		hostname = hmh.lastJoinedPlayer;
+	}
+	
 	public void createBroadcaster(){
 		hb = new HostBroadcaster(port-1, hostname);
 	}
 	
 	
-	
 	public void waitToStart(){
 		//wait to be started by hostplayer
+		
+		// wait for start msg from host client
+		while (true) {
+			receiveObject();
+			if (objSender.equals(hostname) &&
+					objReceived instanceof String &&
+					((String)objReceived).equals("start")) {
+				break;
+			}
+		}
+	}
+	
+	
+
+	public void receiveObject(){
+		try {
+			synchronized(this){
+				isWaiting = true;
+				this.wait();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -92,8 +134,8 @@ public class Host{
 				//each turn
 				do{
 					sendGameState();
-					receiveAction();
-					updateAction();
+					UserAction ua = receiveUserAction();
+					updateAction(ua);
 
 					//TEST V_02!!//
 					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
@@ -164,7 +206,7 @@ public class Host{
 	public void sendGameState(){
 		//send "game.getGamestate();"  <- this will be an object of "Gamestate"
 		//to every player "game.player[]" (you have to check if player!=null)
-		
+		/*
 		for(int i=0; i<GameSystem.MAXPLAYER; i++){
 		
 			if(game.player[i] != null){
@@ -172,33 +214,43 @@ public class Host{
 				
 			}
 		
-		}
+		}*/
 		
+		hmh.sendAll(game.getGamestate());	
 	}
 	
 	
-	
-	public void receiveAction(){
-		//request and receive user action from "game.whoseTurn"
-		//user action can be the enum we made last sunday
-		try {
-			synchronized(this){
-				this.wait();
+
+	public UserAction receiveUserAction() {
+		String playerName = players[game.whoseTurn];
+		while (true) {
+			receiveObject();
+			if (objSender.equals(playerName) &&
+					objReceived instanceof UserAction) {
+				break;
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
+		return (UserAction)objReceived;
 	}
 	
 	
-	
-	
-	public void updateAction(){
+	public void updateAction(UserAction ua){
 		//bet/fold/call/raise...
 //		if(action)?
 //		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
 //		game.highestBet = betAmount;
 //		game.player[game.whoseTurn].fold();
+		
+		switch (ua.action) {
+		case CHECK_CALL:
+			break;
+		case FOLD:
+			break;
+		case RAISE_BET:
+			break;
+		case START_GAME:
+			break;
+		}
 	}
 	
 	
@@ -208,15 +260,25 @@ public class Host{
 		// start host, hostmessagehandler, hostbroadcaster
 		Host host = new Host(4321);
 		
-		
-		// PLACEHOLDER!!!
-		host.hostname = "test_hostname";
+		// wait for connection from client who started this host
+		host.waitForHostClientConnection();
 		
 		// start broadcaster
 		host.createBroadcaster();
 		
+		// wait for start msg from host client
+		host.waitToStart();
 		
 		
+		
+		
+		host.startGame();	
+		//host.endGame();
+		 
+		
+		
+		
+		/*
 		while (true) {
 			
 			try {
@@ -228,7 +290,7 @@ public class Host{
 			for (String s : host.hmh.getConnectedPlayerNames())
 				System.out.println(s);
 		}
-		
+		*/
 		
 		// wait for players to join, wait for start-game message from client 0
 		
@@ -242,17 +304,5 @@ public class Host{
 		
 		
 		
-		/*
-		Host host = new Host(4321);
-		
-		//TEST TEST TEST// V_01
-		host.playerCount = 4;
-		//TEST TEST TEST// V_01
-		
-		host.createHost();
-		host.waitToStart();
-		host.startGame();	
-		//host.endGame();
-		 * */
 	}	
 }

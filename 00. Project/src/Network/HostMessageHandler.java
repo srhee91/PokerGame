@@ -27,6 +27,7 @@ public class HostMessageHandler {
 		}
 	}
 
+	public String lastJoinedPlayer;
 	
 	private Map<String, ClientConnection> clientConnections;
 	
@@ -145,6 +146,13 @@ public class HostMessageHandler {
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
 							+port+"] as client "+playerName);
 					
+					lastJoinedPlayer = playerName;
+					
+					
+					host.players[host.numPlayers++] = playerName;
+					
+					sendAll(host.players);
+					
 				}catch(NullPointerException e){
 					System.out.println("Cannot listen on port");
 					break;
@@ -176,8 +184,12 @@ public class HostMessageHandler {
 					Object ac;
 					ac=myois.readObject();
 					host.objReceived=ac;
-					synchronized(host){
-						host.notify();
+					if (host.isWaiting) {
+						synchronized(host){
+							host.isWaiting = false;
+							host.objSender = playerName;
+							host.notify();
+						}
 					}
 					System.out.println("Host receives an object from Client "+playerName);
 				}catch(IOException e){
@@ -198,10 +210,10 @@ public class HostMessageHandler {
 	
 	// call this function will send game state to specific client,
 	// which are arguments
-	public synchronized void send(String playerName, Gamestate gs){
+	public synchronized void send(String playerName, Object ob){
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;
 		try{
-			oos.writeObject(gs);
+			oos.writeObject(ob);
 			oos.flush();
 		}catch(IOException e){
 			System.out.println("Cannot send object");
@@ -210,9 +222,9 @@ public class HostMessageHandler {
 	}
 	
 	// call this function will send game state to all clients
-	public synchronized void sendAll(Gamestate gs){
+	public synchronized void sendAll(Object ob){
 		for (String playerName : clientConnections.keySet())
-			send(playerName, gs);
+			send(playerName, ob);
 	}
 	
 	

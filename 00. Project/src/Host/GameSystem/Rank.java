@@ -7,7 +7,7 @@ import java.util.*;
 //For debugging Goto Deck.java
 public class Rank {
 	public static Card[][] merge_arr;
-	public static final int PLAYER_MAX=3;		//temporary exist for player number
+	public static final int PLAYER_MAX=8;		//temporary exist for player number
 	public static int final_rank = 0; 
 	public static boolean Ace = false;
 	public static boolean Ace_Pair;
@@ -49,12 +49,11 @@ public class Rank {
 
 	//split pot winner not handled yet.
 	public boolean[] findWinner(Card[] flop, Card[][]hand){
+
 		int rank[]=new int[8];
-		boolean winner[]=new boolean[8];
-		int max_rank=0;
-		int max_rank_count=0;  //number of players who is max_rank
 		merge(flop,hand);
 		//printMerge();
+		
 		for(int i=0;i<PLAYER_MAX;i++){			//find players rank and store their rank to the rank array
 			if(merge_arr[i]!=null){
 				findBestHand(merge_arr[i]);
@@ -62,191 +61,75 @@ public class Rank {
 			}
 		}
 		
-		for(int i=0;i<7;i++){			//gets max_rank
+		int max_rank=0;
+		for(int i=0;i<8;i++){			//gets max_rank
 			if(rank[i]>max_rank){
 				max_rank=rank[i];
 			}
 		}
 		
+		int max_rank_count=0;  //number of players who is max_rank
+		boolean winner[]=new boolean[8];
 		for(int i=0;i<PLAYER_MAX;i++){
 			if(rank[i]==max_rank){
 				max_rank_count++;
+				winner[i]=true;
+			}else{
 				merge_arr[i]=null;
 				winner[i]=false;
-			}else{
-				winner[i]=true;
 			}
 		}
 		//printMerge();
-		System.out.println(max_rank_count);
 		if(max_rank_count>1){
 			winner = compareHands(merge_arr,max_rank);
-			for(int i=0;i<8;i++){
-				System.out.println("compare "+ winner[i]);
-			}
-			return winner;
-		}else{
-			for(int i=0;i<8;i++){
-				System.out.println("no compare " + winner[i]);
-			}
-			return winner;
 		}
+		//debugging purpose
+	  /*for(int i=0;i<8;i++){
+			System.out.println(winner[i]);
+		}*/ 
+		return winner;
 	}
 	//compare hands between two players?
 	public boolean[] compareHands(Card[][]merge_arr,int max_rank){
 		boolean tie[]=new boolean[8];
-		for(int i=0;i<8;i++){
-			tie[i]=false;
-		}
-		if(max_rank==STRAIGHT_FLUSH){
-			System.out.println("inside of SF");
-			for(int i=0;i<2;i++){
-				System.out.println("inside of i for loop");
-				System.out.println(merge_arr[i]);
+		int highest_index = 0;
+		if(max_rank>=0){
+			int highest = -1;
+			for(int i=0; i<8; i++){
 				if(merge_arr[i]!=null){
-					System.out.println("inside of i for loop null");
-					int[] rank1 = findBestHand(merge_arr[i]);
-					for(int l=i+1;l<3;l++){
-						System.out.println(merge_arr[l]);
-						if(merge_arr[l]!=null){
-							int[] rank2 = findBestHand(merge_arr[l]);
-							System.out.println("rank1 :" + rank1[0] + "rank2 : " + rank2[0]);
-							if(rank1[0]>rank2[0]){
-								tie[i]=true;
-							}else if(rank1[0]<rank2[0]){
-								tie[l]=true;
-							}else if(rank1[0]==rank2[0]){
-								tie[i]=true;
-								tie[l]=true;
-							}
+					if(highest == -1){
+						highest = i;
+					}
+					else{
+						int[] rank1 = findBestHand(merge_arr[highest]);
+						int[] rank2 = findBestHand(merge_arr[i]);
+						for(int j=0;j<5;j++){
+							if(rank1[j]>rank2[j])	break;
+							else if(rank1[j]<rank2[j]){	highest = i; break;}
 						}
 					}
+				}
+			}
+			
+			int[] rank1 = findBestHand(merge_arr[highest]);
+			for(int t=0; t<8;t++){
+				int equal_count=0;
+				if(merge_arr[t]!=null){
+					int[] rank2 = findBestHand(merge_arr[t]);
+					for(int i=0;i<5;i++){
+						if(rank1[i]==rank2[i]){
+							equal_count++;
+						}
+					}
+				}
+				if(equal_count==5){
+					tie[t]=true;
 				}
 			}
 			return tie;
 		}
-		return tie;
+	 return null;
 	}
-				//players have same rank
-/*
-		if(rank_1 > rank_2)	return p1;
-		else if(rank_1 < rank_2)	return p2;
-		else{
-			//if they have same rank, compare 5 best cards 
-			if(rank_1==ROYAL_STRAIGHT_FLUSH){
-				//players have same rank
-			}
-			else if(rank_1==STRAIGHT_FLUSH){
-				if(rank1[0]>rank2[0]){
-					return p1;
-				}else if(rank1[0]<rank2[0]){
-					return p2;
-				}else{
-					//players have same rank
-				}
-			}
-			else if(rank_1==FOURCARD){
-				if(rank1[0]>rank2[0]){
-					return p1;
-				}
-				else if(rank1[0]==rank2[0] && rank1[4]>rank2[4]){
-					return p1;
-				}
-			}
-			else if(rank_1==FULLHOUSE){
-				if(rank1[0]>rank2[0]){
-					return p1;
-				}
-				else if(rank1[0]==rank2[0] && rank1[3]>rank2[3]){
-					return p1;
-				}
-				else{
-					//players have same hand
-				}
-				
-			}
-			else if(rank_1==FLUSH){
-				for(int i=0;i<5;i++){
-					if(rank1[i]>rank2[i]){
-						return p1;
-					}
-					else if(rank1[i]<rank2[i]){
-						return p2;
-					}
-					else{
-						if(i==4){
-							//players have same hands.
-						}
-					}
-				}
-			}
-			else if(rank_1==STRAIGHT){
-				if(rank1[0]>rank2[0]){
-					return p1;
-				}
-			}
-			else if(rank_1==THREEPAIR){
-				for(int i=0;i<=2;i++){
-					if(rank1[i]>rank2[i]){
-						return p1;
-					}
-					else if(rank1[i]<rank2[i]){
-						return p2;
-					}
-					else{
-						if(i==4){
-							// player has same hand.
-						}
-					}
-				}
-			}
-			else if(rank_1==TWOPAIR){
-				for(int i=0;i<=4;i=i+2){
-					if(rank1[i]>rank2[i]){
-						return p1;
-					}
-					else if(rank1[i]<rank2[i]){
-						return p2;
-					}
-					else{
-						if(i==4){
-							// player has same hand.
-						}
-					}
-				}
-			}
-			else if(rank_1==ONEPAIR){
-				if(rank1[0]>rank2[0]){
-					return p1;
-				}
-				else if(rank1[0]==rank2[0]){
-					for(int i=2;i<5;i++){
-						if(rank1[i]>rank2[i]){
-							return p1;
-						}
-						else if(rank1[i]<rank2[i]){
-							return p2;
-						}
-					}
-					//player have same hands.
-				}
-				return p2;
-			}
-			else if(rank_1==NOPAIR){
-				for(int i=0; i<5; i++){
-					if(rank1[i]>rank2[i]){
-						return p1;
-					}
-					else if(rank1[i]<rank2[i]){
-						return p2;
-					}
-				}
-				//player have same hands.
-			}
-			return p2;
-		}*/
-		//return tie;
-	//}
 	
 	//finds the best hands of the player
 	public int[] findBestHand(Card[] cards){
@@ -305,7 +188,7 @@ public class Rank {
 			highHand=noPair(cards);
 			final_rank = 0;
 		}
-		System.out.println(Arrays.toString(highHand));
+		//System.out.println(Arrays.toString(highHand));
 		
 		return highHand;
 	}

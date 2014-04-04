@@ -68,7 +68,7 @@ public class Rank {
 			if(merge_arr[i]!=null){
 				findBestHand(merge_arr[i]);
 				rank[i]=final_rank;
-				System.out.println("player "+(i+1)+" rank is "+ final_rank);
+				System.out.println("player "+i+" rank is "+ final_rank);
 			}
 		}
 		
@@ -94,7 +94,7 @@ public class Rank {
 		for(int i=0;i<8;i++){
 			if(merge_arr[i]!=null){
 			int[] rank1 = findBestHand(merge_arr[i]);
-			System.out.println("Player "+(i+1)+" best set is "+Arrays.toString(rank1));
+			System.out.println("Player "+i+" best set is "+Arrays.toString(rank1));
 			}
 		}
 		//)
@@ -104,10 +104,10 @@ public class Rank {
 		//debugging purpose
 		
 	  //System.out.println(Arrays.toString(winner));
-	  System.out.print("From player[1-8], The WINNER IS PLAYER ");
+	  System.out.print("From player[0-7], The WINNER IS PLAYER ");
 	  for(int i=0;i<8;i++){
 		  if(winner[i]==true){
-			  System.out.print((i+1)+" ");
+			  System.out.print((i)+" ");
 		  }
 	  }
 	  System.out.println("!");

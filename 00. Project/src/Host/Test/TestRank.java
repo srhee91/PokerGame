@@ -215,7 +215,7 @@ public class TestRank {
 		hand[3][1]=new Card(2,5);
 		hand[4][0]=new Card(4,1);
 		hand[4][1]=new Card(1,5);
-		hand[5][0]=new Card(4,7);
+		hand[5][0]=new Card(4,1);
 		hand[5][1]=new Card(3,5);
 		hand[6]=null;
 		hand[7]=null;

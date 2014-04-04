@@ -6,7 +6,7 @@ import java.util.*;
 
 //For debugging Goto Deck.java
 public class Rank {
-	public static Card[][] merge_arr;
+	
 	public static final int PLAYER_MAX=8;		//temporary exist for player number
 	public static int final_rank = 0; 
 	public static boolean Ace = false;
@@ -14,16 +14,19 @@ public class Rank {
 	
 	
 	public Rank(){
-		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
 	}
 	
-	public void merge(Card[]flop, Card[][]hand){		//merge player array and flop array. [0-1] will be player card [2-6] will be flop card (same with other player)
+	public Card[][] merge(Card[]flop, Card[][]hand){		//merge player array and flop array. [0-1] will be player card [2-6] will be flop card (same with other player)
+		Card[][] merge_arr=new Card[PLAYER_MAX][7];
 		for(int i=0;i<PLAYER_MAX;i++){
 			if(hand[i]!=null){
 				for(int j=0;j<2;j++){
+					//System.out.println("i:"+i+"j:"+j);
+					//System.out.println("hand["+i+"]["+j+"]:"+hand[i][j]);
 					merge_arr[i][j]=hand[i][j];
 				}
 				for(int j=2,m=0;j<7;j++,m++){
+					//System.out.println("i:"+i+"j:"+j);
 					merge_arr[i][j]=flop[m];
 				}
 			}
@@ -31,15 +34,16 @@ public class Rank {
 				merge_arr[i]=null;
 			}
 		}
+		return merge_arr;
     }
 	
-	public void printMerge(){			//exist for debugging
+	public void printMerge(Card[][]merge_arr){			//exist for debugging
 		
 		for(int i=0;i<PLAYER_MAX;i++){
 			if(merge_arr[i]!=null){
 				for(int j=0;j<7;j++){
 					
-					System.out.println("i:"+i+"j:"+j);
+					//System.out.println("i:"+i+"j:"+j);
 					System.out.println("merge_arr["+i+"]["+j+"]: "+merge_arr[i][j].toString());
 				}
 			}
@@ -51,8 +55,8 @@ public class Rank {
 	public boolean[] findWinner(Card[] flop, Card[][]hand){
 
 		int rank[]=new int[8];
-		merge(flop,hand);
-		//printMerge();
+		Card[][] merge_arr=merge(flop,hand);
+		//printMerge(merge_arr);
 		
 		for(int i=0;i<PLAYER_MAX;i++){			//find players rank and store their rank to the rank array
 			if(merge_arr[i]!=null){

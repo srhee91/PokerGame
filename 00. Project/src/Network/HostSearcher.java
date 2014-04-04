@@ -2,9 +2,13 @@ package Network;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -101,14 +105,15 @@ public abstract class HostSearcher {
 class SearchSuperThread extends Thread{
 	public void run(){
 		while(!HostSearcher.stop){
-			for (int i=1;i<50;i++){
+			for (int i=4;i<5;i++){
 				new SearchThread(i).start();
 			}
-			try {
+			break;
+			/*try {
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 	}
 }
@@ -121,20 +126,31 @@ class SearchThread extends Thread{
 	}
 	public void run(){
 		if (HostSearcher.IP4[i]!=null) return;
-		Socket socket = new Socket();
+		DatagramSocket socket=null;
 		try {
-			socket.connect(new InetSocketAddress(InetAddress.getByName(""+HostSearcher.IP1+"."
-					+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 10000);
-			synchronized(mutex){
+			socket = new DatagramSocket(HostSearcher.port-1);
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+		}
+		DatagramPacket packet=null;
+		try {
+			packet=new DatagramPacket("0".getBytes(),1,InetAddress.getByName(""+HostSearcher.IP1+"."+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port);
+			socket.send(packet);
+			socket.setSoTimeout(5000);
+			socket.receive(packet);
+			System.out.println(new String(packet.getData()));
+			/*socket.connect(new InetSocketAddress(InetAddress.getByName(""+HostSearcher.IP1+"."
+					+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 10000);*/
+			/*synchronized(mutex){
 				System.out.println("Connecting successfully: 192.168.1."+i);
 				ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());
 				LobbyState lobbyState=(LobbyState)ois.readObject();
 				System.out.println("HostNickName: "+lobbyState.hostName);
 				HostSearcher.IP4[i]=lobbyState.hostName;
-			}
-		} catch( ClassNotFoundException | IOException e){
-			//HostSearcher.IP4[i] = null;
-			//e.printStackTrace();
+			}*/
+		} catch(SocketTimeoutException e){
+		} catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 }

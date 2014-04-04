@@ -323,16 +323,16 @@ public class Rank {
 						best_set[i]=valid;
 					}
 				}
+				for(int i=0;i<5;i++){		//returns 14 to 1.
+					if(best_set[i]==1){
+						best_set[i]=14;
+					}
+				}
 				Arrays.sort(best_set);
 				for(int j=2,k=4;j<7;j++,k--){
 					temp[k]=best_set[j];
 				}
-				for(int i=0;i<5;i++){		//returns 14 to 1.
-					if(temp[i]==1){
-						temp[i]=14;
-						Arrays.sort(temp);
-					}
-				}
+
 				return temp;
 			}
 			else{

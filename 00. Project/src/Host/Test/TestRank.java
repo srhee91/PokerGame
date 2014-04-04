@@ -10,16 +10,16 @@ public class TestRank {
 	public static void fullhouse_check(Rank calrank){
 		System.out.println("Testing Fullhouse");
 		Card[]temp=new Card[7];
-		for(int i=1;i<12;i++){
+		//for(int i=1;i<12;i++){
 		temp[0]=new Card(1,13);
 		temp[1]=new Card(2,12);
-		temp[2]=new Card(3,i);
-		temp[3]=new Card(4,i);
+		temp[2]=new Card(3,4);
+		temp[3]=new Card(4,4);
 		temp[4]=new Card(1,3);
 		temp[5]=new Card(1,3);
 		temp[6]=new Card(1,3);
 		calrank.findBestHand(temp);
-		}
+		//}
 	}
 	public static void fourcard_check(Rank calrank){
 		System.out.println("Testing FourCard");
@@ -64,13 +64,13 @@ public class TestRank {
 	public static void straight_check(Rank calrank){
 		System.out.println("Testing Straight");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(1,10);
-		temp[1]=new Card(1,11);
-		temp[2]=new Card(4,13);
-		temp[3]=new Card(2,12);
+		temp[0]=new Card(1,2);
+		temp[1]=new Card(1,3);
+		temp[2]=new Card(4,5);
+		temp[3]=new Card(2,4);
 		temp[4]=new Card(3,1);
 		temp[5]=new Card(3,8);
-		temp[6]=new Card(1,6);
+		temp[6]=new Card(1,7);
 		calrank.findBestHand(temp);
 	}
 	// three of kinds

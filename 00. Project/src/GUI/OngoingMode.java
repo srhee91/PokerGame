@@ -188,7 +188,10 @@ public class OngoingMode extends TableMode {
 						}
 					}
 		});
-	
+		
+		playerNamesLocal = new String[8];
+		for (int i=0; i<8; ++i)
+			playerNamesLocal[i] = null;
 	}
 	
 	protected void setPlayerNamesLocal(String[] names) {
@@ -210,18 +213,19 @@ public class OngoingMode extends TableMode {
 
 		
 		// check for received gamestates from host
-		Object receivedObject = GUI.cmh.getReceivedObject();
-		if (receivedObject!=null) {
-			
-			gameState = (Gamestate)receivedObject;
-			
-			if (gameState.whoseTurn==GUI.playerIndexInHost) {
-				setButtonsEnable(true); 
-			} else {
-				setButtonsEnable(false); 
+		if (GUI.cmh != null) {
+			Object receivedObject = GUI.cmh.getReceivedObject();
+			if (receivedObject!=null) {
+				
+				gameState = (Gamestate)receivedObject;
+				
+				if (gameState.whoseTurn==GUI.playerIndexInHost) {
+					setButtonsEnable(true); 
+				} else {
+					setButtonsEnable(false); 
+				}
 			}
 		}
-		
 		
 		
 		// TEST!!!
@@ -360,14 +364,13 @@ public class OngoingMode extends TableMode {
 
 	
 	private void drawPlayerNames(Graphics g) {
-		g.setColor(Color.white);
 
 		GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[0], mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
 			if (playerNamesLocal[i] != null) {
-				GUI.drawStringCenter(g, infoFont, Color.white, "Player"+i, playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[i], playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 			}
 		}

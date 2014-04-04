@@ -112,28 +112,30 @@ public class LobbyMode extends TableMode {
 		
 		
 		// check for new player list, convert to local order
-		Object receivedObject = GUI.cmh.getReceivedObject();
-		if (receivedObject!=null) {
-			
-			String[] playerNames = (String[])receivedObject;
-			
-			// find out which place we are in the server player list
-			numPlayers = 0;
-			GUI.playerIndexInHost = -1;
-			for (int i=0; i<8; ++i) {
-				if (playerNames[i] != null) {
-					numPlayers++;
-					if (playerNames[i].equals(GUI.playerName)) {
-						GUI.playerIndexInHost = i;
+		if (GUI.cmh != null) {
+			Object receivedObject = GUI.cmh.getReceivedObject();
+			if (receivedObject!=null) {
+				
+				String[] playerNames = (String[])receivedObject;
+				
+				// find out which place we are in the server player list
+				numPlayers = 0;
+				GUI.playerIndexInHost = -1;
+				for (int i=0; i<8; ++i) {
+					if (playerNames[i] != null) {
+						numPlayers++;
+						if (playerNames[i].equals(GUI.playerName)) {
+							GUI.playerIndexInHost = i;
+						}
 					}
 				}
+				
+				// update local players list
+				for (int i=0; i<8; ++i) {
+					playerNamesLocal[i] = playerNames[(i + GUI.playerIndexInHost)%8];
+				}
+				hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
 			}
-			
-			// update local players list
-			for (int i=0; i<8; ++i) {
-				playerNamesLocal[i] = playerNames[(i + GUI.playerIndexInHost)%8];
-			}
-			hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
 		}
 	}
 	

@@ -16,6 +16,7 @@ import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
 import GameState.Gamestate;
+import Host.GameSystem.GameSystem;
 import Host.GameSystem.Player;
 import Network.HostSearcher;
 import Network.UserAction;
@@ -243,6 +244,26 @@ public class OngoingMode extends TableMode {
 			if (receivedObject!=null) {
 				
 				gameState = (Gamestate)receivedObject;
+				
+				
+				// DEBUG: print game state
+				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFlops :");
+				if(gameState.flopState == 0)	System.out.println("-");
+				else if(gameState.flopState == 1)	for(int k=0; k<3; k++)	System.out.println(gameState.flops[k]);
+				else if(gameState.flopState == 2)	for(int k=0; k<4; k++)	System.out.println(gameState.flops[k]);
+				else if(gameState.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(gameState.flops[k]);
+				System.out.println();
+				for(int k=0; k<8; k++){
+					if(gameState.player[k] != null){
+						if(gameState.dealer == k)	System.out.println("***Dealer***");
+						if(gameState.whoseTurn == k)	System.out.println("---Your Turn---");
+						System.out.println("Player "+k+":\n" + gameState.player[k]);
+					}
+				}
+				System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
+				
+				
+				
 				
 				int hostDealerIndex = gameState.dealer;
 				int localDealerIndex = hostToLocalIndex(hostDealerIndex);

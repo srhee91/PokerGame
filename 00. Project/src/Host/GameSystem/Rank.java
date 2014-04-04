@@ -217,7 +217,7 @@ public class Rank {
 		 int best_set[]=new int[5];
 		 int high_num;
 		 int pop_num;
-		 temp=sort_toIntArray(cards);
+		 temp=sort_toIntArrayAce(cards);
 		if(findPair(cards)>=4){
 			pop_num=getMostPopularElement(temp);
 			if(pop_num==1){
@@ -261,7 +261,7 @@ public class Rank {
 		int best_set[]=new int[5];
 		int pop_num1;
 		int pop_num2=0,pop_num3=0,pop_num4=0;
-		temp=sort_toIntArray(cards);
+		temp=sort_toIntArrayAce(cards);
 		if(findPair(cards)==3){
 			pop_num1=getMostPopularElement(temp);
 			for(int i=6;i>0;i--){
@@ -326,6 +326,12 @@ public class Rank {
 				Arrays.sort(best_set);
 				for(int j=2,k=4;j<7;j++,k--){
 					temp[k]=best_set[j];
+				}
+				for(int i=0;i<5;i++){		//returns 14 to 1.
+					if(temp[i]==1){
+						temp[i]=14;
+						Arrays.sort(temp);
+					}
 				}
 				return temp;
 			}
@@ -430,13 +436,8 @@ public class Rank {
 		 int pop_num;
 		 int cardcount = 0;
 		 int best_set[]=new int[5];
-		 temp=sort_toIntArray(cards);
+		 temp=sort_toIntArrayAce(cards);
 		 
-		 for(int i=0;i<7;i++){			//if there is ace change it to 14
-			 	if(temp[i]==1){
-			 		temp[i]=14;
-			 	}
-		 }
 		 Arrays.sort(temp);
 		 pop_num=getMostPopularElement(temp);
 		 
@@ -456,11 +457,6 @@ public class Rank {
 			    	break;
 			    }
 			}
-			for(int i=0;i<5;i++){		//returns 14 to 1.
-				if(best_set[i]==14){
-					best_set[i]=1;
-				}
-			}
 			
 				return best_set;
 		}
@@ -475,13 +471,7 @@ public class Rank {
 		 int high_num=0;
 		 int best_set1[]=new int[5];
 		
-		 temp=sort_toIntArray(cards);
-		 
-			 for(int i=0;i<temp.length;i++){			//checks if there is ace(1). If there is temporary change it to 14.
-				 if(temp[i]==1){
-					 temp[i]=14;
-				 }
-			 }
+		 temp=sort_toIntArrayAce(cards);
 		
 		 Arrays.sort(temp);
 		 pop_num1=getMostPopularElement(temp);
@@ -518,11 +508,6 @@ public class Rank {
 			    	break;
 			    }
 			}
-			for(int i=0;i<5;i++){		//returns 14 to 1.
-				if(best_set1[i]==14){
-					best_set1[i]=1;
-				}
-			}
 			return best_set1;
 		}
 		else{
@@ -534,7 +519,7 @@ public class Rank {
 
 		int best_set[] = new int[5];
 		int card[] = sort_toIntArrayAce(cards);
-		
+				
 		boolean ch=false;
 		for(int i=0; i<6; i++)
 		{
@@ -552,6 +537,7 @@ public class Rank {
 			}
 			if(ch)	break;
 		}
+		if(!ch)	return null;
 
 		int index = 2;
 		for(int i=6; i>=0; i--)
@@ -564,100 +550,12 @@ public class Rank {
 		return best_set;
 	}
 
-/*	//debugged. Changed for-loop
-	public int[] isOnePair(Card cards[]){
-		 if(isTwoPair(cards)==null&&findPair(cards)==2){
-			 int temp[];
-			 int pop_num;
-			 int cardcount=0;
-			 int best_set[]=new int[5];
-			 temp=sort_toIntArray(cards);
-			 pop_num=getMostPopularElement(temp);
-			 if(pop_num == 1){
-				Ace_Pair = true;
-			 }
-			 else{
-				 Ace_Pair = false;
-			 }
-			int i,set_track=2;
-			if(Ace_Pair==false){
-				for(i=6;i>=0;i--){
-					if(temp[i]==1){
-						Ace = true;
-					}
-				}
-			}
-			if(Ace==true&&Ace_Pair==false){
-				for(i=6;temp[i]>pop_num;i--){
-					cardcount++;
-					best_set[set_track]=temp[i];
-					set_track++;
-					if(cardcount==3){
-						best_set[2]=1;
-						best_set[3]=temp[6];
-						best_set[4]=temp[5];
-						break;
-					}
-				}
-				if(cardcount==0){
-					int setcount=2;
-					for(int m=1;m<4;m++ ){
-						best_set[setcount]=temp[i-m];
-						setcount++;
-					}
-					best_set[2]=1;
-				}
-				else if(cardcount==2){
-					best_set[4]=temp[2];
-					best_set[2]=1;
-				}
-				else if(cardcount==1){
-					best_set[3]=temp[i-1];
-					best_set[4]=temp[i-2];
-					best_set[2]=1;
-				}
-				for(int j=0;j<2;j++){
-					best_set[j]=pop_num;
-				}
-			}
-			else{
-				for(i=6;temp[i]>pop_num;i--){
-					cardcount++;
-					best_set[set_track]=temp[i];
-					set_track++;
-					if(cardcount==3){
-						break;
-					}
-				}
-				if(cardcount==0){
-					int setcount=2;
-					for(int m=2;m<5;m++ ){
-						best_set[setcount]=temp[i-m];
-						setcount++;
-					}
-				}
-				else if(cardcount==2){
-					best_set[4]=temp[2];
-				}
-				else if(cardcount==1){
-					best_set[3]=temp[i-2];
-					best_set[4]=temp[i-3];
-				}
-				for(int j=0;j<2;j++){
-					best_set[j]=pop_num;
-					
-				}
-			}
-			return best_set;
-		}
-		return null;
-	}*/
 	public int[] noPair(Card cards[]){
 		 if(findPair(cards)==0){
 			 int temp[];
 			 boolean test=false;
 			 int best_set[]=new int[5];
-			 temp=sort_toIntArray(cards);
+			 temp=sort_toIntArrayAce(cards);
 			 for(int i=6;i>=0;i--){
 				 if(temp[i]==1){
 					 test=true;

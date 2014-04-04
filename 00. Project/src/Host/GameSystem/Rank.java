@@ -94,7 +94,7 @@ public class Rank {
 		for(int i=0;i<8;i++){
 			if(merge_arr[i]!=null){
 			int[] rank1 = findBestHand(merge_arr[i]);
-			System.out.println("Player "+(i+1)+" best set is "+Arrays.toString(rank1));
+			System.out.println("Player "+(i)+" best set is "+Arrays.toString(rank1));
 			}
 		}
 		//)

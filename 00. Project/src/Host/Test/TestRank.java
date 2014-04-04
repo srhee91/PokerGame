@@ -11,10 +11,10 @@ public class TestRank {
 		System.out.println("Testing Fullhouse");
 		Card[]temp=new Card[7];
 		temp[0]=new Card(1,1);
-		temp[1]=new Card(2,2);
-		temp[2]=new Card(3,13);
+		temp[1]=new Card(2,4);
+		temp[2]=new Card(3,4);
 		temp[3]=new Card(4,1);
-		temp[4]=new Card(1,13);
+		temp[4]=new Card(1,2);
 		temp[5]=new Card(1,1);
 		temp[6]=new Card(1,2);
 		calrank.findBestHand(temp);
@@ -101,10 +101,10 @@ public class TestRank {
 	public static void onepair_check(Rank calrank){
 		System.out.println("Testing OnePair");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(1,2);
+		temp[0]=new Card(1,9);
 		temp[1]=new Card(4,1);
-		temp[2]=new Card(4,7);
-		temp[3]=new Card(2,7);
+		temp[2]=new Card(4,4);
+		temp[3]=new Card(2,1);
 		temp[4]=new Card(3,3);
 		temp[5]=new Card(1,5);
 		temp[6]=new Card(1,6);

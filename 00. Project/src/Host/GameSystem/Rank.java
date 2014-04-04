@@ -224,12 +224,12 @@ public class Rank {
 		int temp[];
 		int best_set[]=new int[5];
 		int pop_num1;
-		int pop_num2=0,pop_num3=0;
+		int pop_num2=0,pop_num3=0,pop_num4=0;
 		temp=sort_toIntArray(cards);
 		if(findPair(cards)==3){
 			pop_num1=getMostPopularElement(temp);
-			for(int i=0;i<6;i++){
-				if((temp[i]==temp[i+1])&&(temp[i]!=pop_num1)){
+			for(int i=6;i>0;i--){
+				if((temp[i]==temp[i-1])&&(temp[i]!=pop_num1)){
 					pop_num2=temp[i];
 					break;
 				}
@@ -239,20 +239,20 @@ public class Rank {
 					pop_num3++;
 				}
 			}
-			if(pop_num3==3&&pop_num1!=1){
-				pop_num2=pop_num1;
+			if(pop_num3==3&&pop_num2!=1){
 				pop_num1=1;
 			}
-			if(pop_num2==1||pop_num3==1){
+			if(pop_num2==1){
 				Ace_Pair = true;
 			}
 			if(pop_num2!=0){
 				if(pop_num3>pop_num2&&Ace_Pair==false){
+					System.out.println(Ace_Pair);
 					for(int j=0;j<3;j++){
 						best_set[j]=pop_num1;
 					}
 					for(int j=3;j<5;j++){
-						best_set[j]=pop_num3;
+						best_set[j]=pop_num2;
 					}
 				}else if(pop_num3<pop_num2&&Ace_Pair==false) {
 					for(int j=0;j<3;j++){
@@ -263,11 +263,11 @@ public class Rank {
 					}
 				}
 				else if(Ace_Pair==true){
+					System.out.println(Ace_Pair);
 					for(int j=0;j<3;j++){
 						best_set[j]=1;
 					}
 					for(int j=3;j<5;j++){
-						System.out.println("inside");
 						best_set[j]=pop_num2;
 					}
 				}
@@ -507,6 +507,9 @@ public class Rank {
 			 if(pop_num == 1){
 				Ace_Pair = true;
 			 }
+			 else{
+				 Ace_Pair = false;
+			 }
 			int i,set_track=2;
 			if(Ace_Pair==false){
 				for(i=6;i>=0;i--){
@@ -515,12 +518,15 @@ public class Rank {
 					}
 				}
 			}
-			if(Ace==true){
+			if(Ace==true&&Ace_Pair==false){
 				for(i=6;temp[i]>pop_num;i--){
 					cardcount++;
 					best_set[set_track]=temp[i];
 					set_track++;
 					if(cardcount==3){
+						best_set[2]=1;
+						best_set[3]=temp[6];
+						best_set[4]=temp[5];
 						break;
 					}
 				}

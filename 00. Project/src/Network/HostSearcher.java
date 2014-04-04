@@ -101,7 +101,7 @@ public abstract class HostSearcher {
 class SearchSuperThread extends Thread{
 	public void run(){
 		while(!HostSearcher.stop){
-			for (int i=1;i<255;i++){
+			for (int i=1;i<50;i++){
 				new SearchThread(i).start();
 			}
 			try {

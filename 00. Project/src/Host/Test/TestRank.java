@@ -39,7 +39,7 @@ public class TestRank {
 				temp[4]=new Card(1,j);
 				temp[5]=new Card(1,0);
 				temp[6]=new Card(1,0);
-				calrank.findBestHand(temp);
+				//calrank.findBestHand(temp);
 				}
 			}
 		}
@@ -95,27 +95,41 @@ public class TestRank {
 	public static void threeofkind_check(Rank calrank){
 		System.out.println("Testing Three of Kinds");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(1,10);
-		temp[1]=new Card(1,2);
-		temp[2]=new Card(4,11);
-		temp[3]=new Card(2,13);
-		temp[4]=new Card(3,1);
-		temp[5]=new Card(1,1);
-		temp[6]=new Card(1,1);
-		calrank.findBestHand(temp);
+		for(int i=1;i<14;i++){			
+			for(int j=1;j<13;j++){
+				if(j!=i){					//There are some case where it is four card. Usually the pair will be always x,x,x,21,20
+				temp[0]=new Card(1,i);
+				temp[1]=new Card(2,i);
+				temp[2]=new Card(3,i);
+				temp[3]=new Card(4,j);
+				temp[4]=new Card(1,j+1);
+				temp[5]=new Card(1,20);
+				temp[6]=new Card(1,21);
+				//calrank.findBestHand(temp);
+				}
+			}
+		}
 	}
 	// two pairs
 	public static void twopair_check(Rank calrank){
 		System.out.println("Testing Two Pair");
 		Card[]temp=new Card[7];
-		temp[0]=new Card(4,1);
-		temp[1]=new Card(2,10);
-		temp[2]=new Card(4,9);
-		temp[3]=new Card(2,9);
-		temp[4]=new Card(3,10);
-		temp[5]=new Card(1,11);
-		temp[6]=new Card(1,11);
-		calrank.findBestHand(temp);
+		for(int i=1;i<14;i++){			
+			for(int j=1;j<14;j++){
+				for(int k=1;k<14;k++){
+					if(j!=i&&k!=i&&k!=j){
+					temp[0]=new Card(1,i);
+					temp[1]=new Card(2,i);
+					temp[2]=new Card(3,k);
+					temp[3]=new Card(4,j);
+					temp[4]=new Card(1,j);
+					temp[5]=new Card(1,0);
+					temp[6]=new Card(1,0);
+					calrank.findBestHand(temp);
+					}
+				}
+			}
+		}
 	}
 	// one pair
 	public static void onepair_check(Rank calrank){

@@ -66,6 +66,7 @@ public abstract class HostSearcher {
 		start(4320);
 	}
 	
+	/*
 	static class SearchSuperThread extends Thread{
 		public void run(){
 			while(!stop){
@@ -92,13 +93,11 @@ public abstract class HostSearcher {
 				}
 			}
 		}
-	}
+	}*/
 }
 
 
 
-
-/*
 class SearchSuperThread extends Thread{
 	public void run(){
 		while(!HostSearcher.stop){
@@ -124,18 +123,19 @@ class SearchThread extends Thread{
 		if (HostSearcher.IP4[i]!=null) return;
 		Socket socket = new Socket();
 		try {
-			socket.connect(new InetSocketAddress(InetAddress.getByName(""+HostSearcher.IP1+"."+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 500);
+			socket.connect(new InetSocketAddress(InetAddress.getByName(""+HostSearcher.IP1+"."
+					+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 500);
 			synchronized(mutex){
 				System.out.println("Connecting successfully: 192.168.1."+i);
 				ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());
 				LobbyState lobbyState=(LobbyState)ois.readObject();
-				System.out.println("HostNickName: "+lobbyState.nickNames[0]);
-				HostSearcher.IP4[i]=lobbyState.nickNames[0];
+				System.out.println("HostNickName: "+lobbyState.hostName);
+				HostSearcher.IP4[i]=lobbyState.hostName;
 			}
-		} catch( ClassNotFoundException e){
+		} catch( ClassNotFoundException | IOException e){
+			//HostSearcher.IP4[i] = null;
 			e.printStackTrace();
-		} catch (IOException e) {
 		}
 	}
-}*/
+}
 

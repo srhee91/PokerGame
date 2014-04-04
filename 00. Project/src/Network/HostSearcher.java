@@ -115,7 +115,7 @@ class SearchSuperThread extends Thread{
 
 class SearchThread extends Thread{
 	int i;
-	static Object mutex;
+	static Object mutex = new Object();
 	public SearchThread(int i){
 		this.i=i;
 	}
@@ -134,7 +134,7 @@ class SearchThread extends Thread{
 			}
 		} catch( ClassNotFoundException | IOException e){
 			//HostSearcher.IP4[i] = null;
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 }

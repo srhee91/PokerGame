@@ -17,66 +17,53 @@ public class Rank {
 		merge_arr=new Card[PLAYER_MAX][7];//7 = player cards (2) + flop cards (5)
 	}
 	
-	public void merge(){		//merge player array and flop array. [0-1] will be player card [2-6] will be flop card (same with other player)
-		int k=0;
+	public void merge(Card[]flop, Card[][]hand){		//merge player array and flop array. [0-1] will be player card [2-6] will be flop card (same with other player)
 		for(int i=0;i<PLAYER_MAX;i++){
-			for(int j=0;j<2;j++,k++){
-				merge_arr[i][j]=Deck.player[k];		
+			if(hand[i]!=null){
+				for(int j=0;j<2;j++){
+					merge_arr[i][j]=hand[i][j];
+				}
+				for(int j=2,m=0;j<7;j++,m++){
+					merge_arr[i][j]=flop[m];
+				}
 			}
-			for(int j=2,m=0;j<7;j++,m++){
-				merge_arr[i][j]=Deck.flop[m];
+			else{
+				merge_arr[i]=null;
 			}
 		}
     }
 	
 	public void printMerge(){			//exist for debugging
 		for(int i=0;i<PLAYER_MAX;i++){
-			for(int j=0;j<7;j++){
-				System.out.println("merge_arr["+i+"]["+j+"]: "+merge_arr[i][j].toString());
+			if(merge_arr[i]!=null){
+				for(int j=0;j<7;j++){
+					
+					System.out.println("i:"+i+"j:"+j);
+					System.out.println("merge_arr["+i+"]["+j+"]: "+merge_arr[i][j].toString());
+				}
 			}
+			
 		}
 	}
 
 	//split pot winner not handled yet.
-	public int findWinner(Card[] flop, Player[] player){
-		
-		int winner = 0;
-		int i;
-		for(i=0; i<GameSystem.MAXPLAYER; i++){
-			if(player[i] != null && !player[i].hasFolded)
-			{
-				winner = i;
-				break;
+	public int findWinner(Card[] flop, Card[][]hand){
+		int rank[]=new int[8];
+		merge(flop,hand);
+		//printMerge();
+		for(int i=0;i<PLAYER_MAX;i++){
+			if(merge_arr[i]!=null){
+			findBestHand(merge_arr[i]);
+				rank[i]=final_rank;
 			}
 		}
 		
-		if(winner == GameSystem.MAXPLAYER-1)	return winner;
-		
-		for(i=winner+1; i< GameSystem.MAXPLAYER; i++)
-		{
-			
-			if(player[i] != null && !player[i].hasFolded)
-			{					
-				winner = compareHands(flop, player, winner, i);
-			}
-		}
-		
-		return winner;
+		return 0;
 	}
-	
 	//compare hands between two players?
 	public int compareHands(Card[] flop, Player[] player, int p1, int p2){
 
-		Card[] card1 = new Card[7];
-		Card[] card2 = new Card[7];
-		for(int j=0; j<5; j++){
-			card1[j] = flop[j];
-			card2[j] = flop[j];
-		}
-		card1[5] = player[p1].hand[0];
-		card1[6] = player[p1].hand[1];
-		card2[5] = player[p2].hand[0];
-		card2[6] = player[p2].hand[1];
+	
 
 
 		int[] rank1 = findBestHand(card1);
@@ -94,6 +81,10 @@ public class Rank {
 			else if(rank_1==STRAIGHT_FLUSH){
 				if(rank1[0]>rank2[0]){
 					return p1;
+				}else if(rank1[0]<rank2[0]){
+					return p2;
+				}else{
+					//players have same rank
 				}
 			}
 			else if(rank_1==FOURCARD){

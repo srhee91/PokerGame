@@ -105,7 +105,7 @@ class SearchSuperThread extends Thread{
 				new SearchThread(i).start();
 			}
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -124,7 +124,7 @@ class SearchThread extends Thread{
 		Socket socket = new Socket();
 		try {
 			socket.connect(new InetSocketAddress(InetAddress.getByName(""+HostSearcher.IP1+"."
-					+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 500);
+					+HostSearcher.IP2+"."+HostSearcher.IP3+"."+i), HostSearcher.port), 10000);
 			synchronized(mutex){
 				System.out.println("Connecting successfully: 192.168.1."+i);
 				ObjectInputStream ois=new ObjectInputStream(socket.getInputStream());

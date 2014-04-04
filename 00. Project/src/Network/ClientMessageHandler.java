@@ -31,7 +31,7 @@ public class ClientMessageHandler {
 			throws IOException, ClassNotFoundException, NameTakenException{
 
 		socket = new Socket();
-		socket.connect(new InetSocketAddress(IP, port), 1000);
+		socket.connect(new InetSocketAddress(IP, port), 10000);
 		
 		// send player name to host, await boolean reply to see if name
 		// is ok

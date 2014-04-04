@@ -37,7 +37,7 @@ public class Pot implements Serializable  {
 			//check for someone who folded/left OR didn't bet
 			for(int i=0; i<player.length; i++) {
 				if(player[i] != null){
-				if(player[i].hasFolded || player[i].hasLeft || player[i].betAmount == 0) {
+				if(player[i].hasFolded || player[i].hasLeft || player[i].betAmount < highestBet) {
 					totalPot += player[i].betAmount;
 					player[i].betAmount = 0;
 					playerInvolved[i] = false;
@@ -45,7 +45,7 @@ public class Pot implements Serializable  {
 				else{
 					playerInvolved[i] = false;
 				}
-			}			
+			}
 			
 			//check if someone went all in, and find the lowest all in
 			int lowestBet = GameSystem.INIT_CHIP*8 + 1; 

@@ -131,7 +131,8 @@ public class OngoingMode extends TableMode {
 						System.out.println("checked/called!");
 						
 						try {
-							GUI.cmh.send(new UserAction(UserAction.Action.CHECK_CALL, 0));
+							if (GUI.cmh!=null)
+								GUI.cmh.send(new UserAction(UserAction.Action.CHECK_CALL, 0));
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -147,7 +148,8 @@ public class OngoingMode extends TableMode {
 						System.out.println("folded!");
 						
 						try {
-							GUI.cmh.send(new UserAction(UserAction.Action.FOLD, 0));
+							if (GUI.cmh!=null)
+								GUI.cmh.send(new UserAction(UserAction.Action.FOLD, 0));
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -163,9 +165,11 @@ public class OngoingMode extends TableMode {
 						System.out.println("raised!");
 						
 						try {
-							String raiseAmtString = raiseTextField.getText();
-							GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET,
-									Integer.parseInt(raiseAmtString)));
+							if (GUI.cmh!=null) {
+								String raiseAmtString = raiseTextField.getText();
+								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET,
+										Integer.parseInt(raiseAmtString)));
+							}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -181,7 +185,8 @@ public class OngoingMode extends TableMode {
 						System.out.println("all in!");
 						
 						try {
-							GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, 
+							if (GUI.cmh!=null)
+								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, 
 									100));		// TODO: CHANGE THIS
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");

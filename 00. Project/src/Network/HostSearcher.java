@@ -127,7 +127,7 @@ class SearcherListening extends Thread{
 			byte[] recvBuf = new byte[20];
 	        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 			try {
-				socket.setSoTimeout(1500);
+				socket.setSoTimeout(2000);
 				socket.receive(recvPacket);
 				if (enable==false) return;
 				InetAddress IP=recvPacket.getAddress();

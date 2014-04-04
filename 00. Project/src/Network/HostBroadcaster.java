@@ -48,6 +48,7 @@ public class HostBroadcaster {
 				byte[] recvBuf = new byte[10];
 		        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 				try {
+					socket.setSoTimeout(5000);
 					socket.receive(recvPacket);
 					if (enable==false) return;
 					InetAddress IP=recvPacket.getAddress();

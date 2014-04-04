@@ -100,15 +100,21 @@ public class Pot implements Serializable  {
 				hands[i] = null;
 		}
 		
-		//int[] winner = (new Rank()).findWinner(game.flops, hands);
+		boolean[] winner = (new Rank()).findWinner(game.flops, hands);
+		int winnerCount = 0;
 		
 		totalPot += game.leftover;
-		/*
-		for(int i=0; i<winner.length; i++)
-		{
-			game.player[winner[i]].totalChip += (int) (totalPot/winner.length);
+		
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			if(winner[i]) winnerCount++;
 		}
-		game.leftover = totalPot%winner.length;*/
+		for(int i=0; i<GameSystem.MAXPLAYER; i++)
+		{
+			if(winner[i]){
+				game.player[i].totalChip += (int) (totalPot/winnerCount);
+			}
+		}
+		game.leftover = totalPot%winnerCount;
 	}
 	
 	public void printPot()

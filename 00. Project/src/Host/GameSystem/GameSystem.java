@@ -19,7 +19,7 @@ public class GameSystem{
 	
 	public Pot potTotal;
 	public int highestBet;
-	//public int highestBetter; its currently in Host.java
+	public int highestBetter;
 	
 	public Deck deck;
 	

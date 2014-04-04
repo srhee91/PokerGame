@@ -125,7 +125,7 @@ public class Host{
 			//each round
 			for(int i=0; i<4; i++){
 				game.flopState = i;
-				int highestBetter = game.nextTurn();
+				game.highestBetter = game.nextTurn();
 				
 				//TEST TEST TEST// V_01
 //				System.out.println("Flop state : " + game.flopState);
@@ -137,7 +137,7 @@ public class Host{
 					UserAction ua = receiveUserAction();
 					updateAction(ua);
 
-					//TEST V_02!!//
+/*					//TEST V_02!!//
 					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 					
 					for(int k=0; k<5; k++)	System.out.println(game.flops[k]);
@@ -166,7 +166,7 @@ public class Host{
 						game.highestBet = input;
 					}
 					//TEST V_02!!//
-					
+*/					
 					//TEST TEST TEST// V_01
 //					System.out.println("It's player " + game.whoseTurn +"'s turn!");
 //					System.out.print("Fold=0 Call=1 Bet=2\n:");
@@ -187,7 +187,7 @@ public class Host{
 //						else						System.out.println("Player "+k+" Does not exist.");
 					//TEST TEST TEST// V_01
 
-				}while(game.nextTurn() != highestBetter);
+				}while(game.nextTurn() != game.highestBetter);
 				
 				game.updateRound();
 				game.potTotal.printPot();
@@ -240,13 +240,19 @@ public class Host{
 //		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
 //		game.highestBet = betAmount;
 //		game.player[game.whoseTurn].fold();
+
 		
 		switch (ua.action) {
 		case CHECK_CALL:
+			game.player[game.whoseTurn].bet(ua.raiseAmount);
 			break;
 		case FOLD:
+			game.player[game.whoseTurn].fold();
 			break;
 		case RAISE_BET:
+			game.player[game.whoseTurn].bet(ua.raiseAmount);
+			game.highestBetter = game.whoseTurn;
+			game.highestBet = ua.raiseAmount;
 			break;
 		case START_GAME:
 			break;

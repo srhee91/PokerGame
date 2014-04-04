@@ -103,6 +103,7 @@ public class ClientMessageHandler {
 					System.out.println("Receive a game state from host\n\t: "+receivedObj);
 				}catch(IOException | ClassNotFoundException e){
 					System.out.println("Lost connection to host!");
+					e.printStackTrace();
 					if (enable) {
 						GUI.lobbyMode.hostConnectionError_flag = true;
 						GUI.ongoingMode.hostConnectionError_flag = true;

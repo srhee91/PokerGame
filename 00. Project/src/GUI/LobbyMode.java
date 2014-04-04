@@ -118,6 +118,7 @@ public class LobbyMode extends TableMode {
 					if (((String)receivedObject).equals("start")) {
 						// go to ongoing mode
 						GUI.ongoingMode.setPlayerNamesLocal(playerNamesLocal);
+						GUI.ongoingMode.setButtonsEnable(false);
 						game.enterState(4);
 					}
 				

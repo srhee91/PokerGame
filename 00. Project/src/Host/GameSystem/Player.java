@@ -1,6 +1,8 @@
 package Host.GameSystem;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable {
 
 	public int hand_rank = 0;
 	public static Card hand[];

@@ -1,10 +1,12 @@
 package GameState;
 
+import java.io.Serializable;
+
 import Host.GameSystem.*;
 
 //sends Gamestate from server to host while in the game
 //*** One gamestate holds through the entire game ***//
-public class Gamestate {
+public class Gamestate implements Serializable {
 	
 	public Player player[];
 	

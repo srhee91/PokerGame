@@ -1,6 +1,8 @@
 package Host.GameSystem;
 
-public class Card {
+import java.io.Serializable;
+
+public class Card implements Serializable  {
 	private int kind;
 	private int number;
 	

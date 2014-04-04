@@ -232,7 +232,9 @@ public class Host{
 				break;
 			}
 		}
-		return (UserAction)objReceived;
+		UserAction ret = (UserAction)objReceived;
+		System.out.println("action received: "+ret.action.name());
+		return ret;
 	}
 	
 	

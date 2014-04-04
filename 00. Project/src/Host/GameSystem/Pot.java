@@ -1,8 +1,10 @@
 package Host.GameSystem;
 
+import java.io.Serializable;
+
 import Host.*;
 
-public class Pot {
+public class Pot implements Serializable  {
 
 	public Pot splitPot;
 	public int totalPot;
@@ -98,15 +100,15 @@ public class Pot {
 				hands[i] = null;
 		}
 		
-		int[] winner = (new Rank()).findWinner(game.flops, hands);
+		//int[] winner = (new Rank()).findWinner(game.flops, hands);
 		
 		totalPot += game.leftover;
-		
+		/*
 		for(int i=0; i<winner.length; i++)
 		{
 			game.player[winner[i]].totalChip += (int) (totalPot/winner.length);
 		}
-		game.leftover = totalPot%winner.length;
+		game.leftover = totalPot%winner.length;*/
 	}
 	
 	public void printPot()

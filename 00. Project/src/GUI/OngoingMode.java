@@ -309,7 +309,7 @@ public class OngoingMode extends TableMode {
 	}
 	
 	
-	private void setButtonsEnable(boolean enable) {
+	protected void setButtonsEnable(boolean enable) {
 		checkButton.setEnable(enable);
 		foldButton.setEnable(enable);
 		raiseButton.setEnable(enable);

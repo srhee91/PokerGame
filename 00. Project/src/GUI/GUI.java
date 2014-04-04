@@ -48,14 +48,18 @@ public class GUI extends StateBasedGame
 	
 	
 	protected static void drawStringCenter(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
-		font.drawString(x-font.getWidth(s)/2, y-font.getHeight(s)/2, s, c);
+		if (s != null) {
+			font.drawString(x-font.getWidth(s)/2, y-font.getHeight(s)/2, s, c);
+		}
 	}
 	
 	protected static void drawStringLeftCenter(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
-		font.drawString(x, y-font.getHeight(s)/2, s, c);
+		if (s!=null)
+			font.drawString(x, y-font.getHeight(s)/2, s, c);
 	}
 	
 	protected static void drawStringRightCenter(Graphics g, TrueTypeFont font, Color c, String s, int x, int y) {
-		font.drawString(x-font.getWidth(s), y-font.getHeight(s)/2, s, c);
+		if (s!=null)
+			font.drawString(x-font.getWidth(s), y-font.getHeight(s)/2, s, c);
 	}
 }

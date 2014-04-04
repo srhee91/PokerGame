@@ -217,10 +217,10 @@ public class Rank {
 		 int best_set[]=new int[5];
 		 int high_num;
 		 int pop_num;
-		 temp=sort_toIntArray(cards);
+		 temp=sort_toIntArrayAce(cards);
 		if(findPair(cards)>=4){
 			pop_num=getMostPopularElement(temp);
-			if(pop_num==1){
+			if(pop_num==14){
 				Ace_Pair=true;
 			}
 			else{
@@ -236,7 +236,7 @@ public class Rank {
 				
 			high_num=temp[i];
 			
-			if(high_num>pop_num){
+			if(high_num>pop_num && pop_num!=14){
 				for(int j=0;j<4;j++){
 					best_set[j]=pop_num;
 				}
@@ -246,9 +246,15 @@ public class Rank {
 				else if(Ace==true){
 					best_set[4]=1;
 				}
-			}else{
-				best_set[0]=high_num;
-				for(int j=1;j<5;j++){
+			}else if(pop_num==14){
+				for(int j=0;j<4;j++){
+					best_set[j]=pop_num;
+				}
+				best_set[4]=high_num;
+			}
+			else{
+				best_set[4]=high_num;
+				for(int j=0;j<4;j++){
 					best_set[j]=pop_num;
 				}
 			}

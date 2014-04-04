@@ -281,6 +281,7 @@ public class Host{
 		host.waitToStart();
 		
 		
+		host.hb.close();
 		
 		
 		host.startGame();	

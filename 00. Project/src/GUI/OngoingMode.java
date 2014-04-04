@@ -17,6 +17,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import GameState.Gamestate;
 import Host.GameSystem.Player;
+import Network.HostSearcher;
 import Network.UserAction;
 
 public class OngoingMode extends TableMode {
@@ -166,9 +167,13 @@ public class OngoingMode extends TableMode {
 						
 						try {
 							if (GUI.cmh!=null) {
+								
 								String raiseAmtString = raiseTextField.getText();
-								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET,
-										Integer.parseInt(raiseAmtString)));
+								int raiseAmount = 0;
+								if (!raiseAmtString.isEmpty()) {
+									raiseAmount = Integer.parseInt(raiseAmtString);
+								}
+								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, raiseAmount));
 							}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
@@ -207,6 +212,10 @@ public class OngoingMode extends TableMode {
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		
 		super.update(container, game, delta);
+		
+		// if HostSearcher is running, stop it
+		if (HostSearcher.isRunning())
+				HostSearcher.stop();
 		
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))

@@ -34,6 +34,7 @@ public class HostBroadcaster {
 			System.out.println("Host Broadcaster is Listening on port ["+port+"] Waiting for client to connect...");
 		}catch(IOException e){
 			System.out.println("Cannot listen on port");
+			e.printStackTrace();
 			System.exit(0);
 		}
 	}
@@ -62,6 +63,7 @@ public class HostBroadcaster {
 					socket.close();
 				}catch(NullPointerException e){
 					System.out.println("Cannot listen on port");
+					e.printStackTrace();
 					break;
 				}catch(Exception e){
 					e.printStackTrace();

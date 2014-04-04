@@ -48,6 +48,7 @@ public class Host{
 		// wait for connection from host client
 		while (hmh.getConnectedPlayerNames().isEmpty());
 		hostname = hmh.lastJoinedPlayer;
+		System.out.println("Host client has joined: "+hostname);
 	}
 	
 	public void createBroadcaster(){
@@ -265,6 +266,9 @@ public class Host{
 
 		// start host, hostmessagehandler, hostbroadcaster
 		Host host = new Host(4321);
+		
+		//host.hostname = "test_hostname";
+		//host.createBroadcaster();
 		
 		// wait for connection from client who started this host
 		host.waitForHostClientConnection();

@@ -118,6 +118,11 @@ public class LobbyMode extends TableMode {
 				
 				String[] playerNames = (String[])receivedObject;
 				
+				System.out.println("received player names:");
+				for (String s : playerNames) {
+					System.out.println("\t"+s);
+				}
+				
 				// find out which place we are in the server player list
 				numPlayers = 0;
 				GUI.playerIndexInHost = -1;

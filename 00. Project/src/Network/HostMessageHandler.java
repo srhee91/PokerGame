@@ -55,7 +55,7 @@ public class HostMessageHandler {
 			System.out.println("Host is Listening on port ["+port+"] Waiting for client to connect...");
 		}catch(IOException e){
 			System.out.println("Cannot listen on port");
-			//e.printStackTrace();
+			e.printStackTrace();
 			System.exit(0);
 		}
 		
@@ -139,6 +139,9 @@ public class HostMessageHandler {
 					ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 					ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 					ReceivingThread rt = new ReceivingThread(playerName, ois);
+					
+					lastJoinedPlayer = playerName;
+					
 					clientConnections.put(playerName, new ClientConnection(oos, ois, rt));
 					
 					rt.start();
@@ -146,7 +149,7 @@ public class HostMessageHandler {
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
 							+port+"] as client "+playerName);
 					
-					lastJoinedPlayer = playerName;
+					
 					
 					
 					host.players[host.numPlayers++] = playerName;
@@ -154,7 +157,8 @@ public class HostMessageHandler {
 					sendAll(host.players);
 					
 				}catch(NullPointerException e){
-					System.out.println("Cannot listen on port");
+					System.out.println("Cannot listen on port listening()");
+					e.printStackTrace();
 					break;
 				}catch(Exception e){
 				}

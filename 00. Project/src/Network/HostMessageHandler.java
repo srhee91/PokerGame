@@ -232,35 +232,4 @@ public class HostMessageHandler {
 			send(playerName, ob);
 	}
 	
-	
-	/*
-	public static void main(String args[]){
-		HostMessageHandler host=new HostMessageHandler(4321,null,null);
-		host.sending();
-	}
-	
-	// call this function will start SendThread
-	public void sending(){
-		new SendThread().start();
-	}
-	
-
- 	// Get user input and call send(input);
-	public class SendThread extends Thread{
-		Gamestate gs;
-		public void run(){
-			Scanner input=new Scanner(System.in);
-			System.out.println("Input the client number and message(game state) continously: (0 means send to all, e.g.: 0 msg)");
-			while(true){
-				int index=input.nextInt();
-				String str=input.nextLine();
-				gs=new Gamestate(index,str);
-				if (index==0) 
-					sendAll(gs);
-				else
-					send(index,gs);
-			}
-		}
-	}
-	*/
 }

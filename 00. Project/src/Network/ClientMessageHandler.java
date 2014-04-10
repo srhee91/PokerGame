@@ -31,7 +31,7 @@ public class ClientMessageHandler {
 			throws IOException, ClassNotFoundException, NameTakenException{
 
 		socket = new Socket();
-		socket.connect(new InetSocketAddress(IP, port), 10000);
+		socket.connect(new InetSocketAddress(IP, port), 1500);
 		
 		// send player name to host, await boolean reply to see if name
 		// is ok
@@ -114,41 +114,4 @@ public class ClientMessageHandler {
 		}
 	}
 
-	/*
-	//Get user input and call send(input);
-
-	public class SendThread extends Thread{
-		UserAction ua;
-		public void run(){
-			Scanner input=new Scanner(System.in);
-			System.out.println("Input your message continously:");
-			while(true){
-				String str=input.nextLine();
-				ua = new UserAction(str);
-				try {
-					send(ua);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
-	public static void main(String args[]){
-		InetAddress serverIP=null;
-		try {
-			serverIP=InetAddress.getByName("127.0.0.1");
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		System.out.println("connect to "+serverIP.getHostAddress());
-		ClientMessageHandler client=new ClientMessageHandler(serverIP,4321);
-		client.sending();
-	}
-	
-	//call this function will start SendThread
-	public void sending(){
-		new SendThread().start();
-	}
-	*/
 }	

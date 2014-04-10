@@ -17,29 +17,34 @@ public abstract class HostSearcher {
 	
 	
 	public static void start(int port){
-		String myIP;
+		InetAddress myIP;
 		HostSearcher.port=port;
 		try {
-			myIP=InetAddress.getLocalHost().getHostAddress();
+			myIP=InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
 			System.out.println("Cannot get local IP");
 			return;
 		}
-		IP1=Integer.parseInt(myIP.substring(0,myIP.indexOf('.')));
-		myIP=myIP.substring(myIP.indexOf('.')+1);
-		IP2=Integer.parseInt(myIP.substring(0,myIP.indexOf('.')));
-		myIP=myIP.substring(myIP.indexOf('.')+1);
-		IP3=Integer.parseInt(myIP.substring(0,myIP.indexOf('.')));
+		IP1=myIP.getAddress()[0];
+		IP2=myIP.getAddress()[1];
+		IP3=myIP.getAddress()[2];
+		if(IP1<0) IP1+=256;
+		if(IP2<0) IP2+=256;
+		if(IP3<0) IP3+=256;
 		
-		
-		for(int i=0;i<255;i++) IP4[i]=null;
+		for(int i=0;i<255;i++) IP4[i]="";
 		stop=false;
+		checkAvailable();
 		
-		new SearchSuperThread().start();
 		new SearcherListening().start();
-		
 	}
 	
+	public static void checkAvailable(){
+		for (int i=2;i<3;i++){
+			if (IP4[i]!=null)
+				new CheckThread(i).start();
+		}
+	}
 	
 	public static ArrayList<String[]> getValidNamesAndIps(){
 		ArrayList<String[]> ret = new ArrayList<String[]>();
@@ -69,30 +74,12 @@ public abstract class HostSearcher {
 	
 }
 
-
-
-class SearchSuperThread extends Thread{
-	public void run(){
-		while(!HostSearcher.stop){
-			for (int i=1;i<255;i++){
-				new SearchThread(i).start();
-			}
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-}
-
-class SearchThread extends Thread{
+class CheckThread extends Thread{
 	int i;
-	public SearchThread(int i){
+	public CheckThread(int i){
 		this.i=i;
 	}
 	public void run(){
-		if (HostSearcher.IP4[i]!=null) return;
 		byte IP[]=new byte[4];
 		IP[0]=(byte)HostSearcher.IP1;
 		IP[1]=(byte)HostSearcher.IP2;
@@ -102,9 +89,10 @@ class SearchThread extends Thread{
 		DatagramSocket socket=null;
 		try {
 			socket = new DatagramSocket();
-		} catch (SocketException e1) {
-			e1.printStackTrace();
+		} catch (SocketException e) {
+			e.printStackTrace();
 		}
+		HostSearcher.IP4[i]=null;
 		DatagramPacket packet=null;
 		try {
 			packet=new DatagramPacket(IP,1,InetAddress.getByAddress(IP), HostSearcher.port);
@@ -117,7 +105,6 @@ class SearchThread extends Thread{
 
 class SearcherListening extends Thread{
 	DatagramSocket socket;
-	boolean enable = true;
 	public void run(){
 		try {
 			socket=new DatagramSocket(HostSearcher.port-1);
@@ -125,19 +112,17 @@ class SearcherListening extends Thread{
 			e1.printStackTrace();
 			return;
 		}
-		while(enable){
+		while(!HostSearcher.stop){
 			byte[] recvBuf = new byte[15];
 	        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 			try {
-				socket.setSoTimeout(2000);
+				socket.setSoTimeout(1000);
 				socket.receive(recvPacket);
-				if (enable==false) return;
+				if (HostSearcher.stop==true) return;
 				InetAddress IP=recvPacket.getAddress();
-				String hostname=new String(recvPacket.getData());
-				hostname=hostname.substring(0, hostname.indexOf("!|!"));
+				String hostname=new String(recvPacket.getData()).substring(0, recvPacket.getLength());
 				System.out.println("Receive from IP "+IP.getHostAddress()+ " with name: "+ hostname);
-				HostSearcher.IP4[IP.getAddress()[3]]=hostname;
-				System.out.println(hostname.length());
+				HostSearcher.IP4[(int)(IP.getAddress()[3])]=hostname;
 			} catch (IOException e) {
 			}
 			

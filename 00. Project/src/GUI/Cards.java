@@ -119,6 +119,10 @@ public class Cards {
 	}
 	
 	
+	// QueueAction params:
+	// card, 
+	// position, visible, faceUp, instant, waitTime, letPrevActionsFinish
+	
 	public void resetCards() {
 		// flip all cards face down
 		for (int i=0; i<5; ++i) {

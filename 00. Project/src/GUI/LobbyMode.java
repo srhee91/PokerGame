@@ -3,6 +3,8 @@ package GUI;
 import java.awt.Font;
 import java.io.IOException;
 
+import javax.sound.midi.Receiver;
+
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -123,7 +125,7 @@ public class LobbyMode extends TableMode {
 					}
 				
 				
-				} else {
+				} else if (receivedObject instanceof String[]) {
 					
 					String[] playerNames = (String[])receivedObject;
 					
@@ -149,6 +151,9 @@ public class LobbyMode extends TableMode {
 						playerNamesLocal[i] = playerNames[(i + GUI.playerIndexInHost)%8];
 					}
 					hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
+				
+				} else {
+					System.out.println("unexpected object type received");
 				}
 			}
 		}

@@ -243,119 +243,130 @@ public class OngoingMode extends TableMode {
 			Object receivedObject = GUI.cmh.getReceivedObject();
 			if (receivedObject!=null) {
 				
-				gameState = (Gamestate)receivedObject;
+				if (receivedObject instanceof Gamestate) {
 				
-				
-				// DEBUG: print game state
-				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFlops :");
-				if(gameState.flopState == 0)	System.out.println("-");
-				else if(gameState.flopState == 1)	for(int k=0; k<3; k++)	System.out.println(gameState.flops[k]);
-				else if(gameState.flopState == 2)	for(int k=0; k<4; k++)	System.out.println(gameState.flops[k]);
-				else if(gameState.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(gameState.flops[k]);
-				System.out.println();
-				for(int k=0; k<8; k++){
-					if(gameState.player[k] != null){
-						if(gameState.dealer == k)	System.out.println("***Dealer***");
-						if(gameState.whoseTurn == k)	System.out.println("---Your Turn---");
-						System.out.println("Player "+k+":\n" + gameState.player[k]);
-					}
-				}
-				System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
-				
-				
-				
-				
-				int hostDealerIndex = gameState.dealer;
-				int localDealerIndex = hostToLocalIndex(hostDealerIndex);
-				Host.GameSystem.Card[] flop = gameState.flops;
-				
-				
-				// update dealer chip position
-				dealerChip.moveTo(localDealerIndex);
-				
-				switch (gameState.flopState) {
-				
-				case 0:
+					gameState = (Gamestate)receivedObject;
 					
-					// deal if cards haven't been dealt
-					if (!playerCardsDealt) {
-						Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
-						
-						for(int i=0; i<8; i++)if(gameState.player[i]!=null) System.out.println("player " + i + "cards"+gameState.player[i].hand);
-						
-						cards.playerCards[0][0].setFaceImage(hand[0]);
-						cards.playerCards[0][1].setFaceImage(hand[1]);
-						
-						cards.dealCards(hostToLocalIndex(hostDealerIndex), playerNamesLocal);
-						cards.showPlayerCards(0);
-						
-						playerCardsDealt = true;
-					}
-					else {
-						
-					}
-					break;
 					
-				case 1:
-					
-					if (!flopDealt) {
-						
-						
-						for (int i=0; i<3; ++i) {
-							cards.centerCards[i].setFaceImage(flop[i]);
+					// DEBUG: print game state
+					System.out.println("\n\n\n\nFlops :");
+					if(gameState.flopState == 0)	System.out.println("-");
+					else if(gameState.flopState == 1)	for(int k=0; k<3; k++)	System.out.println(gameState.flops[k]);
+					else if(gameState.flopState == 2)	for(int k=0; k<4; k++)	System.out.println(gameState.flops[k]);
+					else if(gameState.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(gameState.flops[k]);
+					System.out.println();
+					for(int k=0; k<8; k++){
+						if(gameState.player[k] != null){
+							if(gameState.dealer == k)	System.out.println("***Dealer***");
+							if(gameState.whoseTurn == k)	System.out.println("---Your Turn---");
+							System.out.println("Player "+k+":\n" + gameState.player[k]);
 						}
-						
-						cards.dealFlop();
-						
-						flopDealt = true;
 					}
-					else {
-						
-					}
-					break;
-				case 2:
+					System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
+					// DONE printing game state
 					
-					if (!turnDealt) {
-						
-
-						cards.centerCards[3].setFaceImage(flop[3]);
-
-						
-						cards.dealTurn();
-						
-						turnDealt = true;
-					}
-					else {
-						
-					}
-					break;
-				case 3:
 					
-					if (!riverDealt) {
-						cards.centerCards[4].setFaceImage(flop[4]);
-
+					
+					int hostDealerIndex = gameState.dealer;
+					int localDealerIndex = hostToLocalIndex(hostDealerIndex);
+					Host.GameSystem.Card[] flop = gameState.flops;
+					
+					
+					// update dealer chip position
+					dealerChip.moveTo(localDealerIndex);
+					
+					switch (gameState.flopState) {
+					
+					case 0:
 						
-						cards.dealRiver();
+						// deal if cards haven't been dealt
+						if (!playerCardsDealt) {
+							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
+							
+							for(int i=0; i<8; i++) {
+								if(gameState.player[i]!=null)
+									System.out.println("player " + i + "cards"+gameState.player[i].hand);
+							}
+							
+							cards.playerCards[0][0].setFaceImage(hand[0]);
+							cards.playerCards[0][1].setFaceImage(hand[1]);
+							
+							cards.dealCards(hostToLocalIndex(hostDealerIndex), playerNamesLocal);
+							cards.showPlayerCards(0);
+							
+							playerCardsDealt = true;
+						}
+						else {
+							
+						}
+						break;
 						
-						riverDealt = true;
+					case 1:
+						
+						if (!flopDealt) {
+							
+							
+							for (int i=0; i<3; ++i) {
+								cards.centerCards[i].setFaceImage(flop[i]);
+							}
+							
+							cards.dealFlop();
+							
+							flopDealt = true;
+						}
+						else {
+							
+						}
+						break;
+					case 2:
+						
+						if (!turnDealt) {
+							
+	
+							cards.centerCards[3].setFaceImage(flop[3]);
+	
+							
+							cards.dealTurn();
+							
+							turnDealt = true;
+						}
+						else {
+							
+						}
+						break;
+					case 3:
+						
+						if (!riverDealt) {
+							cards.centerCards[4].setFaceImage(flop[4]);
+	
+							
+							cards.dealRiver();
+							
+							riverDealt = true;
+						}
+						else {
+							
+						}
+						break;
 					}
-					else {
-						
+					
+					
+					if (gameState.whoseTurn==GUI.playerIndexInHost) {
+						setButtonsEnable(true); 
+					} else {
+						setButtonsEnable(false); 
 					}
-					break;
-				}
-				
-				
-				if (gameState.whoseTurn==GUI.playerIndexInHost) {
-					setButtonsEnable(true); 
+					
+					
 				} else {
-					setButtonsEnable(false); 
+					System.out.println("unexpected object type received");
 				}
 			}
 		}
 		
 		
 		// TEST!!!
+		/*
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
 			
 			cards.resetCards();
@@ -393,14 +404,13 @@ public class OngoingMode extends TableMode {
 			allInButton.setEnable(!allInButton.getEnable());
 			raiseTextField.setEnable(!raiseTextField.getEnable());
 		}
-		/*
 		else if (container.getInput().isKeyPressed(Input.KEY_H)) {
 			checkButton.setAlphaWhileDisabled(1.5f-checkButton.getAlphaWhileDisabled());
 			foldButton.setAlphaWhileDisabled(1.5f-foldButton.getAlphaWhileDisabled());
 			raiseButton.setAlphaWhileDisabled(1.5f-raiseButton.getAlphaWhileDisabled());
 			allInButton.setAlphaWhileDisabled(1.5f-allInButton.getAlphaWhileDisabled());
 			raiseTextField.setAlphaWhileDisabled(1.5f-raiseTextField.getAlphaWhileDisabled());
-		}*/
+		}
 		else if (container.getInput().isKeyPressed(Input.KEY_H)) {
 			boolean srcIsPlayer = Math.random()<0.5;
 			boolean destIsPlayer = Math.random()<0.5;
@@ -414,6 +424,7 @@ public class OngoingMode extends TableMode {
 			int dealer = (int)Math.floor(Math.random()*8.0);
 			dealerChip.moveTo(dealer);
 		}
+		*/
 		
 		
 		

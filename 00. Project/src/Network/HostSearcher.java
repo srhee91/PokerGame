@@ -32,7 +32,7 @@ public abstract class HostSearcher {
 		if(IP2<0) IP2+=256;
 		if(IP3<0) IP3+=256;
 		
-		for(int i=0;i<255;i++) IP4[i]="";
+		for(int i=0;i<255;i++) IP4[i]=null;
 		stop=false;
 		checkAvailable();
 		
@@ -40,8 +40,8 @@ public abstract class HostSearcher {
 	}
 	
 	public static void checkAvailable(){
-		for (int i=2;i<3;i++){
-			if (IP4[i]!=null)
+		for (int i=0;i<255;i++){
+			//if (IP4[i]!=null)
 				new CheckThread(i).start();
 		}
 	}
@@ -74,7 +74,7 @@ public abstract class HostSearcher {
 	
 }
 
-class CheckThread extends Thread{
+class CheckThread extends Thread{	// 255 of these; sends out IP address
 	int i;
 	public CheckThread(int i){
 		this.i=i;
@@ -103,7 +103,7 @@ class CheckThread extends Thread{
 	}
 }
 
-class SearcherListening extends Thread{
+class SearcherListening extends Thread{		// 1 of these; listens for replies from hostbroadcasters
 	DatagramSocket socket;
 	public void run(){
 		try {

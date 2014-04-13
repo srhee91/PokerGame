@@ -176,7 +176,7 @@ public class Cards {
 		for (int i=0; i<8; ++i) {
 			player %= 8;
 			Card card = playerCards[player][0];
-			if (playerName[i]!=null) {
+			if (playerName[player]!=null) {
 				actionQueue.add(new QueuedAction(card,
 						playerCardPositions[player][0], null, null, false, 100.0, i==0));
 			}
@@ -186,7 +186,7 @@ public class Cards {
 		for (int i=0; i<8; ++i) {
 			player %= 8;
 			Card card = playerCards[player][1];
-			if (playerName[i]!=null) {
+			if (playerName[player]!=null) {
 				actionQueue.add(new QueuedAction(card,
 						playerCardPositions[player][1], null, null, false, 100.0, false));
 			}

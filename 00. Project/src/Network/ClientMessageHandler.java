@@ -3,13 +3,15 @@ import java.io.*;
 import java.net.*;
 
 import GUI.GUI;
+import java.util.*;
 
 public class ClientMessageHandler {
 	
 	ObjectOutputStream oos=null;
 	ObjectInputStream ois=null;
 	Socket socket=null;
-	Object receivedObj=null;
+	//Object receivedObj=null;
+	Deque<Object> receivedObjs = new ArrayDeque<Object>();
 	int ChildIndex=-1;
 	ReceivingThread receivingThread;
 	
@@ -55,12 +57,10 @@ public class ClientMessageHandler {
 	
 	
 	public Object getReceivedObject() {
-		if (receivedObj==null)
+		if (receivedObjs.isEmpty())
 			return null;
 		else{
-			Object temp=receivedObj;
-			receivedObj=null;
-			return temp;
+			return receivedObjs.removeFirst();
 		}
 	}
 	
@@ -99,7 +99,8 @@ public class ClientMessageHandler {
 		public void run(){
 			while(enable){
 				try{
-					receivedObj=ois.readObject();
+					Object receivedObj=ois.readObject();
+					receivedObjs.addLast(receivedObj);
 					System.out.println("Receive a game state from host\n\t: "+receivedObj);
 				}catch(IOException | ClassNotFoundException e){
 					System.out.println("Lost connection to host!");

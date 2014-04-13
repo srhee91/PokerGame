@@ -153,7 +153,7 @@ public class LobbyMode extends TableMode {
 					hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
 				
 				} else {
-					System.out.println("unexpected object type received");
+					System.out.println("unexpected object type received in LobbyMode");
 				}
 			}
 		}

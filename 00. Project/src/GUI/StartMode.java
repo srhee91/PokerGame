@@ -37,7 +37,7 @@ public class StartMode extends Mode
 	private TrueTypeFont buttonFont;
 	
 	private Button hostGameButton;
-	private Button joinGameButton;
+	protected Button joinGameButton;
 	private Button spectateGameButton;
 	private Button exitButton;
 		

@@ -64,7 +64,7 @@ public class JoinMode extends Mode {
 						joinList.setVisible(true);
 						
 						// go to name prompt in startmode
-						GUI.startMode.showPopupEnterName(source);
+						GUI.startMode.showPopupEnterName(GUI.startMode.joinGameButton);
 						game.enterState(1);
 					}
 				});

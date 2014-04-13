@@ -3,6 +3,7 @@ package GUI;
 import java.awt.Font;
 import java.util.*;
 
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -41,6 +42,7 @@ public class JoinList {
 	private final int[] refreshButtonOffset = {80, 400};
 	private final int[] cancelButtonOffset = {770, 400};
 	
+	private final int[] loadingAnimationOffset = {500, 220};
 	
 	private String[] columnNames;
 	private int[] columnWidths;		// in pixels
@@ -53,10 +55,13 @@ public class JoinList {
 	private Button[] joinButtons;
 	private Button prevButton;
 	private Button nextButton;
-	private Button refreshButton;
+	protected Button refreshButton;
 	private Button cancelButton;
 	
 	private boolean visible;
+	
+	private Animation loadingAnimation;
+	private boolean isLoading;
 	
 	
 	// meta-info
@@ -69,12 +74,14 @@ public class JoinList {
 	}
 	
 	
-	public JoinList(GUIContext container, boolean initialVisible,
+	public JoinList(GUIContext container, boolean initialVisible, Animation loadingAnimation,
 			String[] columnNames, int[] columnWidths,
 			final IndexedComponentListener joinListener, ComponentListener refreshListener,
 			ComponentListener cancelListener) throws SlickException{
 		
 		this.visible = initialVisible;
+		this.loadingAnimation = loadingAnimation;
+		isLoading = false;
 		this.columnNames = columnNames;
 		this.columnWidths = columnWidths;
 		rowsData = new ArrayList<String[]>();
@@ -198,6 +205,15 @@ public class JoinList {
 		}
 	}
 	
+	
+	public void setLoading(boolean loading) {
+		isLoading = loading;
+		setButtonsEnable(!loading);
+	}
+	
+	public boolean isLoading() {
+		return isLoading;
+	}
 		
 	public void setRowsData(List<String[]> rowsData) {
 		this.rowsData = rowsData;
@@ -236,38 +252,47 @@ public class JoinList {
 				textX += columnWidths[i];
 			}
 			
-			// draw each row
-			if (!rowsData.isEmpty()) {
-				textYCenter += rowHeight;
-				for (int i=currentPage*numRowsDisplayed;
-						i < Math.min((currentPage+1)*numRowsDisplayed, rowsData.size());
-						++i) {
-					textX = textXLeft;
-					GUI.drawStringLeftCenter(g, headerFont, Color.white, Integer.toString(i+1), textX, textYCenter);
-					textX += indexColumnWidth;
-					
-					String[] rowData = rowsData.get(i);
-					for (int j=0; j<columnNames.length; ++j) {
-						GUI.drawStringLeftCenter(g, listFont, Color.white, rowData[j], textX, textYCenter);
-						textX += columnWidths[j];
-					}
-					joinButtons[i%numRowsDisplayed].render(container, g, joinButtonsFont, Color.white, "Join");
-					textYCenter += rowHeight;
-				}
-			}
 			
-			// draw page label
-			String labelString;
-			if (rowsData.size()==0) {
-				labelString = "No games found.";
+			if (isLoading) {
+				
+				loadingAnimation.draw(position[0]+loadingAnimationOffset[0]-loadingAnimation.getWidth()/2,
+						position[1]+loadingAnimationOffset[1]-loadingAnimation.getHeight()/2);
+				
 			} else {
-				int firstIndex = currentPage * numRowsDisplayed + 1;
-				int lastIndex = Math.min(firstIndex+numRowsDisplayed-1, rowsData.size());
-				labelString = firstIndex+" to "+lastIndex+
-						" of "+rowsData.size()+" games found";
+				// draw each row
+				if (!rowsData.isEmpty()) {
+					textYCenter += rowHeight;
+					for (int i=currentPage*numRowsDisplayed;
+							i < Math.min((currentPage+1)*numRowsDisplayed, rowsData.size());
+							++i) {
+						textX = textXLeft;
+						GUI.drawStringLeftCenter(g, headerFont, Color.white, Integer.toString(i+1), textX, textYCenter);
+						textX += indexColumnWidth;
+						
+						String[] rowData = rowsData.get(i);
+						for (int j=0; j<columnNames.length; ++j) {
+							GUI.drawStringLeftCenter(g, listFont, Color.white, rowData[j], textX, textYCenter);
+							textX += columnWidths[j];
+						}
+						joinButtons[i%numRowsDisplayed].render(container, g, joinButtonsFont, Color.white, "Join");
+						textYCenter += rowHeight;
+					}
+				}
+				
+				// draw page label
+				String labelString;
+				if (rowsData.size()==0) {
+					labelString = "No games found.";
+				} else {
+					int firstIndex = currentPage * numRowsDisplayed + 1;
+					int lastIndex = Math.min(firstIndex+numRowsDisplayed-1, rowsData.size());
+					labelString = firstIndex+" to "+lastIndex+
+							" of "+rowsData.size()+" games found";
+				}
+				GUI.drawStringCenter(g, pageLabelFont, Color.white, 
+						labelString, position[0]+pageLabelOffset[0], position[1]+pageLabelOffset[1]);
+				
 			}
-			GUI.drawStringCenter(g, pageLabelFont, Color.white, 
-					labelString, position[0]+pageLabelOffset[0], position[1]+pageLabelOffset[1]);
 			
 			// draw prev, next, refresh buttons
 			prevButton.render(container, g, navButtonsFont, Color.white, "<");

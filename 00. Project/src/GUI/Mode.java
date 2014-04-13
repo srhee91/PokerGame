@@ -15,6 +15,7 @@ public class Mode extends BasicGameState {
 	
 	protected final String loadingString = "Loading...";
 	
+	protected Animation waitingAnimation;
 	protected PopupMessageAnimation popupLoading;
 	
 	
@@ -22,7 +23,7 @@ public class Mode extends BasicGameState {
 	public void init(GameContainer container, StateBasedGame game)
 			throws SlickException {
 		
-		Animation waitingAnimation = new Animation();
+		waitingAnimation = new Animation();
 		SpriteSheet sheet = new SpriteSheet(GUI.RESOURCES_PATH+"loading2.png", 32, 32);
 		for (int i=0; i<8; ++i) {
 			waitingAnimation.addFrame(sheet.getSprite(i, 0), 64);

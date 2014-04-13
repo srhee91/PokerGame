@@ -234,8 +234,8 @@ public class StartMode extends Mode
 		*/
 		
 		// if HostSearcher is not running, start it
-		if (!HostSearcher.isRunning())
-			HostSearcher.start(4320);
+		//if (!HostSearcher.isRunning())
+			//HostSearcher.start(4320);
 		
 		
 		// if loading screen is up, check status of whatever's loading

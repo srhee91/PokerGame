@@ -1,6 +1,7 @@
 package GUI;
 
 import java.util.*;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -36,6 +37,8 @@ public class JoinMode extends Mode {
 	public boolean joinHostSuccess_flag;
 	public boolean joinHostNameTaken_flag;
 	public boolean joinHostError_flag;
+	
+	private long refreshTimeNano;
 		
 	
 	@Override
@@ -69,7 +72,7 @@ public class JoinMode extends Mode {
 					}
 				});
 		
-		joinList = new JoinList(container, true,
+		joinList = new JoinList(container, true, waitingAnimation,
 				joinListColumnNames, joinListColumnWidths,
 				new JoinList.IndexedComponentListener() {
 					@Override
@@ -90,8 +93,10 @@ public class JoinMode extends Mode {
 						
 						System.out.println("refresh games list!");
 						
-						// UPDATE GAMES LIST
-						updateGamesList();
+						// REFRESH
+						HostSearcher.checkAvailable();
+						joinList.setLoading(true);
+						refreshTimeNano = System.nanoTime();	// record time
 					}
 				},
 				new ComponentListener() {			// cancel action
@@ -159,6 +164,15 @@ public class JoinMode extends Mode {
 		// if HostSearcher is not running, start it
 		if (!HostSearcher.isRunning())
 			HostSearcher.start(4320);
+		
+		// if joinlist is refreshing, check if 1 second has passed
+		if (joinList.isLoading()) {
+			if (System.nanoTime() - refreshTimeNano >= 1000000000L) {
+				joinList.setLoading(false);
+				updateGamesList();
+			}
+		}
+		
 		
 		// if we're trying to join a host, check the status of it
 		if (popupLoading.isVisible()) {

@@ -199,6 +199,7 @@ public class HostMessageHandler {
 					System.out.println("Host receives an object from Client "+playerName);
 				}catch(IOException e){
 					System.out.println("Session end for client "+playerName);
+					
 					break;
 				}catch(ClassNotFoundException e){
 					System.out.println("ClassNotFound");

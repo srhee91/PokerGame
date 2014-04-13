@@ -80,7 +80,7 @@ public abstract class HostSearcher {
 
 class CheckThread extends Thread{	// 255 of these; sends out IP address
 	int i;
-	Object mutex;
+	Object mutex=new Object();
 	public CheckThread(int i){
 		this.i=i;
 	}

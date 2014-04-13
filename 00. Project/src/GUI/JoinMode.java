@@ -146,7 +146,7 @@ public class JoinMode extends Mode {
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta)
 			throws SlickException {
-		
+		/*
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
 			game.enterState(1);
@@ -154,7 +154,7 @@ public class JoinMode extends Mode {
 			game.enterState(3);
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
-		
+		*/
 		
 		// if HostSearcher is not running, start it
 		if (!HostSearcher.isRunning())

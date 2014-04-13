@@ -100,7 +100,7 @@ public class LobbyMode extends TableMode {
 		// if HostSearcher is running, stop it
 		if (HostSearcher.isRunning())
 			HostSearcher.stop();
-		
+		/*
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
 			game.enterState(1);
@@ -108,7 +108,7 @@ public class LobbyMode extends TableMode {
 			game.enterState(2);
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
-		
+		*/
 		
 		// check for new player list, convert to local order
 		if (GUI.cmh != null) {

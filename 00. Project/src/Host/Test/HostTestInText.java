@@ -267,6 +267,9 @@ public class HostTestInText {
 		}
 	}
 	
+	public void random_testing(){
+		
+	}
 	
 	//main method - a process created by Poker.java or GUI
 	public static void main(String args[]){

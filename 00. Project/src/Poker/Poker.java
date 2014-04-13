@@ -16,7 +16,8 @@ public class Poker {
 		try {
 			AppGameContainer app = new AppGameContainer(new GUI("Poker"));
 			app.setDisplayMode(1000, 600, false);
-			app.setVSync(true);
+			//app.setVSync(true);
+			app.setTargetFrameRate(30);
 			app.start();
 		}
 		catch (SlickException e) {

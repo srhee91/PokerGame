@@ -92,6 +92,10 @@ public class GameSystem{
 		//pot to winner
 		potTotal.potToWinner(this);
 		
+		for(int i=0; i<MAXPLAYER; i++){
+			if(player[i]!=null && player[i].totalChip == 0)	player[i]=null;
+		}
+		
 		//update dealer
 		dealer = nextPlayer(dealer);
 	}
@@ -119,7 +123,7 @@ public class GameSystem{
 			nextP++;
 			if(nextP == MAXPLAYER)	nextP = 0;
 
-			if(nextP == currentPlayer) return -1;
+			//if(nextP == currentPlayer) return -1;
 		}
 		
 		return nextP;

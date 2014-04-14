@@ -23,7 +23,7 @@ public class Deck {
 	public static Card[] player_8 = new Card[7];
 	
 	
-	private static int deckcount=0,burncount=0,flopcount=0;
+	private int deckcount=0,burncount=0,flopcount=0;
 	
 	
 	public Deck(){					//initialize card 

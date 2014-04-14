@@ -4,7 +4,11 @@ import java.util.*;
 
 import GameState.*;
 import Host.GameSystem.GameSystem;
+import Host.GameSystem.Player;
 import Network.*;
+
+import java.util.Random;
+
 
 
 //Host will do the followings:
@@ -25,8 +29,10 @@ public class HostTestInText {
 	public HostMessageHandler hmh;
 	
 	public GameSystem game;
+	public Player player;
 	
 	public int playerCount;
+	public int playerLeftCount;
 	public String players[];
 	
 	
@@ -96,7 +102,7 @@ public class HostTestInText {
 	//1. turn change
 	//2. player action
 	public void startGame(){
-	
+		Random generator = new Random();
 		//each game
 		game = new GameSystem(playerCount);
 		
@@ -110,7 +116,8 @@ public class HostTestInText {
 		//each hand
 		while(game.playerCount() > 1){
 			game.newHand();
-
+			int player_count=1;
+			System.out.println("player count = " + game.playerCount());
 			//TEST TEST TEST// V_01
 //			System.out.println("\nwhen the hand is dealt");
 //			for(int i=0; i<GameSystem.MAXPLAYER; i++)
@@ -134,7 +141,7 @@ public class HostTestInText {
 //					sendGameState();
 //					UserAction ua = receiveUserAction();
 //					updateAction(ua);
-
+					
 					//TEST V_02!!//
 					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFlops :");
 					
@@ -146,7 +153,7 @@ public class HostTestInText {
 					System.out.println();
 					
 					for(int k=0; k<GameSystem.MAXPLAYER; k++){
-						if(game.player[k] != null){
+						if(game.player[k] != null && game.whoseTurn!=-1 ){
 							if(game.dealer == k)	System.out.println("***Dealer***");
 							if(game.whoseTurn == k)	System.out.println("---Your Turn---");
 							System.out.println("Player "+k+":\n" + game.player[k]);
@@ -155,21 +162,57 @@ public class HostTestInText {
 
 					System.out.println("It's player " + game.whoseTurn +"'s turn!");
 					System.out.print("Fold=0 Call=1 Bet=2\n:");
-					Scanner s = new Scanner(System.in);
-					int input = s.nextInt();
+					//Scanner s = new Scanner(System.in);
+					//int input = s.nextInt();
+					//random input generation
+					int input = generator.nextInt(3);
+					
+					System.out.println(input);
+					if(game.player[game.whoseTurn].totalChip<game.highestBet){
+						input=1;
+					}
 					if(input == 0){
+						System.out.println("player count = "+player_count);
+						System.out.println("player count 2  = "+game.playerCount());
+						if(player_count==game.playerCount()){
+							input=1;
+						}else{
 						game.player[game.whoseTurn].fold();
-						
+						player_count++;
+						}
 						//if every1 folds the hand ends
 						//
 					}
 					else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
 					else {
 						System.out.print("How much you want to bet? :");
-						input = s.nextInt();
+						int whileloop=0;
+						
+						while(whileloop==0){
+							input = generator.nextInt(1000);
+							if(game.player[game.whoseTurn].totalChip<game.highestBet||game.player[game.whoseTurn].totalChip<=20){
+								
+								
+									input=game.player[game.whoseTurn].totalChip;
+									whileloop=2;
+								
+							}
+							else if(input>=20&&input>=game.highestBet&&input<=100&&input<game.player[game.whoseTurn].totalChip){
+								whileloop=1;
+							}
+							else{
+								
+							}
+						}
+						System.out.println(input);
 						game.player[game.whoseTurn].bet(input);
-						game.highestBetter = game.whoseTurn;
-						game.highestBet = input;
+						if(whileloop == 1){
+							game.highestBetter = game.whoseTurn;
+							game.highestBet = input;
+						}
+						else{
+							
+						}
 					}
 					//TEST V_02!!//
 					
@@ -193,7 +236,7 @@ public class HostTestInText {
 //						else						System.out.println("Player "+k+" Does not exist.");
 					//TEST TEST TEST// V_01
 
-				}while(game.nextTurn() != game.highestBetter);
+				}while(game.nextTurn() != game.highestBetter && game.whoseTurn!= -1);
 				
 				game.updateRound();
 				game.potTotal.printPot();

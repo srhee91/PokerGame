@@ -25,12 +25,10 @@ public abstract class HostSearcher {
 			System.out.println("Cannot get local IP");
 			return;
 		}
-		IP1=myIP.getAddress()[0];
-		IP2=myIP.getAddress()[1];
-		IP3=myIP.getAddress()[2];
-		if(IP1<0) IP1+=256;
-		if(IP2<0) IP2+=256;
-		if(IP3<0) IP3+=256;
+		IP1=byteToInt(myIP.getAddress()[0]);
+		IP2=byteToInt(myIP.getAddress()[1]);
+		IP3=byteToInt(myIP.getAddress()[2]);
+
 		
 		for(int i=0;i<255;i++) IP4[i]=null;
 		stop=false;
@@ -39,7 +37,12 @@ public abstract class HostSearcher {
 		new SearcherListening().start();
 	}
 	
-	
+	protected static int byteToInt(byte b) {
+		int ret = b;
+		if (ret < 0)
+			ret += 256;
+		return ret;
+	}
 	
 	public static void checkAvailable(){
 		
@@ -129,7 +132,7 @@ class SearcherListening extends Thread{		// 1 of these; listens for replies from
 				InetAddress IP=recvPacket.getAddress();
 				String hostname=new String(recvPacket.getData()).substring(0, recvPacket.getLength());
 				System.out.println("Receive from IP "+IP.getHostAddress()+ " with name: "+ hostname);
-				HostSearcher.IP4[(int)(IP.getAddress()[3])]=hostname;
+				HostSearcher.IP4[HostSearcher.byteToInt((IP.getAddress()[3]))]=hostname;
 			} catch (IOException e) {
 			}
 			

@@ -154,7 +154,10 @@ public class GameSystem{
 		gamestate.dealer = dealer;
 		gamestate.bigBlinder = bigBlinder;
 		gamestate.smallBlinder = smallBlinder;
-		gamestate.flops = flops;
+		gamestate.flops = new Card[5];
+		for(int i=0; i<5; i++){
+			gamestate.flops[i] = new Card(flops[i].getKind(), flops[i].getNumber());
+		}
 		gamestate.flopState = flopState;
 		gamestate.potTotal = new Pot(potTotal);
 		gamestate.highestBet = highestBet;

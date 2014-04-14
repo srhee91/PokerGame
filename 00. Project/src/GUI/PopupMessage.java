@@ -44,6 +44,9 @@ public class PopupMessage {
 		visible = false;
 	}
 	
+	public void setMessageString(String messageString) {
+		this.messageString = messageString;
+	}
 	
 	public void setVisible(AbstractComponent source) {
 		popupSource = source;

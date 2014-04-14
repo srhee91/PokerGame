@@ -235,16 +235,18 @@ public class Cards {
 	}
 	
 	public void fold(int player) {
-		// flip cards face down
-		actionQueue.add(new QueuedAction(playerCards[player][0],
-				null, null, false, false, 0.0, true));
-		actionQueue.add(new QueuedAction(playerCards[player][1],
-				null, null, false, false, 100.0, false));
-		// set cards invisible
-		actionQueue.add(new QueuedAction(playerCards[player][0],
-				null, false, null, false, 0.0, true));
-		actionQueue.add(new QueuedAction(playerCards[player][1],
-				null, false, null, false, 100.0, false));
+		if (playerCards[player][0].isFaceUp()) {
+			// flip cards face down
+			actionQueue.add(new QueuedAction(playerCards[player][0],
+					null, null, false, false, 0.0, true));
+			actionQueue.add(new QueuedAction(playerCards[player][1],
+					null, null, false, false, 100.0, false));
+			// set cards invisible
+			actionQueue.add(new QueuedAction(playerCards[player][0],
+					null, false, null, false, 0.0, true));
+			actionQueue.add(new QueuedAction(playerCards[player][1],
+					null, false, null, false, 100.0, false));
+		}
 	}
 	
 	

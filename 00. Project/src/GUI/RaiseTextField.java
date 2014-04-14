@@ -10,12 +10,12 @@ import org.newdawn.slick.gui.GUIContext;
 public class RaiseTextField extends MyTextField{
 	
 	
-	TrueTypeFont raiseByFont;
-	TrueTypeFont dollarSignFont;
+	private TrueTypeFont raiseByFont;
+	private TrueTypeFont dollarSignFont;
 	
 	private float alphaWhileDisabled;
 	
-	
+	private String raiseByString;
 	
 
 	public RaiseTextField(GUIContext container, int x, int y) {
@@ -33,6 +33,13 @@ public class RaiseTextField extends MyTextField{
 		dollarSignFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 18), true);
 		
 		alphaWhileDisabled = 0.5f;
+		
+		raiseByString = "  Bet:";
+	}
+	
+	
+	public void setRaiseByString(String raiseByString) {
+		this.raiseByString = raiseByString;
 	}
 	
 	public void setEnable(boolean enable) {
@@ -77,7 +84,7 @@ public class RaiseTextField extends MyTextField{
 			c = new Color(1.0f, 1.0f, 1.0f, alphaWhileDisabled);
 		
 		dollarSignFont.drawString(-15+x, -19+y+32-dollarSignFont.getHeight()/2, "$", c);
-		raiseByFont.drawString(-15+x+10, -19+y, "Raise by:", c);
+		raiseByFont.drawString(-15+x+10, -19+y, raiseByString, c);
 	}
 	
 	

@@ -114,8 +114,8 @@ public class StartMode extends Mode
 							System.out.println("Player "+popupEnterName.getText()+" will join");
 							
 							// GO TO JOIN MODE
-							GUI.playerName = popupEnterName.getText();
-							GUI.joinMode.updateGamesList();
+							GUI.playerName = popupEnterName.getText();							
+							GUI.joinMode.onRefresh();
 							game.enterState(2);	
 							setMenuEnable(true);
 						}

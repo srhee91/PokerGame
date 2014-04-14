@@ -22,6 +22,11 @@ public class ChipAmounts {
 			this.amount = initialAmount;
 			this.big = big;
 		}
+		
+		private void setAmount(int amount) {
+			this.amount = amount;
+		}
+		
 		private void draw(Graphics g) {
 			if (amount != 0) {
 				if (!big) {
@@ -152,10 +157,18 @@ public class ChipAmounts {
 		potAmounts = new StaticAmount[8];
 		for (int i=0; i<8; ++i) {
 			potAmounts[i] = new StaticAmount(potAmountPositions[i][0],
-					potAmountPositions[i][1], 9998, i==0);
+					potAmountPositions[i][1], 0, i==0);
 		}
 		amountsInTransit = new ArrayList<SendAmount>();
 		sendQueue = new ArrayDeque<QueuedSend>();
+	}
+	
+	public void setPlayerAmount(int player, int amount) {
+		playerAmounts[player].setAmount(amount);
+	}
+	
+	public void setPotAmount(int pot, int amount) {
+		potAmounts[pot].setAmount(amount);
 	}
 	
 	public boolean sendOngoing() {

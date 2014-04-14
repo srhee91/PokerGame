@@ -140,7 +140,8 @@ public class OngoingMode extends TableMode {
 						
 						try {
 							if (GUI.cmh!=null)
-								GUI.cmh.send(new UserAction(UserAction.Action.CHECK_CALL, 0));
+								GUI.cmh.send(new UserAction(UserAction.Action.CHECK_CALL,
+										gameState.highestBet));
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -274,6 +275,28 @@ public class OngoingMode extends TableMode {
 					
 					// update dealer chip position
 					dealerChip.moveTo(localDealerIndex);
+					
+					// update player chip amounts
+					for (int i=0; i<8; i++) {
+							int localIndex = hostToLocalIndex(i);
+						if (gameState.player[i] != null) {
+							chipAmounts.setPlayerAmount(localIndex, gameState.player[i].totalChip);
+						} else {
+							chipAmounts.setPlayerAmount(localIndex, 0);
+						}
+					}
+						
+					// update pot amounts
+					Host.GameSystem.Pot pot = gameState.potTotal;
+					for (int i=0; i<8; i++) {
+						if (pot != null) {
+							chipAmounts.setPotAmount(i, pot.totalPot);
+							pot = pot.splitPot;
+						} else {
+							chipAmounts.setPotAmount(i, 0);
+						}
+					}
+					
 					
 					switch (gameState.flopState) {
 					

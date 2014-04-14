@@ -94,9 +94,7 @@ public class JoinMode extends Mode {
 						System.out.println("refresh games list!");
 						
 						// REFRESH
-						HostSearcher.checkAvailable();
-						joinList.setLoading(true);
-						refreshTimeNano = System.nanoTime();	// record time
+						onRefresh();
 					}
 				},
 				new ComponentListener() {			// cancel action
@@ -120,6 +118,12 @@ public class JoinMode extends Mode {
 		joinList.setRowsJoinable(gamesJoinable);
 	}
 	
+	
+	protected void onRefresh() {
+		HostSearcher.checkAvailable();
+		joinList.setLoading(true);
+		refreshTimeNano = System.nanoTime();	// record time
+	}
 	
 	
 	public void updateGamesList() {

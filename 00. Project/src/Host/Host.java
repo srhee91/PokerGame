@@ -3,6 +3,7 @@ package Host;
 import java.util.*;
 
 import GameState.*;
+import GameState.Gamestate;
 import Host.GameSystem.GameSystem;
 import Network.*;
 
@@ -146,6 +147,18 @@ public class Host{
 			}
 		
 		}*/
+		// DEBUG: print game state
+		
+		Gamestate gameState = game.getGamestate();
+		for(int k=0; k<8; k++){
+			if(gameState.player[k] != null){
+				if(gameState.dealer == k)	System.out.println("***Dealer***");
+				if(gameState.whoseTurn == k)	System.out.println("---Your Turn---");
+				System.out.println("Player "+k+":\n" + gameState.player[k]);
+			}
+		}
+		System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
+		// DONE printing game state
 		
 		hmh.sendAll(game.getGamestate());	
 	}

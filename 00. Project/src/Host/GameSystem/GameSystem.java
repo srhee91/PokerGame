@@ -123,7 +123,7 @@ public class GameSystem{
 			nextP++;
 			if(nextP == MAXPLAYER)	nextP = 0;
 
-			//if(nextP == currentPlayer) return -1;
+			if(nextP == currentPlayer) return -1;
 		}
 		
 		return nextP;

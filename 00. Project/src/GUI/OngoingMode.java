@@ -388,7 +388,8 @@ public class OngoingMode extends TableMode {
 					
 					// fold player's cards 
 					for (int i=0; i<8; i++) {
-						if (gameState.player[i].hasFolded) {
+						if (gameState.player[i]!=null
+								&& gameState.player[i].hasFolded) {
 							cards.fold(hostToLocalIndex(i));
 						}
 					}
@@ -594,7 +595,7 @@ public class OngoingMode extends TableMode {
 			// update bet/raise label
 			if (highestBet==0 || 
 					(gameState.flopState==0 && gameState.bigBlinder==GUI.playerIndexInHost
-					&& gameState.highestBet==20)) {		//gameState.blind)) { TODO:
+					&& gameState.highestBet==gameState.blind)) {
 				raiseButtonString = "Bet";
 				raiseTextField.setRaiseByString("     Bet:");
 			} else {

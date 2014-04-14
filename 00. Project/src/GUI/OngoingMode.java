@@ -376,20 +376,7 @@ public class OngoingMode extends TableMode {
 						}
 					}
 						
-					// update pot amounts
-					System.out.println("");
-					Host.GameSystem.Pot pot = gameState.potTotal;
-					for (int i=0; i<8; i++) {
-						if (pot != null) {
-							chipAmounts.setPotAmount(i, pot.totalPot);
-							System.out.println("\tpot "+i+": "+pot.totalPot);
-							pot = pot.splitPot;
-						} else {
-							chipAmounts.setPotAmount(i, 0);
-						}
-					}
-					
-					
+										
 					// fold player's cards 
 					for (int i=0; i<8; i++) {
 						if (gameState.player[i]!=null
@@ -483,18 +470,7 @@ public class OngoingMode extends TableMode {
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
 			
 			cards.resetCards();
-			
-			boolean[] existPlayer = new boolean[8];
-			for (int i=0; i<8; ++i) {
-				existPlayer[i] = playerNamesLocal[i]!=null;
-			}
-			
-			//cards.dealCards((int)(Math.random()*8.0), playerNamesLocal);
-			String[] t = new String[8];
-			for (int i=0; i<8; ++i) {
-				if (Math.random()<0.5)
-				t[i] = "e";
-			}
+
 			cards.dealCards((int)(Math.random()*8.0), t);
 			cards.showPlayerCards(0);
 			
@@ -509,13 +485,6 @@ public class OngoingMode extends TableMode {
 			cards.showPlayerCards((int)(Math.random()*8.0));
 			cards.fold((int)(Math.random()*8.0));
 			cards.fold(0);
-		}
-		else if (container.getInput().isKeyPressed(Input.KEY_G)) {
-			checkButton.setEnable(!checkButton.getEnable());
-			foldButton.setEnable(!foldButton.getEnable());
-			raiseButton.setEnable(!raiseButton.getEnable());
-			allInButton.setEnable(!allInButton.getEnable());
-			raiseTextField.setEnable(!raiseTextField.getEnable());
 		}
 		else if (container.getInput().isKeyPressed(Input.KEY_H)) {
 			checkButton.setAlphaWhileDisabled(1.5f-checkButton.getAlphaWhileDisabled());
@@ -533,12 +502,20 @@ public class OngoingMode extends TableMode {
 			chipAmounts.addSendToQueue(amount, srcIsPlayer, srcIndex,
 					destIsPlayer, destIndex, 0.0, true);
 		}
-		else if (container.getInput().isKeyPressed(Input.KEY_J)) {
-			int dealer = (int)Math.floor(Math.random()*8.0);
-			dealerChip.moveTo(dealer);
-		}
 		*/
 		
+		// update pot amounts
+		System.out.println("");
+		Host.GameSystem.Pot pot = gameState.potTotal;
+		for (int i=0; i<8; i++) {
+			if (pot != null) {
+				chipAmounts.setPotAmount(i, pot.totalPot);
+				System.out.println("\tpot "+i+": "+pot.totalPot);
+				pot = pot.splitPot;
+			} else {
+				chipAmounts.setPotAmount(i, 0);
+			}
+		}
 		
 		
 		// update all cards

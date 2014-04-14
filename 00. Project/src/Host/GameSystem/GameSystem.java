@@ -67,8 +67,10 @@ public class GameSystem{
 		deck.shuffle();
 		
 		for(int i=0; i<MAXPLAYER; i++){
-			if(player[i] != null)
+			if(player[i] != null){
 				player[i].dealHands(deck.drawHands());
+				player[i].latestAction = null;
+			}
 		}
 		
 		flops = deck.drawFlops();

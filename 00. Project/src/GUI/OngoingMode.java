@@ -38,7 +38,6 @@ public class OngoingMode extends TableMode {
 	private final int[] playerDealerChipOffset = {42, 145};
 	
 
-	
 	private final Color thinkingLabelColor = new Color(128, 128, 128, 242);
 	private final Color foldLabelColor = new Color(206, 0, 0, 242);
 	private final Color raiseLabelColor = new Color(92, 184, 17, 242);
@@ -208,8 +207,9 @@ public class OngoingMode extends TableMode {
 		});
 		
 		playerNamesLocal = new String[8];
-		for (int i=0; i<8; ++i)
+		for (int i=0; i<8; ++i) {
 			playerNamesLocal[i] = null;
+		}
 	}
 	
 	protected void setPlayerNamesLocal(String[] names) {
@@ -276,21 +276,27 @@ public class OngoingMode extends TableMode {
 					// update dealer chip position
 					dealerChip.moveTo(localDealerIndex);
 					
-					// update player chip amounts
+					
+					
+					// update player total chips
 					for (int i=0; i<8; i++) {
 							int localIndex = hostToLocalIndex(i);
 						if (gameState.player[i] != null) {
-							chipAmounts.setPlayerAmount(localIndex, gameState.player[i].totalChip);
+							int amount = gameState.player[i].totalChip;
+							chipAmounts.setPlayerAmount(localIndex, amount);
+							System.out.println("\tplayer "+i+" current bet: "+amount);
 						} else {
 							chipAmounts.setPlayerAmount(localIndex, 0);
 						}
 					}
 						
 					// update pot amounts
+					System.out.println("");
 					Host.GameSystem.Pot pot = gameState.potTotal;
 					for (int i=0; i<8; i++) {
 						if (pot != null) {
 							chipAmounts.setPotAmount(i, pot.totalPot);
+							System.out.println("\tpot "+i+": "+pot.totalPot);
 							pot = pot.splitPot;
 						} else {
 							chipAmounts.setPotAmount(i, 0);
@@ -497,21 +503,43 @@ public class OngoingMode extends TableMode {
 		drawInteractiveElements(container, g);
 	}
 
+	
 	private void drawLabels(Graphics g) {
+		if (gameState==null)
+			return;
+		
 		for (int i=0; i<8; ++i) {
-			if (playerNamesLocal[i] != null) {
-				if (i==0)
-					drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
-				else if (i==1)
-					drawPlayerLabel(g, i, "Fold", Color.white, foldLabelColor);
-				else if (i==2)
-					drawPlayerLabel(g, i, "Raise $9999", Color.white, raiseLabelColor);
-				else if (i==3)
-					drawPlayerLabel(g, i, "Call", Color.white, checkLabelColor);
-				else if (i==4)
-					drawPlayerLabel(g, i, "All in", Color.white, allInLabelColor);
-				else if (i==5)
-					drawPlayerLabel(g, i, "Thinking...", Color.white, thinkingLabelColor);
+			if (gameState.player[i] != null) {
+				
+				int localIndex = hostToLocalIndex(i);
+				
+				if (i==gameState.whoseTurn) {
+					drawPlayerLabel(g, localIndex, "Thinking...", Color.white, thinkingLabelColor);
+					continue;
+				}
+				else {
+					
+					int betAmount = gameState.player[i].betAmount;
+					
+					UserAction lastAction = gameState.player[i].latestAction;
+					if (lastAction!=null) {
+						switch (lastAction.action) {
+						case CHECK_CALL:
+							drawPlayerLabel(g, localIndex, "Call $"+betAmount, Color.white, checkLabelColor);
+							break;
+						case FOLD:
+							drawPlayerLabel(g, localIndex, "Fold", Color.white, foldLabelColor);
+							break;
+						case RAISE_BET:
+							drawPlayerLabel(g, localIndex, "Raise $"+betAmount, Color.white, raiseLabelColor);
+							break;
+						default:
+							drawPlayerLabel(g, localIndex, "All in $"+betAmount, Color.white, allInLabelColor);
+							break;
+						}
+					}
+				
+				}
 			}
 		}
 	}

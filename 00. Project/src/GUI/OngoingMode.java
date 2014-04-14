@@ -349,7 +349,9 @@ public class OngoingMode extends TableMode {
 							/*
 							// put player bets into pot
 							for (int i=0; i<8; ++i) {
-								chipAmounts.addSendToQueue(amount, srcIsPlayer, srcIndex, destIsPlayer, destIndex, waitTime, removeFromQueueWhenComplete);
+								int localIndex = hostToLocalIndex(i);
+								chipAmounts.addSendToQueue(
+										player, srcIsPlayer, srcIndex, destIsPlayer, destIndex, waitTime, removeFromQueueWhenComplete);
 							}*/
 							
 							for (int i=0; i<3; ++i) {

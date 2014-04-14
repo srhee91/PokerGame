@@ -143,7 +143,11 @@ public class GameSystem{
 		Gamestate gamestate = new Gamestate();
 		
 		//gamestate.me = me;
-		gamestate.player = player;
+		gamestate.player = new Player[GameSystem.MAXPLAYER];
+		for(int i=0; i< GameSystem.MAXPLAYER; i++){
+			if(player[i] == null)	gamestate.player[i] = null;
+			else gamestate.player[i] = new Player(player[i]);
+		}
 		gamestate.whoseTurn = whoseTurn;
 		gamestate.dealer = dealer;
 		gamestate.bigBlinder = bigBlinder;

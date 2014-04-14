@@ -122,12 +122,18 @@ public class Host{
 					UserAction ua = receiveUserAction();
 					updateAction(ua);
 
-				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1);
+				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1
+						&& game.potTotal.getCurrentPot().winnerByFold == -1);
 				
 				game.updateRound();
 				
 				//testing
 				game.potTotal.printPot();
+				
+				//special case handling
+				//if everyone folds
+				if(game.potTotal.getCurrentPot().winnerByFold != -1)
+					break;
 			}
 			game.updateHand();
 		}

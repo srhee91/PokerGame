@@ -10,6 +10,8 @@ public class Pot implements Serializable  {
 	public int totalPot;
 	public boolean playerInvolved[];
 	
+	public boolean winner[];
+	
 	//special case
 	public int winnerByFold;
 
@@ -36,8 +38,13 @@ public class Pot implements Serializable  {
 		totalPot = pot.totalPot;
 		winnerByFold = pot.winnerByFold;
 		playerInvolved = new boolean[pot.playerInvolved.length];
-		for (int i=0; i<playerInvolved.length; i++)
+		for (int i=0; i<GameSystem.MAXPLAYER; i++)
 			playerInvolved[i] = pot.playerInvolved[i];
+		
+		if(pot.winner!=null){
+			for(int i=0; i<GameSystem.MAXPLAYER; i++)
+				winner[i] = pot.winner[i];
+		}
 		
 		if (pot.splitPot!=null)
 			splitPot = new Pot(pot.splitPot);
@@ -111,30 +118,35 @@ public class Pot implements Serializable  {
 	{
 		if(splitPot != null)	splitPot.potToWinner(game);
 		
-		Card hands[][] = new Card[GameSystem.MAXPLAYER][2];
-		
-		for(int i=0; i<GameSystem.MAXPLAYER; i++){
-			if(playerInvolved[i])
-				hands[i] = game.player[i].hand;
-			else
-				hands[i] = null;
-		}
-		
-		boolean[] winner = (new Rank()).findWinner(game.flops, hands);
-		int winnerCount = 0;
-		
-		totalPot += game.leftover;
-		
-		for(int i=0; i<GameSystem.MAXPLAYER; i++){
-			if(winner[i]) winnerCount++;
-		}
-		for(int i=0; i<GameSystem.MAXPLAYER; i++)
-		{
-			if(winner[i]){
-				game.player[i].totalChip += (int) (totalPot/winnerCount);
+		if(winnerByFold == -1) {
+			Card hands[][] = new Card[GameSystem.MAXPLAYER][2];
+			
+			for(int i=0; i<GameSystem.MAXPLAYER; i++){
+				if(playerInvolved[i])
+					hands[i] = game.player[i].hand;
+				else
+					hands[i] = null;
 			}
+			
+			winner = (new Rank()).findWinner(game.flops, hands);
+			int winnerCount = 0;
+			
+			totalPot += game.leftover;
+			
+			for(int i=0; i<GameSystem.MAXPLAYER; i++){
+				if(winner[i]) winnerCount++;
+			}
+			for(int i=0; i<GameSystem.MAXPLAYER; i++)
+			{
+				if(winner[i]){
+					game.player[i].totalChip += (int) (totalPot/winnerCount);
+				}
+			}
+			game.leftover = totalPot%winnerCount;
 		}
-		game.leftover = totalPot%winnerCount;
+		else {
+			game.player[winnerByFold].totalChip += totalPot;
+		}
 	}
 	
 	public Pot getCurrentPot() {

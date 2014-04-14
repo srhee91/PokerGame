@@ -118,7 +118,7 @@ public class Host{
 					UserAction ua = receiveUserAction();
 					updateAction(ua);
 
-				}while(game.nextTurn() != game.highestBetter);
+				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1);
 				
 				game.updateRound();
 				game.potTotal.printPot();

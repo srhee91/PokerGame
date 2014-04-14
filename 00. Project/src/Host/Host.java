@@ -193,6 +193,7 @@ public class Host{
 		case FOLD:
 			game.player[game.whoseTurn].fold();
 			
+			//Special 
 			Pot currentPot = game.potTotal.getCurrentPot();
 			int numPlaying = 0;
 			for(int i=0; i<GameSystem.MAXPLAYER; i++){

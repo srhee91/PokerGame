@@ -80,7 +80,6 @@ public class GameSystem{
 	}
 	public void newRound(){
 		
-		flopState++;
 		highestBetter = nextTurn();
 
 		for(int i=0; i<MAXPLAYER; i++)
@@ -88,10 +87,14 @@ public class GameSystem{
 	}
 	
 	public void updateRound(){
+		
 		potTotal.gatherPots(player, highestBet);
 		
 		highestBet = 0;
 		whoseTurn = dealer;
+		
+		flopState++;
+
 	}
 	public void updateHand(){
 

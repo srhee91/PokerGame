@@ -159,32 +159,42 @@ public class HostTestInText {
 							System.out.println("Player "+k+":\n" + game.player[k]);
 						}
 					}
-
-					System.out.println("It's player " + game.whoseTurn +"'s turn!");
-					System.out.print("Fold=0 Call=1 Bet=2\n:");
+					//if(game.whoseTurn!=-1){
+						System.out.println("It's player " + game.whoseTurn +"'s turn!");
+						System.out.print("Fold=0 Call=1 Bet=2\n:");
+					//}
+					//else if(game.whoseTurn==-1){
+						
+					//}
 					//Scanner s = new Scanner(System.in);
 					//int input = s.nextInt();
 					//random input generation
 					int input = generator.nextInt(3);
-					
+					if(input==0){
+						input=1;
+					}
 					System.out.println(input);
-					if(game.player[game.whoseTurn].totalChip<game.highestBet){
+					if(game.player[game.whoseTurn].totalChip<game.highestBet&&game.player[game.whoseTurn].totalChip==0){
 						input=1;
 					}
 					if(input == 0){
 						System.out.println("player count = "+player_count);
 						System.out.println("player count 2  = "+game.playerCount());
 						if(player_count==game.playerCount()){
-							input=1;
+							System.out.println("input = 1");
+							input=3;
 						}else{
-						game.player[game.whoseTurn].fold();
-						player_count++;
+						//	if(game.player[game.whoseTurn].totalChip!=0){
+							System.out.println("can fold");
+								game.player[game.whoseTurn].fold();
+								player_count++;
+							//}
 						}
 						//if every1 folds the hand ends
 						//
 					}
 					else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
-					else {
+					else if(input == 2){
 						System.out.print("How much you want to bet? :");
 						int whileloop=0;
 						
@@ -210,9 +220,9 @@ public class HostTestInText {
 							game.highestBetter = game.whoseTurn;
 							game.highestBet = input;
 						}
-						else{
-							
-						}
+					}
+					else{
+						
 					}
 					//TEST V_02!!//
 					

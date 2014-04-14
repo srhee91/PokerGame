@@ -173,7 +173,6 @@ public class Host{
 //		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
 //		game.highestBet = betAmount;
 //		game.player[game.whoseTurn].fold();
-
 		
 		switch (ua.action) {
 		case CHECK_CALL:
@@ -187,9 +186,9 @@ public class Host{
 			game.highestBetter = game.whoseTurn;
 			game.highestBet = ua.raiseAmount;
 			break;
-		case START_GAME:
-			break;
 		}
+		
+		game.player[game.whoseTurn].latestAction = ua;
 	}
 	
 	

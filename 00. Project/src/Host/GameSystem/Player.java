@@ -2,12 +2,17 @@ package Host.GameSystem;
 
 import java.io.Serializable;
 
+import Network.UserAction;
+
+
 public class Player implements Serializable {
 
 	public int hand_rank = 0;
 	public Card hand[];
 	public int totalChip;
 	public int betAmount;
+	
+	public UserAction latestAction;
 	
 	public boolean hasFolded, hasLeft;
 	public int count;

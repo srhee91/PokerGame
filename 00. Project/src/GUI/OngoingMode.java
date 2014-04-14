@@ -638,8 +638,14 @@ public class OngoingMode extends TableMode {
 			cards.draw();
 		}
 		
+				
 		drawLabels(g);
 		drawInteractiveElements(container, g);
+		
+		
+		popupRaiseInvalid.render(container, g);
+		popupAllInConfirm.render(container, g);
+		popupLostGame.render(container, g);
 	}
 
 	

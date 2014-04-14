@@ -32,7 +32,12 @@ public class Player implements Serializable {
 		}
 		totalChip = player.totalChip;
 		betAmount = player.betAmount;
-		latestAction = new UserAction(player.latestAction.action, player.latestAction.raiseAmount);
+		
+		if (player.latestAction==null)
+			latestAction = null;
+		else
+			latestAction = new UserAction(player.latestAction.action, player.latestAction.raiseAmount);
+		
 		hasFolded = player.hasFolded;
 		hasLeft = player.hasLeft;
 		count = player.count;

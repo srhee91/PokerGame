@@ -26,6 +26,21 @@ public class Pot implements Serializable  {
 		for(int i=0; i< GameSystem.MAXPLAYER; i++){	playerInvolved[i] = true;	}
 	}
 	
+	
+	public Pot(Pot pot) {
+		totalPot = pot.totalPot;
+		playerInvolved = new boolean[pot.playerInvolved.length];
+		for (int i=0; i<playerInvolved.length; i++)
+			playerInvolved[i] = pot.playerInvolved[i];
+		
+		if (pot.splitPot!=null) {
+			splitPot = new Pot(pot.splitPot);
+		} else {
+			splitPot = null;
+		}		
+	}
+	
+	
 	//gathersPots at the end of each round
 	//parameter player[] is the array of players. 
 	public void gatherPots(Player player[], int highestBet) {

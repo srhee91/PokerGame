@@ -68,10 +68,13 @@ public class OngoingMode extends TableMode {
 	
 	
 	// game state flags
+	/*
 	private boolean playerCardsDealt = false;
 	private boolean flopDealt = false;
 	private boolean turnDealt = false;
 	private boolean riverDealt = false;
+	*/
+	private int lastFlopState;
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game)throws SlickException {
@@ -210,6 +213,8 @@ public class OngoingMode extends TableMode {
 		for (int i=0; i<8; ++i) {
 			playerNamesLocal[i] = null;
 		}
+		
+		lastFlopState = 3;
 	}
 	
 	protected void setPlayerNamesLocal(String[] names) {
@@ -304,12 +309,21 @@ public class OngoingMode extends TableMode {
 					}
 					
 					
+					// enable/disable buttons based on if it's our turn
+					if (gameState.whoseTurn==GUI.playerIndexInHost) {
+						setButtonsEnable(true); 
+					} else {
+						setButtonsEnable(false); 
+					}
+	
+// FLOPSTATE PROCESSING --------------------------------------------------------------------------------------
+					
 					switch (gameState.flopState) {
 					
 					case 0:
 						
 						// deal if cards haven't been dealt
-						if (!playerCardsDealt) {
+						if (lastFlopState == 3) {
 							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
 							
 							for(int i=0; i<8; i++) {
@@ -320,10 +334,9 @@ public class OngoingMode extends TableMode {
 							cards.playerCards[0][0].setFaceImage(hand[0]);
 							cards.playerCards[0][1].setFaceImage(hand[1]);
 							
+							cards.resetCards();
 							cards.dealCards(hostToLocalIndex(hostDealerIndex), playerNamesLocal);
 							cards.showPlayerCards(0);
-							
-							playerCardsDealt = true;
 						}
 						else {
 							
@@ -332,16 +345,17 @@ public class OngoingMode extends TableMode {
 						
 					case 1:
 						
-						if (!flopDealt) {
-							
+						if (lastFlopState==0) {
+							/*
+							// put player bets into pot
+							for (int i=0; i<8; ++i) {
+								chipAmounts.addSendToQueue(amount, srcIsPlayer, srcIndex, destIsPlayer, destIndex, waitTime, removeFromQueueWhenComplete);
+							}*/
 							
 							for (int i=0; i<3; ++i) {
 								cards.centerCards[i].setFaceImage(flop[i]);
 							}
-							
 							cards.dealFlop();
-							
-							flopDealt = true;
 						}
 						else {
 							
@@ -349,29 +363,18 @@ public class OngoingMode extends TableMode {
 						break;
 					case 2:
 						
-						if (!turnDealt) {
-							
-	
-							cards.centerCards[3].setFaceImage(flop[3]);
-	
-							
+						if (lastFlopState==1) {
+							cards.centerCards[3].setFaceImage(flop[3]);							
 							cards.dealTurn();
-							
-							turnDealt = true;
 						}
 						else {
 							
 						}
 						break;
 					case 3:
-						
-						if (!riverDealt) {
+						if (lastFlopState==2) {
 							cards.centerCards[4].setFaceImage(flop[4]);
-	
-							
 							cards.dealRiver();
-							
-							riverDealt = true;
 						}
 						else {
 							
@@ -379,15 +382,17 @@ public class OngoingMode extends TableMode {
 						break;
 					}
 					
-					
-					if (gameState.whoseTurn==GUI.playerIndexInHost) {
-						setButtonsEnable(true); 
-					} else {
-						setButtonsEnable(false); 
-					}
+
 					
 					
-				} else {
+					
+					lastFlopState = gameState.flopState;
+					
+					
+					
+				}	// END GAMESTATE PROCESSING
+				
+				else {
 					System.out.println("unexpected object type received in OngoingMode");
 				}
 			}

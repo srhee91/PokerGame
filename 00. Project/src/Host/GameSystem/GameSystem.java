@@ -156,7 +156,7 @@ public class GameSystem{
 		gamestate.smallBlinder = smallBlinder;
 		gamestate.flops = flops;
 		gamestate.flopState = flopState;
-		gamestate.potTotal = potTotal;
+		gamestate.potTotal = new Pot(potTotal);
 		gamestate.highestBet = highestBet;
 		gamestate.leftover = leftover;
 		

@@ -289,6 +289,10 @@ public class OngoingMode extends TableMode {
 		}
 		
 		lastFlopState = 3;
+		
+		
+		checkButtonString = "Check";
+		raiseButtonString = "Bet";
 	}
 	
 	protected void setPlayerNamesLocal(String[] names) {

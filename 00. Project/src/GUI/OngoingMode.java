@@ -456,6 +456,22 @@ public class OngoingMode extends TableMode {
 					lastFlopState = gameState.flopState;
 					
 					
+					
+					// update pot amounts
+					System.out.println("");
+					Host.GameSystem.Pot pot = gameState.potTotal;
+					for (int i=0; i<8; i++) {
+						if (pot != null) {
+							chipAmounts.setPotAmount(i, pot.totalPot);
+							System.out.println("\tpot "+i+": "+pot.totalPot);
+							pot = pot.splitPot;
+						} else {
+							chipAmounts.setPotAmount(i, 0);
+						}
+					}
+					
+					
+					
 				}	// END GAMESTATE PROCESSING
 				
 				else {
@@ -504,19 +520,7 @@ public class OngoingMode extends TableMode {
 		}
 		*/
 		
-		// update pot amounts
-		System.out.println("");
-		Host.GameSystem.Pot pot = gameState.potTotal;
-		for (int i=0; i<8; i++) {
-			if (pot != null) {
-				chipAmounts.setPotAmount(i, pot.totalPot);
-				System.out.println("\tpot "+i+": "+pot.totalPot);
-				pot = pot.splitPot;
-			} else {
-				chipAmounts.setPotAmount(i, 0);
-			}
-		}
-		
+				
 		
 		// update all cards
 		cards.update(delta);

@@ -5,6 +5,7 @@ import java.util.*;
 import GameState.*;
 import GameState.Gamestate;
 import Host.GameSystem.GameSystem;
+import Host.GameSystem.Pot;
 import Network.*;
 
 
@@ -106,15 +107,17 @@ public class Host{
 		
 		//each hand
 		while(game.playerCount() > 1){
+			
 			game.newHand();
 			
 			//each round
 			for(int i=0; i<4; i++){
-				game.flopState = i;
-				game.highestBetter = game.nextTurn();
+
+				game.newRound();
 				
 				//each turn
 				do{
+
 					sendGameState();
 					UserAction ua = receiveUserAction();
 					updateAction(ua);
@@ -122,6 +125,8 @@ public class Host{
 				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1);
 				
 				game.updateRound();
+				
+				//testing
 				game.potTotal.printPot();
 			}
 			game.updateHand();
@@ -182,22 +187,38 @@ public class Host{
 	
 	public void updateAction(UserAction ua){
 		//bet/fold/call/raise...
-//		if(action)?
-//		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
-//		game.highestBet = betAmount;
-//		game.player[game.whoseTurn].fold();
-		
+
 		switch (ua.action) {
+		
+		case FOLD:
+			game.player[game.whoseTurn].fold();
+			
+			Pot currentPot = game.potTotal.getCurrentPot();
+			int numPlaying = 0;
+			for(int i=0; i<GameSystem.MAXPLAYER; i++){
+				if(currentPot.playerInvolved[i] && !game.player[i].hasFolded){
+					numPlaying++;
+					currentPot.winnerByFold = i;
+				}
+			}
+			if(numPlaying > 1){
+				currentPot.winnerByFold = -1;
+			}
+			
+			break;
+		
 		case CHECK_CALL:
 			game.player[game.whoseTurn].bet(ua.raiseAmount);
 			break;
-		case FOLD:
-			game.player[game.whoseTurn].fold();
-			break;
+		
 		case RAISE_BET:
 			game.player[game.whoseTurn].bet(ua.raiseAmount);
 			game.highestBetter = game.whoseTurn;
 			game.highestBet = ua.raiseAmount;
+			break;
+			
+		case START_GAME:
+		default:
 			break;
 		}
 		

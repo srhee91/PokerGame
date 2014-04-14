@@ -25,5 +25,6 @@ public class Gamestate implements Serializable {
 	public Pot potTotal;
 	public int highestBet;	
 	
-	public int leftover;	
+	public int blind;
+	public int leftover;
 }

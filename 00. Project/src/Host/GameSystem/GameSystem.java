@@ -27,7 +27,6 @@ public class GameSystem{
 	public int leftover;
 	
 	
-	
 	public GameSystem() {
 		
 		player = new Player[MAXPLAYER];
@@ -66,12 +65,8 @@ public class GameSystem{
 		deck = new Deck();
 		deck.shuffle();
 		
-		for(int i=0; i<MAXPLAYER; i++){
-			if(player[i] != null){
-				player[i].dealHands(deck.drawHands());
-				player[i].latestAction = null;
-			}
-		}
+		for(int i=0; i<MAXPLAYER; i++)
+			if(player[i] != null)	player[i].dealHands(deck.drawHands());
 		
 		flops = deck.drawFlops();
 		potTotal = new Pot(leftover);
@@ -80,6 +75,16 @@ public class GameSystem{
 		whoseTurn = dealer;
 		highestBet = blind;
 		initBlinds();
+		
+		flopState = 0;
+	}
+	public void newRound(){
+		
+		flopState++;
+		highestBetter = nextTurn();
+
+		for(int i=0; i<MAXPLAYER; i++)
+			if(player[i] != null)	player[i].latestAction = null;
 	}
 	
 	public void updateRound(){
@@ -90,8 +95,7 @@ public class GameSystem{
 	}
 	public void updateHand(){
 
-		//find winner
-		//pot to winner
+		//find and give pot to winner
 		potTotal.potToWinner(this);
 		
 		for(int i=0; i<MAXPLAYER; i++){
@@ -161,6 +165,7 @@ public class GameSystem{
 		gamestate.flopState = flopState;
 		gamestate.potTotal = new Pot(potTotal);
 		gamestate.highestBet = highestBet;
+		gamestate.blind = blind;
 		gamestate.leftover = leftover;
 		
 		return gamestate;

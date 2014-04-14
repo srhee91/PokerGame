@@ -9,35 +9,40 @@ public class Pot implements Serializable  {
 	public Pot splitPot;
 	public int totalPot;
 	public boolean playerInvolved[];
+	
+	//special case
+	public int winnerByFold;
 
 	//Constructor
 	public Pot() {
 		totalPot = 0;
 		splitPot = null;
+		winnerByFold = -1;
 		
 		playerInvolved = new boolean[GameSystem.MAXPLAYER];
-		for(int i=0; i< GameSystem.MAXPLAYER; i++){	playerInvolved[i] = true;	}
+		for(int i=0; i< GameSystem.MAXPLAYER; i++)	playerInvolved[i] = true;
 	}
 	public Pot(int leftover) {
 		totalPot = leftover;
 		splitPot = null;
+		winnerByFold = -1;
 		
 		playerInvolved = new boolean[GameSystem.MAXPLAYER];
-		for(int i=0; i< GameSystem.MAXPLAYER; i++){	playerInvolved[i] = true;	}
+		for(int i=0; i< GameSystem.MAXPLAYER; i++)	playerInvolved[i] = true;
 	}
 	
-	
+	//copy constructor
 	public Pot(Pot pot) {
 		totalPot = pot.totalPot;
+		winnerByFold = pot.winnerByFold;
 		playerInvolved = new boolean[pot.playerInvolved.length];
 		for (int i=0; i<playerInvolved.length; i++)
 			playerInvolved[i] = pot.playerInvolved[i];
 		
-		if (pot.splitPot!=null) {
+		if (pot.splitPot!=null)
 			splitPot = new Pot(pot.splitPot);
-		} else {
+		else
 			splitPot = null;
-		}		
 	}
 	
 	
@@ -132,6 +137,10 @@ public class Pot implements Serializable  {
 		game.leftover = totalPot%winnerCount;
 	}
 	
+	public Pot getCurrentPot() {
+		if(splitPot == null)	return this;
+		else					return splitPot.getCurrentPot();
+	}
 	public void printPot()
 	{
 		if(splitPot != null)	splitPot.printPot();

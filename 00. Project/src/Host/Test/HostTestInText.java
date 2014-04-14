@@ -19,74 +19,17 @@ import java.util.Random;
 //   - uses methods in GameSystem
 public class HostTestInText {
 	
-	// for communicating with hmh
-	public boolean isWaiting = false;
-	public String objSender;
-	public Object objReceived;
-	
-	
-	public HostBroadcaster hb;
-	public HostMessageHandler hmh;
-	
 	public GameSystem game;
 	public Player player;
 	
 	public int playerCount;
 	public int playerLeftCount;
 	public String players[];
-	
-	
-	public int port;
-	
-	public String hostname;
-	
+		
 	public HostTestInText(){
 		playerCount = 4;
 	}
-			
-	
-	public void waitForHostClientConnection() {
-		// wait for connection from host client
-		while (hmh.getConnectedPlayerNames().isEmpty());
-		hostname = hmh.lastJoinedPlayer;
-		System.out.println("Host client has joined: "+hostname);
-	}
-	
-	public void createBroadcaster(){
-		hb = new HostBroadcaster(port-1, hostname);
-	}
-	
-	
-	public void waitToStart(){
-		//wait to be started by hostplayer
-		
-		// wait for start msg from host client
-		while (true) {
-			receiveObject();
-			if (objSender.equals(hostname) &&
-					objReceived instanceof String &&
-					((String)objReceived).equals("start")) {
-				break;
-			}
-		}
-		
-		hmh.sendAll("start");
-	}
-	
-	
-
-	public void receiveObject(){
-		try {
-			synchronized(this){
-				isWaiting = true;
-				this.wait();
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
+					
 	/************** Game Flow **************/
 	//each game
 	//1. players, table created
@@ -137,11 +80,7 @@ public class HostTestInText {
 				//TEST TEST TEST// V_01
 
 				//each turn
-				do{
-//					sendGameState();
-//					UserAction ua = receiveUserAction();
-//					updateAction(ua);
-					
+				do{					
 					//TEST V_02!!//
 					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFlops :");
 					
@@ -257,69 +196,7 @@ public class HostTestInText {
 		//losers will just become a spectator without any notification
 		//celebrateWinner();
 	}
-	
-	
-	
-	
-	
-	public void sendGameState(){
-		//send "game.getGamestate();"  <- this will be an object of "Gamestate"
-		//to every player "game.player[]" (you have to check if player!=null)
-		/*
-		for(int i=0; i<GameSystem.MAXPLAYER; i++){
 		
-			if(game.player[i] != null){
-				game.getGamestate(i);
-				
-			}
-		
-		}*/
-		
-		hmh.sendAll(game.getGamestate());	
-	}
-	
-	
-
-	public UserAction receiveUserAction() {
-		String playerName = players[game.whoseTurn];
-		while (true) {
-			receiveObject();
-			if (objSender.equals(playerName) &&
-					objReceived instanceof UserAction) {
-				break;
-			}
-		}
-		UserAction ret = (UserAction)objReceived;
-		System.out.println("action received: "+ret.action.name());
-		return ret;
-	}
-	
-	
-	public void updateAction(UserAction ua){
-		//bet/fold/call/raise...
-//		if(action)?
-//		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
-//		game.highestBet = betAmount;
-//		game.player[game.whoseTurn].fold();
-
-		
-		switch (ua.action) {
-		case CHECK_CALL:
-			game.player[game.whoseTurn].bet(ua.raiseAmount);
-			break;
-		case FOLD:
-			game.player[game.whoseTurn].fold();
-			break;
-		case RAISE_BET:
-			game.player[game.whoseTurn].bet(ua.raiseAmount);
-			game.highestBetter = game.whoseTurn;
-			game.highestBet = ua.raiseAmount;
-			break;
-		case START_GAME:
-			break;
-		}
-	}
-	
 	public void random_testing(){
 		
 	}
@@ -327,56 +204,8 @@ public class HostTestInText {
 	//main method - a process created by Poker.java or GUI
 	public static void main(String args[]){
 
-		// start host, hostmessagehandler, hostbroadcaster
-		HostTestInText host = new HostTestInText();//for testV24321);
-		
-		//host.hostname = "test_hostname";
-		//host.createBroadcaster();
-		
-		// wait for connection from client who started this host
-//for testV2		host.waitForHostClientConnection();
-		
-		// start broadcaster
-//for testV2		host.createBroadcaster();
-		
-		// wait for start msg from host client
-//for testV2		host.waitToStart();
-		
-		
-//for testV2		host.hb.close();
-		
-		
+		HostTestInText host = new HostTestInText();		
+
 		host.startGame();	
-		//host.endGame();
-		 
-		
-		
-		
-		/*
-		while (true) {
-			
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-			}
-			host.hmh.removeDeadConnections();
-			System.out.println("\n\nConnected players:");
-			for (String s : host.hmh.getConnectedPlayerNames())
-				System.out.println(s);
-		}
-		*/
-		
-		// wait for players to join, wait for start-game message from client 0
-		
-		
-		
-		// close broadcaster when game starts
-		//host.hb.close();
-		
-		// close hostmessagehandler last
-		//host.hmh.close();
-		
-		
-		
 	}	
 }

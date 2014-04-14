@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import Poker.Poker.PlayerAction;
 
 public class HostMessageHandler {
 	
@@ -35,6 +36,8 @@ public class HostMessageHandler {
 	private Thread hostThread;	// will be notified when object is received
 	private ServerSocket server=null;
 	private int port;
+	protected String allowedPlayer=null;
+	protected Timer nowTimer;
 	
 	private Listening listeningThread = null;
 	
@@ -50,6 +53,8 @@ public class HostMessageHandler {
 		this.port=port;
 		this.host=host;
 		this.hostThread=hostThread;
+		allowedPlayer=null;
+		
 		try{
 			server=new ServerSocket(port);
 			System.out.println("Host is Listening on port ["+port+"] Waiting for client to connect...");
@@ -149,11 +154,7 @@ public class HostMessageHandler {
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
 							+port+"] as client "+playerName);
 					
-					
-					
-					
 					host.players[host.playerCount++] = playerName;
-					
 					
 					sendAll(host.players.clone());
 					
@@ -188,6 +189,9 @@ public class HostMessageHandler {
 				try{
 					Object ac;
 					ac=myois.readObject();
+					//if ((ac instanceof UserAction)&&(playerName!=allowedPlayer)) continue;
+					//nowTimer.cancel();
+					//allowedPlayer=null;
 					host.objReceived=ac;
 					if (host.isWaiting) {
 						synchronized(host){
@@ -210,13 +214,34 @@ public class HostMessageHandler {
 	}
 	
 	
-	
+	class autoResponse extends TimerTask{
+		public void run() {
+			nowTimer.cancel();
+			UserAction ac=new UserAction(UserAction.Action.FOLD,0);
+			host.objReceived=ac;
+			if (host.isWaiting) {
+				synchronized(host){
+					host.isWaiting = false;
+					host.objSender = allowedPlayer;
+					host.notify();
+				}
+			}	
+			allowedPlayer=null;
+		}
+		
+	}
 	
 	
 	
 	// call this function will send game state to specific client,
 	// which are arguments
 	public synchronized void send(String playerName, Object ob){
+		/*int turn=((GameState.Gamestate)ob).whoseTurn;
+		allowedPlayer=host.players[turn];
+		
+		nowTimer=new Timer();
+		nowTimer.schedule(new autoResponse(), 3000);*/
+		
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;
 		try{
 			oos.writeObject(ob);

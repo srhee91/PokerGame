@@ -254,6 +254,8 @@ public class OngoingMode extends TableMode {
 										raiseTextField.setText(""+gameState.player[GUI.playerIndexInHost].totalChip);
 										setButtonsEnable(false);
 										popupAllInConfirm.setVisible(raiseButton);
+									} else {
+										GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, raiseAmount));
 									}
 									
 								} else {
@@ -262,7 +264,7 @@ public class OngoingMode extends TableMode {
 									popupRaiseInvalid.setMessageString("No raise amount entered!");
 									popupRaiseInvalid.setVisible(raiseButton);
 								}
-								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, raiseAmount));
+								
 							}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
@@ -471,8 +473,8 @@ public class OngoingMode extends TableMode {
 					}
 					
 					
-					
-				}	// END GAMESTATE PROCESSING
+	// END GAMESTATE PROCESSING ---------------------------------	-----
+				}	
 				
 				else {
 					System.out.println("unexpected object type received in OngoingMode");

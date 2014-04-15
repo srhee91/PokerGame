@@ -14,8 +14,8 @@ public class PopupPromptTwoButtons extends PopupMessageTwoButtons{
 
 
 	//private final int[] messageStringOffset = {500, 75};
-	private static final int[] textFieldOffset = {350, 110};
-	private static final int[] textFieldSize = {300, 45};
+	private static final int[] textFieldOffset = {280, 110};
+	private static final int[] textFieldSize = {440, 45};
 
 	
 	private static final TrueTypeFont textFieldFont =

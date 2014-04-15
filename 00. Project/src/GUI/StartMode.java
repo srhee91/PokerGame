@@ -130,7 +130,7 @@ public class StartMode extends Mode
 						setMenuEnable(true);
 					}
 				});
-		popupEnterName.setMaxLength(10);
+		popupEnterName.setMaxLength(16);
 		
 		
 		

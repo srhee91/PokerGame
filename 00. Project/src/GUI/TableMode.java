@@ -67,6 +67,12 @@ public class TableMode extends Mode {
 		
 	}
 	
+	protected int hostToLocalIndex(int hostIndex) {
+		return (hostIndex + 8 - GUI.playerIndexInHost) % 8;
+	}
+	protected int localToHostIndex(int localIndex) {
+		return (localIndex + GUI.playerIndexInHost) % 8;
+	}
 	
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {

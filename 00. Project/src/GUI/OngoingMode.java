@@ -31,13 +31,15 @@ public class OngoingMode extends TableMode {
 	private final int[] mainRaiseTextFieldOffset = {340, 35};
 	private final int[] mainChipAmountOffset = {37, -30};
 	private final int[] mainDealerChipOffset = {7, -30};
-	
+	private final int[] mainTotalAmountOffset = {10, 15};		// added (center-left align)
 	
 	private final int[][] playerCardOffsets = {{7, 32}, {89, 32}};
 	private final int[] playerChipAmountOffset = {72, 145};
 	private final int[] playerDealerChipOffset = {42, 145};
+	private final int[] playerTotalAmountOffset = {7, 15};		// added (center-left align)
+	protected final int playerNameOffset[] = {163, 15};			// added, overloads. (center-right align)
 	
-	private final Color winnerLabelColor = new Color(212, 65, 238, 242);
+	//private final Color winnerLabelColor = new Color(212, 65, 238, 242);
 	private final Color thinkingLabelColor = new Color(128, 128, 128, 242);
 	private final Color foldLabelColor = new Color(206, 0, 0, 242);
 	private final Color raiseLabelColor = new Color(92, 184, 17, 242);
@@ -58,37 +60,29 @@ public class OngoingMode extends TableMode {
 	private DealerChip dealerChip;
 
 	private TrueTypeFont infoFontBig;
-	
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont allInButtonFont;
-	
-	
-	private String checkButtonString;	// changes between check or call
-	private String raiseButtonString;	// changes between bet and raise
-
+	private TrueTypeFont totalAmountFont;		// added
 	
 	Button foldButton;
 	Button checkButton;
 	Button raiseButton;
 	Button allInButton;
-	
 	RaiseTextField raiseTextField;
 
+	private String checkButtonString;	// changes between check or call
+	private String raiseButtonString;	// changes between bet and raise
+
+	
 	
 	private String[] playerNamesLocal;
 	
 	private Gamestate prevGameState;
 	private Gamestate gameState;
 	
-	
-	// game state flags
-	/*
-	private boolean playerCardsDealt = false;
-	private boolean flopDealt = false;
-	private boolean turnDealt = false;
-	private boolean riverDealt = false;
-	*/
 	private int lastFlopState;
+	
+	
 	
 	@Override
 	public void init(GameContainer container, final StateBasedGame game)throws SlickException {
@@ -99,7 +93,7 @@ public class OngoingMode extends TableMode {
 		infoFontBig = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 26), true);
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
-
+		totalAmountFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);
 		
 		// initialize cards
 		int[][][] playerCardPositions = new int[8][2][2];
@@ -303,9 +297,6 @@ public class OngoingMode extends TableMode {
 	}
 	
 	
-	private int hostToLocalIndex(int hostIndex) {
-		return (hostIndex + 8 - GUI.playerIndexInHost) % 8;
-	}
 	
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
@@ -638,6 +629,7 @@ public class OngoingMode extends TableMode {
 		
 				
 		drawLabels(g);
+		drawTotalAmounts(g);
 		drawInteractiveElements(container, g);
 		
 		
@@ -646,6 +638,26 @@ public class OngoingMode extends TableMode {
 		popupLostGame.render(container, g);
 	}
 
+	
+	
+	private void drawTotalAmounts(Graphics g) {
+		for (int i=0; i<8; i++) {
+			Player player = gameState.player[localToHostIndex(i)];
+			if (player != null) {
+				if (i==0) {
+					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,
+							"$"+player.totalChip,
+							mainPanelPosition[0]+mainTotalAmountOffset[0],
+							mainPanelPosition[1]+mainTotalAmountOffset[1]);
+				} else {
+					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,
+							"$99999",//+player.totalChip,
+							playerPanelPositions[i][0]+playerTotalAmountOffset[0],
+							playerPanelPositions[i][1]+playerTotalAmountOffset[1]);
+				}
+			}
+		}
+	}
 	
 	private void drawLabels(Graphics g) {
 		if (gameState==null)
@@ -703,12 +715,14 @@ public class OngoingMode extends TableMode {
 	
 	private void drawPlayerNames(Graphics g) {
 
-		GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[0], mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[0],
+				mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
 			if (playerNamesLocal[i] != null) {
-				GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[i], playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringRightCenter(g, infoFont, Color.white, playerNamesLocal[i],
+						playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 			}
 		}

@@ -17,7 +17,7 @@ import Network.HostSearcher;
 public class JoinMode extends Mode {
 
 	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS"};//, "PLAYERS"};
-	private final int[] joinListColumnWidths = {220, 180};//, 120};
+	private final int[] joinListColumnWidths = {270, 180};//, 120};
 	
 	private final String nameTakenString = "The entered player name is already being used.";
 	private final String failedJoinString = "Selected game lobby is no longer availabe.";

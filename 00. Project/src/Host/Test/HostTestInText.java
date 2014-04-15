@@ -5,6 +5,7 @@ import java.util.*;
 import GameState.*;
 import Host.GameSystem.GameSystem;
 import Host.GameSystem.Player;
+import Host.GameSystem.Pot;
 import Network.*;
 
 import java.util.Random;
@@ -186,10 +187,30 @@ public class HostTestInText {
 //						else						System.out.println("Player "+k+" Does not exist.");
 					//TEST TEST TEST// V_01
 
-				}while(game.nextTurn() != game.highestBetter && game.whoseTurn!= -1);
+				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1
+						&& game.potTotal.getCurrentPot().winnerByFold == -1);
 				
 				game.updateRound();
+				
+				//testing
 				game.potTotal.printPot();
+				
+				/*special case handling*/
+				//if everyone folds
+				if(game.potTotal.getCurrentPot().winnerByFold != -1)
+					break;
+				
+				//if everyone went all in in current pot
+				Pot currentPot = game.potTotal.getCurrentPot();
+				int notAllIn = 0;
+				for(int j=0; j<GameSystem.MAXPLAYER; j++)
+					if(currentPot.playerInvolved[i] && !game.player[i].isAllIn())
+						notAllIn++;
+				
+				if(notAllIn <= 1){
+					game.showdown = true;
+					break;
+				}
 			}
 			game.updateHand();
 		}

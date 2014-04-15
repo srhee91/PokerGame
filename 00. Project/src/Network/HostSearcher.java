@@ -30,7 +30,7 @@ public abstract class HostSearcher {
 		IP3=byteToInt(myIP.getAddress()[2]);
 
 		
-		for(int i=0;i<255;i++) IP4[i]=null;
+		for(int i=0;i<255;i++) IP4[i]="";
 		stop=false;
 		checkAvailable();
 		
@@ -48,7 +48,7 @@ public abstract class HostSearcher {
 		
 		
 		for (int i=0;i<255;i++){
-			//if (IP4[i]!=null)
+			if (IP4[i]!=null)
 				new CheckThread(i).start();
 		}
 	}
@@ -83,7 +83,6 @@ public abstract class HostSearcher {
 
 class CheckThread extends Thread{	// 255 of these; sends out IP address
 	int i;
-	Object mutex=new Object();
 	public CheckThread(int i){
 		this.i=i;
 	}
@@ -100,11 +99,11 @@ class CheckThread extends Thread{	// 255 of these; sends out IP address
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
-		synchronized(mutex){
+		synchronized(HostSearcher.IP4[i]){
 			HostSearcher.IP4[i]=null;
 			DatagramPacket packet=null;
 			try {
-				packet=new DatagramPacket(IP,1,InetAddress.getByAddress(IP), HostSearcher.port);
+				packet=new DatagramPacket(IP,0,InetAddress.getByAddress(IP), HostSearcher.port);
 				socket.send(packet);
 			} catch(Exception e){
 				e.printStackTrace();

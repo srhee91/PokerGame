@@ -50,7 +50,7 @@ public class HostBroadcaster {
 				e.printStackTrace();
 			}
 			while(!HostBroadcaster.stop){
-				byte[] recvBuf = new byte[15];
+				byte[] recvBuf = new byte[5];
 		        DatagramPacket recvPacket = new DatagramPacket(recvBuf , recvBuf.length);
 				try {
 					socket.setSoTimeout(1000);
@@ -75,7 +75,7 @@ public class HostBroadcaster {
 		}
 		public void run(){
 			while(!HostBroadcaster.stop){
-				for (byte i=2;i<3;i++){
+				for (byte i=1;i<255;i++){
 					new BroadcastThread(i,port).start();
 				}
 				try {

@@ -149,7 +149,7 @@ public class LobbyMode extends TableMode {
 					// update local players list
 					for (int i=0; i<8; ++i) {
 						 String name = playerNames[localToHostIndex(i)];
-						 if (i!=0 && name!=null && infoFont.getWidth(name)>100) {
+						 if (i!=0 && name!=null && infoFont.getWidth(name)>90) {
 							 name = name.substring(0,5)+"...";
 						 }
 						 playerNamesLocal[i] = name;

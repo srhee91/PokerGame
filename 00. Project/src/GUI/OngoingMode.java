@@ -579,7 +579,7 @@ public class OngoingMode extends TableMode {
 		allInButton.setEnable(enable);
 		raiseTextField.setEnable(enable);
 		
-		if (enable) {
+		if (enable && gameState!=null) {
 			
 			// update call/check label
 			int highestBet = gameState.highestBet;
@@ -641,6 +641,9 @@ public class OngoingMode extends TableMode {
 	
 	
 	private void drawTotalAmounts(Graphics g) {
+		if (gameState==null)
+			return;
+		
 		for (int i=0; i<8; i++) {
 			Player player = gameState.player[localToHostIndex(i)];
 			if (player != null) {

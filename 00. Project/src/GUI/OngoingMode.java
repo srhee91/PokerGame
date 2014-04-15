@@ -251,7 +251,9 @@ public class OngoingMode extends TableMode {
 										// must raise to above the highest bet
 										raiseTextField.setText("");
 										setButtonsEnable(false);
-										popupRaiseInvalid.setMessageString("Must raise to an amount above $"+gameState.highestBet);
+										popupRaiseInvalid.setMessageString(betOrRaise
+												? "Must bet an amount above $"+gameState.highestBet
+												: "Must raise to an amount above $"+gameState.highestBet);
 										popupRaiseInvalid.setVisible(raiseButton);
 									} else if (raiseAmount >= gameState.player[GUI.playerIndexInHost].totalChip) {
 										// assume this means all in, show all in popup 
@@ -268,7 +270,7 @@ public class OngoingMode extends TableMode {
 								} else {
 									// no amount entered
 									setButtonsEnable(false);
-									popupRaiseInvalid.setMessageString("No raise amount entered!");
+									popupRaiseInvalid.setMessageString("No amount entered!");
 									popupRaiseInvalid.setVisible(raiseButton);
 								}
 								
@@ -326,6 +328,16 @@ public class OngoingMode extends TableMode {
 		else if (container.getInput().isKeyPressed(Input.KEY_3))
 			game.enterState(3);
 		*/
+		
+		
+		// check if we're still connected to host
+		if (GUI.hostConnectionError_flag) {
+			GUI.hostConnectionError_flag = false;
+			setButtonsEnable(false);
+			popupHostConnectionLost.setVisible(null);
+		}
+		
+		
 		
 		// check for received gamestates from host
 		if (GUI.cmh != null) {
@@ -614,7 +626,7 @@ public class OngoingMode extends TableMode {
 		drawTotalAmounts(g);
 		drawInteractiveElements(container, g);
 		
-		
+		popupHostConnectionLost.render(container, g);
 		popupRaiseInvalid.render(container, g);
 		popupAllInConfirm.render(container, g);
 		popupLostGame.render(container, g);

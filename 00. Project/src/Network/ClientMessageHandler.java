@@ -106,8 +106,7 @@ public class ClientMessageHandler {
 					System.out.println("Lost connection to host!");
 					e.printStackTrace();
 					if (enable) {
-						GUI.lobbyMode.hostConnectionError_flag = true;
-						GUI.ongoingMode.hostConnectionError_flag = true;
+						GUI.hostConnectionError_flag = true;
 					}
 					break;
 				}

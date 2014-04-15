@@ -108,7 +108,8 @@ public class StartMode extends Mode
 							sht.start();
 							System.out.println("HostSetup thread started!");
 							
-							showPopupLoading(source);
+							setMenuEnable(false);
+							popupLoading.setVisible(source);
 						}
 						else if (source==(AbstractComponent)joinGameButton){
 							System.out.println("Player "+popupEnterName.getText()+" will join");
@@ -191,7 +192,8 @@ public class StartMode extends Mode
 					public void componentActivated(AbstractComponent source) {
 						
 						System.out.println("exit button pressed!");
-						showPopupConfirmExit(source);
+						setMenuEnable(false);
+						popupConfirmExit.setVisible(source);
 					}
 				});
 		//exitButton.setAlphaWhileDisabled(1.0f);
@@ -204,23 +206,11 @@ public class StartMode extends Mode
 		spectateGameButton.setEnable(enable);
 		exitButton.setEnable(enable);
 	}
-	private void showPopupFailedHost(AbstractComponent source) {
-		setMenuEnable(false);
-		popupFailedHost.setVisible(source);
-	}
-	private void showPopupLoading(AbstractComponent source) {
-		setMenuEnable(false);
-		popupLoading.setVisible(source);
-	}
+	
 	protected void showPopupEnterName(AbstractComponent source) {
 		setMenuEnable(false);
 		popupEnterName.setVisible(source);
 	}
-	private void showPopupConfirmExit(AbstractComponent source) {
-		setMenuEnable(false);
-		popupConfirmExit.setVisible(source);
-	}
-	
 	
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		/*
@@ -248,7 +238,8 @@ public class StartMode extends Mode
 					game.enterState(3);
 				} else if (startHostError_flag) {
 					popupLoading.setInvisible();
-					showPopupFailedHost(source);
+					setMenuEnable(false);
+					popupFailedHost.setVisible(source);
 				}
 			} else {
 				System.out.println("SOMETHING'S WRONG");

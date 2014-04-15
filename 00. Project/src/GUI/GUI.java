@@ -25,7 +25,7 @@ public class GUI extends StateBasedGame
 	
 	protected static String playerName;
 	protected static int playerIndexInHost = -1;
-	
+	public static boolean hostConnectionError_flag;
 	
 	public GUI(String name) {
 		super(name);		
@@ -34,6 +34,8 @@ public class GUI extends StateBasedGame
 	@Override
 	public void initStatesList(GameContainer container) throws SlickException
 	{
+		hostConnectionError_flag = false;
+		
 		startMode = new StartMode();
 		joinMode = new JoinMode();
 		lobbyMode = new LobbyMode();

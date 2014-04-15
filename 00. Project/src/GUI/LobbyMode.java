@@ -51,6 +51,8 @@ public class LobbyMode extends TableMode {
 		mainStatusFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 32), true);
 		startButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		
+	
+		
 		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig.png", 
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig_down.png",
 				mainPanelPosition[0]+mainStartButtonOffset[0],
@@ -109,6 +111,13 @@ public class LobbyMode extends TableMode {
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
 		*/
+		
+		// check if we're still connected to host
+		if (GUI.hostConnectionError_flag) {
+			GUI.hostConnectionError_flag = false;
+			startButton.setEnable(false);
+			popupHostConnectionLost.setVisible(null);
+		}
 		
 		// check for new player list, convert to local order
 		if (GUI.cmh != null) {
@@ -170,6 +179,8 @@ public class LobbyMode extends TableMode {
 		super.render(container, game, g);
 		
 		drawPlayerNamesAndStatuses(container, g);
+		
+		popupHostConnectionLost.render(container, g);
 	}
 	
 	

@@ -367,6 +367,59 @@ public class OngoingMode extends TableMode {
 						}
 					}
 
+					
+					// update player chip amounts (bet amounts)
+					boolean betCollected = false;
+					for (int i=0; i<8; i++) {
+						int localIndex = hostToLocalIndex(i);
+						// if the updated chip amount is less, send the difference to the main pot
+						// otherwise, just update it
+						if (gameState.player[i] != null) {
+							int amount = gameState.player[i].betAmount;
+							int oldAmount = chipAmounts.getPlayerAmount(localIndex);
+							if (amount < oldAmount) {
+								chipAmounts.addSendToQueue(
+										oldAmount - amount,
+										true, localIndex,
+										false, 0,	// send to main pot
+										0.1, false);
+								betCollected = true;
+							} else {
+								chipAmounts.setPlayerAmount(localIndex, amount);
+							}
+						} else {
+							// if player does not exist, set amount to 0
+							chipAmounts.setPlayerAmount(localIndex, 0);
+						}
+					}
+					if (betCollected) {
+						// split main pot into side pots if necessary
+						Host.GameSystem.Pot pot = gameState.potTotal;
+						for (int i=0; i<8; i++) {
+							if (pot==null)
+								break;
+							chipAmounts.addSendToQueue(
+									pot.totalPot,
+									false, 0,	// take from main pot
+									false, i,	// send to whichever sidepot
+									0.0, true);
+							pot = pot.splitPot;
+						}
+					}
+					
+					/*
+					// update pot amounts
+					System.out.println("");
+					Host.GameSystem.Pot pot = gameState.potTotal;
+					for (int i=0; i<8; i++) {
+						if (pot != null) {
+							chipAmounts.setPotAmount(i, pot.totalPot);
+							System.out.println("\tpot "+i+": "+pot.totalPot);
+							pot = pot.splitPot;
+						} else {
+							chipAmounts.setPotAmount(i, 0);
+						}
+					}*/
 	
 // FLOPSTATE PROCESSING --------------------------------------------------------------------------------------
 					
@@ -395,8 +448,6 @@ public class OngoingMode extends TableMode {
 							cards.resetCards();
 							cards.dealCards(localDealerIndex, playerNamesLocal);
 							cards.showPlayerCards(0);
-						} else {
-							updatePlayerAndPotAmounts();
 						}
 						break;
 						
@@ -404,53 +455,37 @@ public class OngoingMode extends TableMode {
 						
 						if (lastFlopState==0) {
 							
-							collectBets();
-							
 							// flip over flop cards
 							for (int i=0; i<3; ++i) {
 								cards.centerCards[i].setFaceImage(gameState.flops[i]);
 							}
 							cards.dealFlop();
-						} else {
-							updatePlayerAndPotAmounts();
-						}
+						} 
 						break;
 					case 2:
 						
 						if (lastFlopState==1) {
 							
-							collectBets();
-							
 							// flip over turn card
 							cards.centerCards[3].setFaceImage(gameState.flops[3]);							
 							cards.dealTurn();
-						} else {
-							updatePlayerAndPotAmounts();
 						}
 						break;
 					case 3:
 						if (lastFlopState==2) {
-							
-							collectBets();
-							
+
 							// flip over river card
 							cards.centerCards[4].setFaceImage(gameState.flops[4]);
 							cards.dealRiver();
-						} else {
-							updatePlayerAndPotAmounts();
 						}
 						break;
 					}
 					
 
-					lastFlopState = gameState.flopState;
+					lastFlopState = gameState.flopState;	
 					
 					
-
-					
-					
-					
-	// END GAMESTATE PROCESSING ------------------------------------------------
+// END GAMESTATE PROCESSING ------------------------------------------------------------------------
 				}	
 				
 				else {
@@ -511,64 +546,7 @@ public class OngoingMode extends TableMode {
 		dealerChip.update(delta);
 	}
 	
-	
-	
-	private void updatePlayerAndPotAmounts() {
-		// update player total chips
-		for (int i=0; i<8; i++) {
-				int localIndex = hostToLocalIndex(i);
-			if (gameState.player[i] != null) {
-				int amount = gameState.player[i].totalChip + gameState.player[i].betAmount;
-				chipAmounts.setPlayerAmount(localIndex, amount);
-				System.out.println("\tplayer "+i+" current bet: "+amount);
-			} else {
-				chipAmounts.setPlayerAmount(localIndex, 0);
-			}
-		}
-		// update pot amounts
-		System.out.println("");
-		Host.GameSystem.Pot pot = gameState.potTotal;
-		for (int i=0; i<8; i++) {
-			if (pot != null) {
-				chipAmounts.setPotAmount(i, pot.totalPot);
-				System.out.println("\tpot "+i+": "+pot.totalPot);
-				pot = pot.splitPot;
-			} else {
-				chipAmounts.setPotAmount(i, 0);
-			}
-		}
-	}	
-		
-	
-	private void collectBets() {
-		if (prevGameState!=null) {
-			// put player bets into main pot
-			for (int i=0; i<8; ++i) {
-				Player player = prevGameState.player[i];
-				if (player!=null && player.betAmount>0) {
-					int localIndex = hostToLocalIndex(i);
-					chipAmounts.addSendToQueue(
-							player.betAmount,
-							true, localIndex,
-							false, 0,	// send to main pot
-							0.1, false);
-				}
-			}
-			// split main pot into side pots if necessary
-			Host.GameSystem.Pot pot = gameState.potTotal;
-			for (int i=0; i<8; i++) {
-				if (pot==null)
-					break;
-				chipAmounts.addSendToQueue(
-						pot.totalPot,
-						false, 0,	// take from main pot
-						false, i,	// send to whichever sidepot
-						0.0, true);
-				pot = pot.splitPot;
-			}
-		}
-	}
-	
+
 
 	
 	protected void setButtonsEnable(boolean enable) {

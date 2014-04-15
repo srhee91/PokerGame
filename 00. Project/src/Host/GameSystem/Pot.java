@@ -66,14 +66,13 @@ public class Pot implements Serializable  {
 		
 		else {
 			
-			//check for someone who folded/left OR didn't bet
+			//check for someone who are not involved in the current pot
 			for(int i=0; i<player.length; i++) {
 				if(player[i] != null){
-				if(player[i].hasFolded || player[i].betAmount < highestBet) {
-					totalPot += player[i].betAmount;
-					player[i].betAmount = 0;
-					playerInvolved[i] = false;
-				}}
+					if(player[i].betAmount == 0 && highestBet > 0) {
+						playerInvolved[i] = false;
+					}
+				}
 				else{
 					playerInvolved[i] = false;
 				}
@@ -83,10 +82,11 @@ public class Pot implements Serializable  {
 			int lowestBet = GameSystem.INIT_CHIP*8 + 1; 
 			for(int i=0; i<player.length; i++)
 			{
-				if(player[i] != null){
-				if(player[i].betAmount > 0 && highestBet > player[i].betAmount){
-					if(lowestBet > player[i].betAmount) lowestBet = player[i].betAmount;
-				}}
+				if(player[i] != null && !player[i].hasFolded){
+					if(player[i].betAmount > 0 && highestBet > player[i].betAmount){
+						if(lowestBet > player[i].betAmount) lowestBet = player[i].betAmount;
+					}
+				}
 			}
 			//if someone went all in.....
 			if(lowestBet != (GameSystem.INIT_CHIP*8 + 1))
@@ -95,14 +95,21 @@ public class Pot implements Serializable  {
 				for(int i=0; i<player.length; i++)
 				{
 					if(player[i] != null){
-					if(player[i].betAmount > 0){
-						totalPot += lowestBet;
-						player[i].betAmount -= lowestBet;
-					}}
+						if(player[i].betAmount > lowestBet){
+							totalPot += lowestBet;
+							player[i].betAmount -= lowestBet;
+						}
+						else {
+							totalPot += player[i].betAmount;
+							player[i].betAmount = 0;
+						}
+					}
 				}
 				//splitPot the rest;
 				splitPot = new Pot();
 				splitPot.gatherPots(player, highestBet-lowestBet);
+				
+				return;
 			}
 			
 			

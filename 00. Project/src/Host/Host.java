@@ -130,21 +130,31 @@ public class Host{
 				//testing
 				game.potTotal.printPot();
 				
-				//special case handling
+				/*special case handling*/
 				//if everyone folds
 				if(game.potTotal.getCurrentPot().winnerByFold != -1)
 					break;
+				
+				//if everyone went all in in current pot
+				Pot currentPot = game.potTotal.getCurrentPot();
+				int notAllIn = 0;
+				for(int j=0; j<GameSystem.MAXPLAYER; j++)
+					if(currentPot.playerInvolved[i] && !game.player[i].isAllIn())
+						notAllIn++;
+				
+				if(notAllIn <= 1){
+					game.showdown = true;
+					break;
+				}
+				
 			}
+			
+			//TODO need to figure out what to send, what the gui need to show winning hands
+			//		examples : pot, showdown, ...
 			game.updateHand();
+			//TODO send gamestate and receive if anyone left the game.
 			//sendGameState();
-			
-			/*try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-			
+						
 		}
 		//celebrate the winner
 		//losers will just become a spectator without any notification
@@ -213,7 +223,7 @@ public class Host{
 			Pot currentPot = game.potTotal.getCurrentPot();
 			int numPlaying = 0;
 			for(int i=0; i<GameSystem.MAXPLAYER; i++){
-				if(currentPot.playerInvolved[i] && !game.player[i].hasFolded){
+				if(currentPot.playerInvolved[i]){
 					numPlaying++;
 					currentPot.winnerByFold = i;
 				}

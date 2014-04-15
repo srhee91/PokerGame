@@ -21,11 +21,12 @@ public class GameSystem{
 	public int highestBet;
 	public int highestBetter;
 	
-	public Deck deck;
+	private Deck deck;
 	
 	public int blind;
 	public int leftover;
 	
+	public boolean showdown;
 	
 	public GameSystem() {
 		
@@ -143,9 +144,8 @@ public class GameSystem{
 	public int playerCount(){
 		
 		int count = 0;
-		for(int i=0; i<MAXPLAYER; i++){
+		for(int i=0; i<MAXPLAYER; i++)
 			if(player[i]!=null)	count++;
-		}
 		
 		return count;
 	}
@@ -153,25 +153,29 @@ public class GameSystem{
 	public Gamestate getGamestate(){
 		Gamestate gamestate = new Gamestate();
 		
-		//gamestate.me = me;
 		gamestate.player = new Player[GameSystem.MAXPLAYER];
-		for(int i=0; i< GameSystem.MAXPLAYER; i++){
+		for(int i=0; i< GameSystem.MAXPLAYER; i++)
 			if(player[i] == null)	gamestate.player[i] = null;
-			else gamestate.player[i] = new Player(player[i]);
-		}
+			else					gamestate.player[i] = new Player(player[i]);
+		
 		gamestate.whoseTurn = whoseTurn;
 		gamestate.dealer = dealer;
 		gamestate.bigBlinder = bigBlinder;
 		gamestate.smallBlinder = smallBlinder;
+		
 		gamestate.flops = new Card[5];
-		for(int i=0; i<5; i++){
+		for(int i=0; i<5; i++)
 			gamestate.flops[i] = new Card(flops[i].getKind(), flops[i].getNumber());
-		}
+
 		gamestate.flopState = flopState;
+		
 		gamestate.potTotal = new Pot(potTotal);
 		gamestate.highestBet = highestBet;
+		
 		gamestate.blind = blind;
 		gamestate.leftover = leftover;
+		
+		gamestate.showdown = showdown;
 		
 		return gamestate;
 	}

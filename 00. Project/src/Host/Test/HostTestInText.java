@@ -21,6 +21,7 @@ public class HostTestInText {
 	
 	public GameSystem game;
 	public Player player;
+	public boolean last_standing=false;
 	
 	public int playerCount;
 	public int playerLeftCount;
@@ -90,7 +91,6 @@ public class HostTestInText {
 					else if(game.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(game.flops[k]);
 					
 					System.out.println();
-					
 					for(int k=0; k<GameSystem.MAXPLAYER; k++){
 						if(game.player[k] != null && game.whoseTurn!=-1 ){
 							if(game.dealer == k)	System.out.println("***Dealer***");
@@ -98,39 +98,38 @@ public class HostTestInText {
 							System.out.println("Player "+k+":\n" + game.player[k]);
 						}
 					}
-					//if(game.whoseTurn!=-1){
-						System.out.println("It's player " + game.whoseTurn +"'s turn!");
-						System.out.print("Fold=0 Call=1 Bet=2\n:");
-					//}
-					//else if(game.whoseTurn==-1){
-						
-					//}
+					if(game.whoseTurn==-1){
+						//game.whoseTurn = k;
+						break;
+					}
+					System.out.println("It's player " + game.whoseTurn +"'s turn!");
+					System.out.print("Fold=0 Call=1 Bet=2\n:");
+				
 					//Scanner s = new Scanner(System.in);
 					//int input = s.nextInt();
 					//random input generation
 					int input = generator.nextInt(3);
-					if(input==0){
-						input=1;
-					}
+				
 					System.out.println(input);
 					if(game.player[game.whoseTurn].totalChip<game.highestBet&&game.player[game.whoseTurn].totalChip==0){
 						input=1;
 					}
+					if(input==0){
+						input=1;
+					}
+				
 					if(input == 0){
-						System.out.println("player count = "+player_count);
-						System.out.println("player count 2  = "+game.playerCount());
-						if(player_count==game.playerCount()){
-							System.out.println("input = 1");
-							input=3;
-						}else{
-						//	if(game.player[game.whoseTurn].totalChip!=0){
-							System.out.println("can fold");
-								game.player[game.whoseTurn].fold();
-								player_count++;
-							//}
+						if(player_count == (game.playerCount()-1)){
+							System.out.println("player count = "+player_count);
+							System.out.println("player count 2  = "+game.playerCount());
+							last_standing = true;
+							//if every1 folds the hand ends
+							//
 						}
-						//if every1 folds the hand ends
-						//
+						if(last_standing==false){
+							game.player[game.whoseTurn].fold();
+							player_count++;
+						}
 					}
 					else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
 					else if(input == 2){
@@ -197,9 +196,6 @@ public class HostTestInText {
 		//celebrateWinner();
 	}
 		
-	public void random_testing(){
-		
-	}
 	
 	//main method - a process created by Poker.java or GUI
 	public static void main(String args[]){

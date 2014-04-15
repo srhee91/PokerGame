@@ -136,6 +136,15 @@ public class Host{
 					break;
 			}
 			game.updateHand();
+			//sendGameState();
+			
+			/*try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+			
 		}
 		//celebrate the winner
 		//losers will just become a spectator without any notification
@@ -198,6 +207,7 @@ public class Host{
 		
 		case FOLD:
 			game.player[game.whoseTurn].fold();
+			game.potTotal.fold(game.whoseTurn);
 			
 			//Special 
 			Pot currentPot = game.potTotal.getCurrentPot();

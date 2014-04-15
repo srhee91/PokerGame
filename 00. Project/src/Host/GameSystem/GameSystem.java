@@ -107,6 +107,8 @@ public class GameSystem{
 		
 		//update dealer
 		dealer = nextPlayer(dealer);
+		
+		flopState = 4;
 	}
 
 	

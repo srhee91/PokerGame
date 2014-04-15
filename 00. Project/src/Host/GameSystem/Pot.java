@@ -52,7 +52,12 @@ public class Pot implements Serializable  {
 			splitPot = null;
 	}
 	
-	
+	public void fold(int playerIndex){
+		if(splitPot != null)	splitPot.fold(playerIndex);
+		
+		playerInvolved[playerIndex] = false;
+	}
+
 	//gathersPots at the end of each round
 	//parameter player[] is the array of players. 
 	public void gatherPots(Player player[], int highestBet) {
@@ -64,7 +69,7 @@ public class Pot implements Serializable  {
 			//check for someone who folded/left OR didn't bet
 			for(int i=0; i<player.length; i++) {
 				if(player[i] != null){
-				if(player[i].hasFolded || player[i].hasLeft || player[i].betAmount < highestBet) {
+				if(player[i].hasFolded || player[i].betAmount < highestBet) {
 					totalPot += player[i].betAmount;
 					player[i].betAmount = 0;
 					playerInvolved[i] = false;

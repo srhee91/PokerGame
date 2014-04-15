@@ -91,15 +91,19 @@ public class HostTestInText {
 					else if(game.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(game.flops[k]);
 					
 					System.out.println();
+					int j=0;
 					for(int k=0; k<GameSystem.MAXPLAYER; k++){
 						if(game.player[k] != null && game.whoseTurn!=-1 ){
 							if(game.dealer == k)	System.out.println("***Dealer***");
 							if(game.whoseTurn == k)	System.out.println("---Your Turn---");
 							System.out.println("Player "+k+":\n" + game.player[k]);
+							j=k;
 						}
 					}
-					if(game.whoseTurn==-1){
+					
+					if(game.whoseTurn==-1||player_count+1 == (game.playerCount())){
 						//game.whoseTurn = k;
+						game.whoseTurn=j;
 						break;
 					}
 					System.out.println("It's player " + game.whoseTurn +"'s turn!");
@@ -114,12 +118,10 @@ public class HostTestInText {
 					if(game.player[game.whoseTurn].totalChip<game.highestBet&&game.player[game.whoseTurn].totalChip==0){
 						input=1;
 					}
-					if(input==0){
-						input=1;
-					}
+			
 				
 					if(input == 0){
-						if(player_count == (game.playerCount()-1)){
+						if(player_count+1 == (game.playerCount())){
 							System.out.println("player count = "+player_count);
 							System.out.println("player count 2  = "+game.playerCount());
 							last_standing = true;
@@ -145,7 +147,7 @@ public class HostTestInText {
 									whileloop=2;
 								
 							}
-							else if(input>=20&&input>=game.highestBet&&input<=100&&input<game.player[game.whoseTurn].totalChip){
+							else if(input>=20&&input>=game.highestBet&&input<=1000&&input<game.player[game.whoseTurn].totalChip){
 								whileloop=1;
 							}
 							else{

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class UserAction implements Serializable{
 
-	public enum Action{FOLD, CHECK_CALL, RAISE_BET, START_GAME };
+	public enum Action{FOLD, CHECK, CALL, BET, RAISE, ALL_IN};
 	public Action action;
 	public int raiseAmount;
 

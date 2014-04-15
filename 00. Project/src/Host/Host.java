@@ -234,17 +234,18 @@ public class Host{
 			
 			break;
 		
-		case CHECK_CALL:
+		case CHECK:
+		case CALL:
 			game.player[game.whoseTurn].bet(ua.raiseAmount);
 			break;
 		
-		case RAISE_BET:
+		case BET:
+		case RAISE:
+		case ALL_IN:
 			game.player[game.whoseTurn].bet(ua.raiseAmount);
 			game.highestBetter = game.whoseTurn;
 			game.highestBet = ua.raiseAmount;
 			break;
-			
-		case START_GAME:
 		default:
 			break;
 		}

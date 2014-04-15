@@ -36,8 +36,9 @@ public class OngoingMode extends TableMode {
 	private final int[][] playerCardOffsets = {{7, 32}, {89, 32}};
 	private final int[] playerChipAmountOffset = {72, 145};
 	private final int[] playerDealerChipOffset = {42, 145};
-	private final int[] playerTotalAmountOffset = {7, 15};		// added (center-left align)
-	protected final int playerNameOffset[] = {163, 15};			// added, overloads. (center-right align)
+	protected final int playerNameOffset[] = {8, 15};			// added, overloads. (center-left align)
+	private final int[] playerTotalAmountOffset = {162, 15};		// added (center-right align)
+	
 	
 	//private final Color winnerLabelColor = new Color(212, 65, 238, 242);
 	private final Color thinkingLabelColor = new Color(128, 128, 128, 242);
@@ -70,10 +71,11 @@ public class OngoingMode extends TableMode {
 	Button allInButton;
 	RaiseTextField raiseTextField;
 
-	private String checkButtonString;	// changes between check or call
-	private String raiseButtonString;	// changes between bet and raise
+	//private String checkButtonString;	// changes between check or call
+	//private String raiseButtonString;	// changes between bet and raise
 
-	
+	private boolean checkOrCall;	// true=check
+	private boolean betOrRaise;		// true = bet;
 	
 	private String[] playerNamesLocal;
 	
@@ -162,14 +164,15 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// ok action
 						popupAllInConfirm.setInvisible();
-						if (GUI.cmh!=null) {
+						//if (GUI.cmh!=null) {
 							try {
-								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, 
+								GUI.cmh.send(new UserAction(UserAction.Action.ALL_IN, 
 										gameState.player[GUI.playerIndexInHost].totalChip));
 							} catch (IOException e) {
 								System.out.println("failed to send raise (all in)!");
 							}
-						}
+						//}
+						// do not re-enable buttons
 					}
 				},
 				new ComponentListener() {
@@ -197,9 +200,12 @@ public class OngoingMode extends TableMode {
 						System.out.println("checked/called!");
 						
 						try {
-							if (GUI.cmh!=null)
-								GUI.cmh.send(new UserAction(UserAction.Action.CHECK_CALL,
+							//if (GUI.cmh!=null) {
+								GUI.cmh.send(new UserAction(
+										checkOrCall ? UserAction.Action.CHECK : UserAction.Action.CALL,
 										gameState.highestBet));
+								setButtonsEnable(false);
+							//}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -215,8 +221,10 @@ public class OngoingMode extends TableMode {
 						System.out.println("folded!");
 						
 						try {
-							if (GUI.cmh!=null)
+							//if (GUI.cmh!=null) {
 								GUI.cmh.send(new UserAction(UserAction.Action.FOLD, 0));
+								setButtonsEnable(false);
+							//}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -232,7 +240,7 @@ public class OngoingMode extends TableMode {
 						System.out.println("raised!");
 						
 						try {
-							if (GUI.cmh!=null) {
+							//if (GUI.cmh!=null) {
 								
 								String raiseAmtString = raiseTextField.getText();
 								int raiseAmount = 0;
@@ -240,7 +248,8 @@ public class OngoingMode extends TableMode {
 									raiseAmount = Integer.parseInt(raiseAmtString);
 									
 									if (raiseAmount <= gameState.highestBet) {
-										// must raise to at least the highest bet
+										// must raise to above the highest bet
+										raiseTextField.setText("");
 										setButtonsEnable(false);
 										popupRaiseInvalid.setMessageString("Must raise to an amount above $"+gameState.highestBet);
 										popupRaiseInvalid.setVisible(raiseButton);
@@ -250,7 +259,10 @@ public class OngoingMode extends TableMode {
 										setButtonsEnable(false);
 										popupAllInConfirm.setVisible(raiseButton);
 									} else {
-										GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, raiseAmount));
+										GUI.cmh.send(new UserAction(
+												betOrRaise ? UserAction.Action.BET : UserAction.Action.RAISE,
+												raiseAmount));
+										setButtonsEnable(false);
 									}
 									
 								} else {
@@ -260,7 +272,7 @@ public class OngoingMode extends TableMode {
 									popupRaiseInvalid.setVisible(raiseButton);
 								}
 								
-							}
+							//}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -287,9 +299,8 @@ public class OngoingMode extends TableMode {
 		
 		lastFlopState = 3;
 		
-		
-		checkButtonString = "Check";
-		raiseButtonString = "Bet";
+		checkOrCall = true;
+		betOrRaise = true;
 	}
 	
 	protected void setPlayerNamesLocal(String[] names) {
@@ -427,24 +438,17 @@ public class OngoingMode extends TableMode {
 					
 					case 0:
 						
-						// deal if cards haven't been dealt
-						if (lastFlopState == 3) {
+						// when a new hand starts...
+						if (lastFlopState != 0) {
 							
 							// update dealer chip position
 							int localDealerIndex = hostToLocalIndex(gameState.dealer);
 							dealerChip.moveTo(localDealerIndex);
 							
-							
+							// reset and deal cards, show main player's cards
 							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
-							
-							for(int i=0; i<8; i++) {
-								if(gameState.player[i]!=null)
-									System.out.println("player " + i + "cards"+gameState.player[i].hand);
-							}
-							
 							cards.playerCards[0][0].setFaceImage(hand[0]);
 							cards.playerCards[0][1].setFaceImage(hand[1]);
-							
 							cards.resetCards();
 							cards.dealCards(localDealerIndex, playerNamesLocal);
 							cards.showPlayerCards(0);
@@ -562,16 +566,16 @@ public class OngoingMode extends TableMode {
 			// update call/check label
 			int highestBet = gameState.highestBet;
 			int currentBet = gameState.player[GUI.playerIndexInHost].betAmount;
-			checkButtonString = (highestBet==currentBet) ? "Check" : "Call $"+highestBet;
+			checkOrCall = (highestBet==currentBet);
 			// update bet/raise label
 			if (highestBet==0 || 
 					(gameState.flopState==0 && gameState.bigBlinder==GUI.playerIndexInHost
 					&& gameState.highestBet==gameState.blind)) {
-				raiseButtonString = "Bet";
+				betOrRaise = true;
 				raiseTextField.setRaiseByString("     Bet:");
 			} else {
-				raiseButtonString = "Raise";
-				raiseTextField.setRaiseByString("Raise to:");
+				betOrRaise = false;
+				raiseTextField.setRaiseByString("     Raise to:");
 			}
 		
 			// if current bet is more than what I have, the only options are all in and fold
@@ -631,8 +635,8 @@ public class OngoingMode extends TableMode {
 							mainPanelPosition[0]+mainTotalAmountOffset[0],
 							mainPanelPosition[1]+mainTotalAmountOffset[1]);
 				} else {
-					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,
-							"$99999",//+player.totalChip,
+					GUI.drawStringRightCenter(g, totalAmountFont, Color.white,
+							"$"+player.totalChip,
 							playerPanelPositions[i][0]+playerTotalAmountOffset[0],
 							playerPanelPositions[i][1]+playerTotalAmountOffset[1]);
 				}
@@ -660,13 +664,19 @@ public class OngoingMode extends TableMode {
 					UserAction lastAction = gameState.player[i].latestAction;
 					if (lastAction!=null) {
 						switch (lastAction.action) {
-						case CHECK_CALL:
+						case CHECK:
+							drawPlayerLabel(g, localIndex, "Check"+betAmount, Color.white, checkLabelColor);
+							break;
+						case CALL:
 							drawPlayerLabel(g, localIndex, "Call $"+betAmount, Color.white, checkLabelColor);
 							break;
 						case FOLD:
 							drawPlayerLabel(g, localIndex, "Fold", Color.white, foldLabelColor);
 							break;
-						case RAISE_BET:
+						case BET:
+							drawPlayerLabel(g, localIndex, "Bet $"+betAmount, Color.white, raiseLabelColor);
+							break;
+						case RAISE:
 							drawPlayerLabel(g, localIndex, "Raise $"+betAmount, Color.white, raiseLabelColor);
 							break;
 						default:
@@ -684,9 +694,11 @@ public class OngoingMode extends TableMode {
 	
 	private void drawInteractiveElements(GUIContext container, Graphics g) {
 		g.setColor(Color.white);
-		checkButton.render(container, g, buttonFont, Color.white, checkButtonString);
+		checkButton.render(container, g, buttonFont, Color.white,
+				checkOrCall ? "Check" : "Call $"+gameState.highestBet);
 		foldButton.render(container, g,  buttonFont, Color.white, "Fold");
-		raiseButton.render(container, g, buttonFont, Color.white, raiseButtonString);
+		raiseButton.render(container, g, buttonFont, Color.white,
+				betOrRaise ? "Bet" : "Raise");
 		allInButton.render(container, g, allInButtonFont, Color.white, "All In");
 		
 		raiseTextField.render(container, g);
@@ -702,7 +714,7 @@ public class OngoingMode extends TableMode {
 		
 		for (int i=1; i<8; ++i) {
 			if (playerNamesLocal[i] != null) {
-				GUI.drawStringRightCenter(g, infoFont, Color.white, playerNamesLocal[i],
+				GUI.drawStringLeftCenter(g, infoFont, Color.white, playerNamesLocal[i],
 						playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 			}

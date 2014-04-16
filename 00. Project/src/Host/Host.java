@@ -284,7 +284,7 @@ public class Host{
 		
 		// wait for start msg from host client
 		host.waitToStart();
-		
+		host.hmh.gameStart();
 		
 		host.hb.close();
 		
@@ -292,7 +292,7 @@ public class Host{
 		host.startGame();	
 		//host.endGame();
 		 
-		
+		host.hmh.gameEnd();
 		
 		
 		/*

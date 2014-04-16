@@ -188,6 +188,11 @@ public class Host{
 			game.updateHand();
 			//TODO send gamestate and receive if anyone left the game.
 			sendGameState();
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 						
 		}
 		//celebrate the winner

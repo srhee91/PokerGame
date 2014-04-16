@@ -76,7 +76,7 @@ public class OngoingMode extends TableMode {
 	
 	private String[] playerNamesLocal;
 	
-	private Gamestate prevGameState;
+	//private Gamestate prevGameState;
 	private Gamestate gameState;
 	
 	private int lastFlopState;
@@ -302,7 +302,7 @@ public class OngoingMode extends TableMode {
 		// on-enter-mode actions
 		if (GUI.currentMode != 4) {
 			
-			prevGameState = null;
+			//prevGameState = null;
 			
 			lastFlopState = 3;
 			checkOrCall = true;
@@ -351,7 +351,7 @@ public class OngoingMode extends TableMode {
 				
 				if (receivedObject instanceof Gamestate) {
 				
-					prevGameState = gameState;
+					//prevGameState = gameState;
 					gameState = (Gamestate)receivedObject;
 					
 					
@@ -387,7 +387,9 @@ public class OngoingMode extends TableMode {
 						setButtonsEnable(false); 
 					}
 
-					// fold player's cards 
+					
+					
+					// fold player's cards if needed
 					for (int i=0; i<8; i++) {
 						if (gameState.player[i]!=null
 								&& gameState.player[i].hasFolded) {
@@ -395,9 +397,18 @@ public class OngoingMode extends TableMode {
 						}
 					}
 
+					// show all player's cards if showdown occurred
+					if (gameState.showdown) {
+						for (int i=0; i<8; i++) {
+							if (gameState.player[i]!=null) {
+								int localIndex = hostToLocalIndex(i);
+								cards.showPlayerCards(localIndex);
+							}
+						}
+					}
 					
 					// update player chip amounts (bet amounts)
-					boolean sendQueued = false;
+					boolean betCollected = false;
 					for (int i=0; i<8; i++) {
 						int localIndex = hostToLocalIndex(i);
 						// if the updated chip amount is less, send the difference to the main pot
@@ -411,7 +422,7 @@ public class OngoingMode extends TableMode {
 										true, localIndex,
 										false, 0,	// send to main pot
 										0.0, false);
-								sendQueued = true;
+								betCollected = true;
 							} else {
 								chipAmounts.setPlayerAmount(localIndex, amount);
 							}
@@ -420,34 +431,50 @@ public class OngoingMode extends TableMode {
 							chipAmounts.setPlayerAmount(localIndex, 0);
 						}
 					}
-					if (sendQueued) {
-						// split main pot into side pots if necessary
+					
+					
+					// update pot amounts
+					// if bets were collected, update the pot with animations
+					if (betCollected) {
+						// update side pot amounts by taking difference from main pot
 						Host.GameSystem.Pot pot = gameState.potTotal;
 						for (int i=0; i<8; i++) {
 							if (pot==null)
 								break;
-							chipAmounts.addSendToQueue(
-									pot.totalPot,
-									false, 0,	// take from main pot
-									false, i,	// send to whichever sidepot
-									0.0, true);
+							int amount = pot.totalPot;
+							int oldAmount = chipAmounts.getPotAmount(i);
+							if (amount > oldAmount) {
+								chipAmounts.addSendToQueue(
+										amount-oldAmount,
+										false, 0,	// take from main pot
+										false, i,	// send to whichever sidepot
+										0.0, true);
+							}
 							pot = pot.splitPot;
 						}
 					}
-					
-					/*
-					// update pot amounts
-					System.out.println("");
-					Host.GameSystem.Pot pot = gameState.potTotal;
-					for (int i=0; i<8; i++) {
-						if (pot != null) {
-							chipAmounts.setPotAmount(i, pot.totalPot);
-							System.out.println("\tpot "+i+": "+pot.totalPot);
-							pot = pot.splitPot;
-						} else {
-							chipAmounts.setPotAmount(i, 0);
+					// otherwise, update them directly with the new values
+					// (should stay consistent with pot amounts from after animation)
+					else {
+						Host.GameSystem.Pot pot = gameState.potTotal;
+						for (int i=0; i<8; i++) {
+							if (pot != null) {
+								if (chipAmounts.getPotAmount(i) != pot.totalPot) {
+									System.out.println("Pot "+i+" inconsistent with gamestate!!!");
+								}
+								chipAmounts.setPotAmount(i, pot.totalPot);
+								System.out.println("\tpot "+i+": "+pot.totalPot);
+								pot = pot.splitPot;
+							} else {
+								if (chipAmounts.getPotAmount(i) != 0) {
+									System.out.println("Pot "+i+" inconsistent with gamestate!!!");
+								}
+								chipAmounts.setPotAmount(i, 0);
+							}
 						}
-					}*/
+					}
+					
+
 	
 // FLOPSTATE PROCESSING --------------------------------------------------------------------------------------
 					
@@ -483,26 +510,96 @@ public class OngoingMode extends TableMode {
 							cards.dealFlop(1000.0);
 						} 
 						break;
-					case 2:
 						
-						if (lastFlopState==1) {
-							
+					case 2:
+						if (lastFlopState == 1) {
 							// flip over turn card
 							cards.centerCards[3].setFaceImage(gameState.flops[3]);							
 							cards.dealTurn(1000.0);
+							
+						} else {
+							// flip over flop and turn cards
+							for (int i=0; i<4; ++i) {
+								cards.centerCards[i].setFaceImage(gameState.flops[i]);
+							}
+							cards.dealFlop(1000.0);
+							cards.dealTurn(0.0);							
 						}
 						break;
+						
 					case 3:
 						if (lastFlopState==2) {
-
 							// flip over river card
 							cards.centerCards[4].setFaceImage(gameState.flops[4]);
 							cards.dealRiver(1000.0);
+							
+						} else if (lastFlopState==1) {
+							// flip over turn and river cards
+							cards.centerCards[3].setFaceImage(gameState.flops[3]);
+							cards.dealTurn(1000.0);
+							cards.centerCards[4].setFaceImage(gameState.flops[4]);
+							cards.dealRiver(0.0);
+						} else {
+							// flip over flop, turn, and river cards
+							for (int i=0; i<5; ++i) {
+								cards.centerCards[i].setFaceImage(gameState.flops[i]);
+							}
+							cards.dealFlop(1000.0);
+							cards.dealTurn(0.0);
+							cards.dealRiver(0.0);
 						}
 						break;
-					}
 					
-
+					case 4:
+						// when a hand ends
+						if (lastFlopState != 4) {
+							
+							// distribute each pot to its winners
+							Host.GameSystem.Pot pot = gameState.potTotal;
+							for (int potIndex=0; potIndex<8; potIndex++) {
+								if (pot==null)
+									break;
+								
+								// calculate winnings per winner
+								int numWinners = 0;
+								for (int i=0; i<8; i++) {
+									if (pot.winner[i])
+										numWinners++;
+								}
+								int amountPerWinner = pot.totalPot / numWinners;
+								
+								// send that amount to each winner of this pot
+								boolean first = true;
+								for (int i=0; i<8; i++) {
+									if (gameState.player[i]!=null && pot.winner[i]) {
+										chipAmounts.addSendToQueue(
+												amountPerWinner,
+												false, potIndex,
+												true, hostToLocalIndex(i),
+												first ? 100.0 : 0.0, false);
+										first = false;
+									}
+								}
+							}
+							
+							// collect each pot's leftover into the main pot
+							if (gameState.potTotal != null) {
+								pot = gameState.potTotal.splitPot;
+								for (int potIndex=1; potIndex<8; potIndex++) {
+									if (pot==null)
+										break;
+									int leftOver = chipAmounts.getPotAmount(potIndex);
+									if (leftOver > 0) {
+										chipAmounts.addSendToQueue(
+												leftOver,
+												false, potIndex,
+												false, 0,	 // send to main pot
+												0.0, true);
+									}
+								}
+							}
+						}
+					}
 					lastFlopState = gameState.flopState;	
 					
 					
@@ -662,7 +759,8 @@ public class OngoingMode extends TableMode {
 	}
 	
 	private void drawLabels(Graphics g) {
-		if (gameState==null)
+		
+		if (gameState==null || gameState.showdown)	// no labels drawn during showdown
 			return;
 		
 		for (int i=0; i<8; ++i) {

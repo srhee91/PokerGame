@@ -175,6 +175,10 @@ public class ChipAmounts {
 		return playerAmounts[player].amount;
 	}
 	
+	public  int getPotAmount(int pot) {
+		return potAmounts[pot].amount;
+	}
+	
 	public boolean sendOngoing() {
 		return !amountsInTransit.isEmpty();
 	}

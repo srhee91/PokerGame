@@ -143,40 +143,39 @@ public class Pot implements Serializable  {
 	{
 		if(splitPot != null)	splitPot.potToWinner(game);
 		
-		if(winnerByFold == -1) {
-			Card hands[][] = new Card[GameSystem.MAXPLAYER][2];
-			
-			for(int i=0; i<GameSystem.MAXPLAYER; i++){
-				if(playerInvolved[i])
-					hands[i] = game.player[i].hand;
-				else
-					hands[i] = null;
-			}
-			
-			winner = (new Rank()).findWinner(game.flops, hands);
-			int winnerCount = 0;
-			
-			totalPot += game.leftover;
-			
-			for(int i=0; i<GameSystem.MAXPLAYER; i++){
-				if(winner[i]) winnerCount++;
-			}
-			for(int i=0; i<GameSystem.MAXPLAYER; i++)
-			{
-				if(winner[i]){
-					game.player[i].totalChip += (int) (totalPot/winnerCount);
-				}
-			}
-			game.leftover = totalPot%winnerCount;
+		Card hands[][] = new Card[GameSystem.MAXPLAYER][2];
+		
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			if(playerInvolved[i])
+				hands[i] = game.player[i].hand;
+			else
+				hands[i] = null;
 		}
-		else {
-			game.player[winnerByFold].totalChip += totalPot;
+		
+		winner = (new Rank()).findWinner(game.flops, hands);
+		int winnerCount = 0;
+		
+		totalPot += game.leftover;
+		
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			if(winner[i]) winnerCount++;
 		}
+		for(int i=0; i<GameSystem.MAXPLAYER; i++)
+		{
+			if(winner[i]){
+				game.player[i].totalChip += (int) (totalPot/winnerCount);
+			}
+		}
+		game.leftover = totalPot%winnerCount;
 	}
 	
 	public Pot getCurrentPot() {
 		if(splitPot == null)	return this;
 		else					return splitPot.getCurrentPot();
+	}
+	public int countPots(int n){
+		if(splitPot == null)	return n;
+		else					return splitPot.countPots(n+1);
 	}
 	public void printPot()
 	{

@@ -188,10 +188,9 @@ public class Host{
 			game.updateHand();
 			//TODO send gamestate and receive if anyone left the game.
 			
-			System.out.println("about to send flopstate 4");
 			sendGameState();
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(game.potTotal.countPots(1)*100 + 10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

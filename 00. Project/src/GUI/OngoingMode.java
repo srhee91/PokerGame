@@ -161,8 +161,9 @@ public class OngoingMode extends TableMode {
 					public void componentActivated(AbstractComponent arg0) {	// ok action
 						//if (GUI.cmh!=null) {
 							try {
+								Player player = gameState.player[GUI.playerIndexInHost];
 								GUI.cmh.send(new UserAction(UserAction.Action.ALL_IN, 
-										gameState.player[GUI.playerIndexInHost].totalChip));
+										player.totalChip + player.betAmount));
 							} catch (IOException e) {
 								System.out.println("failed to send raise (all in)!");
 							}

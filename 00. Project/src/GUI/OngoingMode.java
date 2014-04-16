@@ -413,11 +413,12 @@ public class OngoingMode extends TableMode {
 					for (int i=0; i<8; i++) {
 						int localIndex = hostToLocalIndex(i);
 						// if the updated chip amount is less, send the difference to the main pot
-						// otherwise, just update it
+						// UNLESS flopstate is 0 (chip amount will be winnings from prev hand)
+						// otherwise, just update it without animating
 						if (gameState.player[i] != null) {
 							int amount = gameState.player[i].betAmount;
 							int oldAmount = chipAmounts.getPlayerAmount(localIndex);
-							if (amount < oldAmount) {
+							if (oldAmount>amount && gameState.flopState!=0) {
 								chipAmounts.addSendToQueue(
 										oldAmount - amount,
 										true, localIndex,

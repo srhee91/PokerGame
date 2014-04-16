@@ -33,7 +33,7 @@ public abstract class HostSearcher {
 		
 		for(int i=0;i<255;i++) IP4[i]="";
 		stop=false;
-		checkAvailable();
+		//checkAvailable();
 		
 	}
 	

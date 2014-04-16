@@ -125,6 +125,20 @@ public class Host{
 				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1
 						&& game.potTotal.getCurrentPot().winnerByFold == -1);
 				
+				// extra gamestate at end of each round.
+				// send gamestate with whoseTurn=-1
+				int temp = game.whoseTurn;
+				game.whoseTurn = -1;
+				sendGameState();
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				game.whoseTurn = temp;
+				
+				
+				
 				game.updateRound();
 				
 				//testing
@@ -146,7 +160,6 @@ public class Host{
 					game.showdown = true;
 					break;
 				}
-				sendGameState();
 			}
 			
 			//TODO need to figure out what to send, what the gui need to show winning hands
@@ -177,8 +190,8 @@ public class Host{
 			}
 		
 		}*/
+		/*
 		// DEBUG: print game state
-		
 		Gamestate gameState = game.getGamestate();
 		for(int k=0; k<8; k++){
 			if(gameState.player[k] != null){
@@ -189,7 +202,7 @@ public class Host{
 		}
 		System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
 		// DONE printing game state
-		
+		*/
 		hmh.sendAll(game.getGamestate());	
 	}
 	

@@ -196,9 +196,7 @@ public class OngoingMode extends TableMode {
 				mainPanelPosition[0] + mainCheckButtonOffset[0], mainPanelPosition[1] + mainCheckButtonOffset[1],
 				new ComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent source) {
-						System.out.println("checked/called!");
-						
+					public void componentActivated(AbstractComponent source) {						
 						try {
 							//if (GUI.cmh!=null) {
 								GUI.cmh.send(new UserAction(
@@ -217,9 +215,7 @@ public class OngoingMode extends TableMode {
 				mainPanelPosition[0] + mainFoldButtonOffset[0], mainPanelPosition[1] + mainFoldButtonOffset[1],
 				new ComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent source) {
-						System.out.println("folded!");
-						
+					public void componentActivated(AbstractComponent source) {						
 						try {
 							//if (GUI.cmh!=null) {
 								GUI.cmh.send(new UserAction(UserAction.Action.FOLD, 0));
@@ -236,9 +232,7 @@ public class OngoingMode extends TableMode {
 				mainPanelPosition[0] + mainRaiseButtonOffset[0], mainPanelPosition[1] + mainRaiseButtonOffset[1],
 				new ComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent source) {
-						System.out.println("raised!");
-						
+					public void componentActivated(AbstractComponent source) {						
 						try {
 							//if (GUI.cmh!=null) {
 								
@@ -287,8 +281,8 @@ public class OngoingMode extends TableMode {
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {
-						System.out.println("all in!");
 						// show all in popup
+						raiseTextField.setText(""+gameState.player[GUI.playerIndexInHost].totalChip);
 						setButtonsEnable(false);
 						popupAllInConfirm.setVisible(allInButton);
 					}
@@ -584,14 +578,14 @@ public class OngoingMode extends TableMode {
 					(gameState.flopState==0 && gameState.bigBlinder==GUI.playerIndexInHost
 					&& gameState.highestBet==gameState.blind)) {
 				betOrRaise = true;
-				raiseTextField.setRaiseByString("     Bet:");
+				raiseTextField.setRaiseByString("Bet:");
 			} else {
 				betOrRaise = false;
-				raiseTextField.setRaiseByString("     Raise to:");
+				raiseTextField.setRaiseByString("Raise to:");
 			}
 		
 			// if current bet is more than what I have, the only options are all in and fold
-			if (currentBet >= gameState.player[GUI.playerIndexInHost].totalChip) {
+			if (highestBet >= gameState.player[GUI.playerIndexInHost].totalChip) {
 				checkButton.setEnable(false);
 				raiseButton.setEnable(false);
 			}
@@ -671,28 +665,28 @@ public class OngoingMode extends TableMode {
 				}
 				else {
 					
-					int betAmount = gameState.player[i].betAmount;
+					//int betAmount = gameState.player[i].betAmount;
 					
 					UserAction lastAction = gameState.player[i].latestAction;
 					if (lastAction!=null) {
 						switch (lastAction.action) {
 						case CHECK:
-							drawPlayerLabel(g, localIndex, "Check"+betAmount, Color.white, checkLabelColor);
+							drawPlayerLabel(g, localIndex, "Check", Color.white, checkLabelColor);
 							break;
 						case CALL:
-							drawPlayerLabel(g, localIndex, "Call $"+betAmount, Color.white, checkLabelColor);
+							drawPlayerLabel(g, localIndex, "Call $"+lastAction.raiseAmount, Color.white, checkLabelColor);
 							break;
 						case FOLD:
 							drawPlayerLabel(g, localIndex, "Fold", Color.white, foldLabelColor);
 							break;
 						case BET:
-							drawPlayerLabel(g, localIndex, "Bet $"+betAmount, Color.white, raiseLabelColor);
+							drawPlayerLabel(g, localIndex, "Bet $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
 							break;
 						case RAISE:
-							drawPlayerLabel(g, localIndex, "Raise $"+betAmount, Color.white, raiseLabelColor);
+							drawPlayerLabel(g, localIndex, "Raise to $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
 							break;
 						default:
-							drawPlayerLabel(g, localIndex, "All in $"+betAmount, Color.white, allInLabelColor);
+							drawPlayerLabel(g, localIndex, "All In $"+lastAction.raiseAmount, Color.white, allInLabelColor);
 							break;
 						}
 					}

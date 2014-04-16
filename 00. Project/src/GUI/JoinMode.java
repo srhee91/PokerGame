@@ -171,7 +171,7 @@ public class JoinMode extends Mode {
 		
 		// if joinlist is refreshing, check if 1 second has passed
 		if (joinList.isLoading()) {
-			if (System.nanoTime() - refreshTimeNano >= 2000000000L) {
+			if (System.nanoTime() - refreshTimeNano >= 1000000000L) {
 				joinList.setLoading(false);
 				updateGamesList();
 			}

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public abstract class HostSearcher {
 	
 	static int IP1,IP2,IP3;
-	static String IP4[]=new String[255];
+	static String IP4[]=new String[256];
 	static volatile boolean stop = true;
 	static int port;
 	
@@ -31,10 +31,10 @@ public abstract class HostSearcher {
 
 		new SearcherListening().start();
 		
-		for(int i=0;i<255;i++) IP4[i]="";
+		for(int i=0;i<255;i++) IP4[i]=null;
+		IP4[255]="";
+		new CheckThread(255).start();
 		stop=false;
-		checkAvailable();
-		
 	}
 	
 	protected static int byteToInt(byte b) {
@@ -45,8 +45,6 @@ public abstract class HostSearcher {
 	}
 	
 	public static void checkAvailable(){
-		
-		
 		for (int i=0;i<255;i++){
 			if (IP4[i]!=null)
 				new CheckThread(i).start();

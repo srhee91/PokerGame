@@ -124,7 +124,7 @@ public class Host{
 				game.whoseTurn = -1;
 				sendGameState();
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(1600);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -187,13 +187,15 @@ public class Host{
 			//		examples : pot, showdown, ...
 			game.updateHand();
 			//TODO send gamestate and receive if anyone left the game.
-			
+			int temp = game.whoseTurn;
+			game.whoseTurn = -1;
 			sendGameState();
 			try {
 				Thread.sleep(game.potTotal.countPots(1)*100 + 10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			game.whoseTurn = temp;
 						
 		}
 		//celebrate the winner

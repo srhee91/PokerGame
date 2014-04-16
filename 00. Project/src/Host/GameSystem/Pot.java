@@ -53,6 +53,7 @@ public class Pot implements Serializable  {
 			playerInvolved[i] = pot.playerInvolved[i];
 		
 		if(pot.winner!=null){
+			winner = new boolean[GameSystem.MAXPLAYER];
 			for(int i=0; i<GameSystem.MAXPLAYER; i++)
 				winner[i] = pot.winner[i];
 		}

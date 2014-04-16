@@ -124,7 +124,7 @@ public class Host{
 				game.whoseTurn = -1;
 				sendGameState();
 				try {
-					Thread.sleep(3000);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -149,7 +149,7 @@ public class Host{
 				game.whoseTurn = -1;
 				sendGameState();
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(1300);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -187,9 +187,11 @@ public class Host{
 			//		examples : pot, showdown, ...
 			game.updateHand();
 			//TODO send gamestate and receive if anyone left the game.
+			
+			System.out.println("about to send flopstate 4");
 			sendGameState();
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -219,9 +221,10 @@ public class Host{
 			}
 		
 		}*/
-		/*
+		
 		// DEBUG: print game state
 		Gamestate gameState = game.getGamestate();
+		System.out.println("flopstate = "+gameState.flopState);
 		for(int k=0; k<8; k++){
 			if(gameState.player[k] != null){
 				if(gameState.dealer == k)	System.out.println("***Dealer***");
@@ -231,7 +234,7 @@ public class Host{
 		}
 		System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
 		// DONE printing game state
-		*/
+		
 		hmh.sendAll(game.getGamestate());	
 	}
 	

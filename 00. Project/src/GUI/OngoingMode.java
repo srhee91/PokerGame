@@ -361,6 +361,7 @@ public class OngoingMode extends TableMode {
 					else if(gameState.flopState == 1)	for(int k=0; k<3; k++)	System.out.println(gameState.flops[k]);
 					else if(gameState.flopState == 2)	for(int k=0; k<4; k++)	System.out.println(gameState.flops[k]);
 					else if(gameState.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(gameState.flops[k]);
+					else if(gameState.flopState == 4)	System.out.print("FLOPSTATE_4: round over.");
 					System.out.println();
 					for(int k=0; k<8; k++){
 						if(gameState.player[k] != null){
@@ -580,6 +581,8 @@ public class OngoingMode extends TableMode {
 										first = false;
 									}
 								}
+								
+								pot = pot.splitPot;
 							}
 							
 							// collect each pot's leftover into the main pot
@@ -596,6 +599,7 @@ public class OngoingMode extends TableMode {
 												false, 0,	 // send to main pot
 												0.0, true);
 									}
+									pot = pot.splitPot;
 								}
 							}
 						}

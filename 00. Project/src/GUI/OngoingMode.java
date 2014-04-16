@@ -561,6 +561,8 @@ public class OngoingMode extends TableMode {
 								if (pot==null)
 									break;
 								
+						System.out.println("distributing pot "+potIndex+"...");
+								
 								// calculate winnings per winner
 								int numWinners = 0;
 								for (int i=0; i<8; i++) {
@@ -568,6 +570,9 @@ public class OngoingMode extends TableMode {
 										numWinners++;
 								}
 								int amountPerWinner = pot.totalPot / numWinners;
+								
+						System.out.println("amt = $"+pot.totalPot);
+						System.out.println("amt per winner = $"+amountPerWinner);
 								
 								// send that amount to each winner of this pot
 								boolean first = true;
@@ -577,7 +582,8 @@ public class OngoingMode extends TableMode {
 												amountPerWinner,
 												false, potIndex,
 												true, hostToLocalIndex(i),
-												first ? 100.0 : 0.0, false);
+												500.0, true);
+												//first ? 300.0 : 0.0, false);
 										first = false;
 									}
 								}

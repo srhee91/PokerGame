@@ -174,7 +174,7 @@ public class Host{
 				Pot currentPot = game.potTotal.getCurrentPot();
 				int notAllIn = 0;
 				for(int j=0; j<GameSystem.MAXPLAYER; j++)
-					if(currentPot.playerInvolved[i] && !game.player[i].isAllIn())
+					if(currentPot.playerInvolved[j] && !game.player[j].isAllIn())
 						notAllIn++;
 				
 				if(notAllIn <= 1){

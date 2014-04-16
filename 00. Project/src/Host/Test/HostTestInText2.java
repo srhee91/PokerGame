@@ -25,7 +25,7 @@ public class HostTestInText2 {
 	public int playerCount;
 		
 	public HostTestInText2(){
-		playerCount = 4;
+		playerCount = 2;
 	}
 					
 	/************** Game Flow **************/
@@ -92,6 +92,7 @@ public class HostTestInText2 {
 				
 				/*special case handling*/
 				Pot currentPot = game.potTotal.getCurrentPot();
+				currentPot.printPot();
 				System.out.println("WinnerByFold : " + currentPot.winnerByFold);
 				//if everyone folds
 				if(currentPot.winnerByFold != -1)
@@ -100,7 +101,7 @@ public class HostTestInText2 {
 				//if everyone went all in in current pot
 				int notAllIn = 0;
 				for(int j=0; j<GameSystem.MAXPLAYER; j++)
-					if(currentPot.playerInvolved[i] && !game.player[i].isAllIn())
+					if(currentPot.playerInvolved[j] && !game.player[j].isAllIn())
 						notAllIn++;
 				
 				System.out.println("Not All In (Showdown)  : " + notAllIn);
@@ -149,12 +150,36 @@ public class HostTestInText2 {
 	
 		//random input generation
 		Random generator = new Random();
-		int input = generator.nextInt(3);
-	
-		if(game.player[game.whoseTurn].totalChip<game.highestBet){
+		//int input;
+		int raise = 0;
+		
+		Scanner s = new Scanner(System.in);
+		int input = s.nextInt();
+		
+		/*if(game.player[game.whoseTurn].totalChip<game.highestBet)
 			input = generator.nextInt(2);
-		}
+		else
+			input = generator.nextInt(3);
+*/
 		System.out.println(input);
+
+		if(input == 2){
+//input for raise
+			System.out.print("How much you want to bet? :");
+/*			int whileloop=0;
+			
+			while(whileloop==0){
+				raise = generator.nextInt(1000);
+				if(raise>=20 && input>game.highestBet && raise<game.player[game.whoseTurn].totalChip && raise>game.player[game.whoseTurn].betAmount){
+					whileloop=1;
+				}
+			}*/
+			s = new Scanner(System.in);
+			raise = s.nextInt();
+
+			System.out.println(raise);
+
+		}
 	
 //Now, update Action
 		if(input == 0){
@@ -176,23 +201,9 @@ public class HostTestInText2 {
 		}
 		else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
 		else if(input == 2){
-
-//input for raise
-			System.out.print("How much you want to bet? :");
-			int whileloop=0;
-			
-			while(whileloop==0){
-				input = generator.nextInt(1000);
-				if(input>=20 && input>game.highestBet && input<game.player[game.whoseTurn].totalChip && input>game.player[game.whoseTurn].betAmount){
-					whileloop=1;
-				}
-			}
-			System.out.println(input);
-
-			
-			game.player[game.whoseTurn].bet(input);
+			game.player[game.whoseTurn].bet(raise);
 			game.highestBetter = game.whoseTurn;
-			game.highestBet = input;
+			game.highestBet = raise;
 		}
 		//TEST V_02!!//
 		

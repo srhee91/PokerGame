@@ -36,7 +36,7 @@ public class GameSystem{
 		}
 		
 		blind = INIT_BLIND;
-		dealer = INIT_DEALER;
+		dealer = -1;
 		leftover = 0;
 	}
 		

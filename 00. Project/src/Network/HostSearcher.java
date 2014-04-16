@@ -33,7 +33,7 @@ public abstract class HostSearcher {
 		
 		for(int i=0;i<255;i++) IP4[i]="";
 		stop=false;
-		//checkAvailable();
+		checkAvailable();
 		
 	}
 	
@@ -57,7 +57,7 @@ public abstract class HostSearcher {
 		ArrayList<String[]> ret = new ArrayList<String[]>();
 		String IPprefix=IP1+"."+IP2+"."+IP3+".";
 		for(int i=0;i<255;i++){
-			if(IP4[i]!=null) {
+			if(IP4[i]!=null && IP4[i].length()>0) {
 				String[] nameAndIp = new String[2];
 				nameAndIp[0] = IP4[i];
 				nameAndIp[1] = IPprefix+i;

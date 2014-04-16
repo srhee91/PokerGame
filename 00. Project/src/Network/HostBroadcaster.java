@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 public class HostBroadcaster {
 	int port;
 	Listening listeningThread;
-	BroadcastSuperThread broadcasting;
+	BroadcastThread broadcasting;
 	String hostname;
 	static volatile boolean stop = true;
 	
@@ -25,7 +25,7 @@ public class HostBroadcaster {
 		stop=false;
         listeningThread=new Listening();
         listeningThread.start();
-        broadcasting=new BroadcastSuperThread(port-1);
+        broadcasting=new BroadcastThread();
         broadcasting.start();
 	}
 	
@@ -68,31 +68,9 @@ public class HostBroadcaster {
 		}
 	}
 	
-	class BroadcastSuperThread extends Thread{
-		int port;
-		public BroadcastSuperThread(int port){
-			this.port=port;
-		}
-		public void run(){
-			while(!HostBroadcaster.stop){
-				for (byte i=1;i<255;i++){
-					new BroadcastThread(i,port).start();
-				}
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
 	class BroadcastThread extends Thread{
-		byte IP[];
-		int port;
-		public BroadcastThread(byte i,int port){
-			this.port=port;
-			IP=new byte[4];
+		public void run(){
+			byte IP[]=new byte[4];
 			InetAddress myIP;
 			try {
 				myIP=InetAddress.getLocalHost();
@@ -103,9 +81,7 @@ public class HostBroadcaster {
 			IP[0]=myIP.getAddress()[0];
 			IP[1]=myIP.getAddress()[1];
 			IP[2]=myIP.getAddress()[2];
-			IP[3]=i;
-		}
-		public void run(){
+			IP[3]=-1;
 			DatagramSocket socket=null;
 			try {
 				socket = new DatagramSocket();
@@ -114,14 +90,21 @@ public class HostBroadcaster {
 			}
 			DatagramPacket packet=null;
 			try {
-				packet=new DatagramPacket(hostname.getBytes(),hostname.length(),InetAddress.getByAddress(IP), port);
-				socket.send(packet);
-			} catch(Exception e){
-				e.printStackTrace();
+				packet = new DatagramPacket(hostname.getBytes(),hostname.length(),InetAddress.getByAddress(IP), port-1);
+			} catch (UnknownHostException e1) {
+				e1.printStackTrace();
+			}
+			while(!HostBroadcaster.stop){
+				try {
+					socket.send(packet);
+					Thread.sleep(6000);
+				} catch (InterruptedException | IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
-	
+
 	public static void main(String args[]){
 		HostBroadcaster hb=new HostBroadcaster(4320,"LHC");
 	}

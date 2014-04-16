@@ -29,19 +29,19 @@ public abstract class HostSearcher {
 		IP2=byteToInt(myIP.getAddress()[1]);
 		IP3=byteToInt(myIP.getAddress()[2]);
 
+		new SearcherListening().start();
 		
 		for(int i=0;i<255;i++) IP4[i]="";
 		stop=false;
 		checkAvailable();
 		
-		new SearcherListening().start();
 	}
 	
 	protected static int byteToInt(byte b) {
-		int ret = b;
-		if (ret < 0)
-			ret += 256;
-		return ret;
+		if (b>0) 
+			return (int)b;
+		else
+			return (int)b+256;
 	}
 	
 	public static void checkAvailable(){
@@ -103,6 +103,7 @@ class CheckThread extends Thread{	// 255 of these; sends out IP address
 			HostSearcher.IP4[i]=null;
 			DatagramPacket packet=null;
 			try {
+				//System.out.println("check "+i);
 				packet=new DatagramPacket(IP,0,InetAddress.getByAddress(IP), HostSearcher.port);
 				socket.send(packet);
 			} catch(Exception e){

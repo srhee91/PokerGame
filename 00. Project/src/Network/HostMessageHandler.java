@@ -32,10 +32,8 @@ public class HostMessageHandler {
 	private Map<String, ClientConnection> clientConnections;
 	
 	private Host.Host host;
-	private Thread hostThread;	// will be notified when object is received
 	private ServerSocket server=null;
 	private int port;
-	
 	private Listening listeningThread = null;
 	
 	
@@ -49,7 +47,6 @@ public class HostMessageHandler {
 	public HostMessageHandler(int port, Host.Host host, Thread hostThread){
 		this.port=port;
 		this.host=host;
-		this.hostThread=hostThread;
 		try{
 			server=new ServerSocket(port);
 			System.out.println("Host is Listening on port ["+port+"] Waiting for client to connect...");
@@ -105,6 +102,14 @@ public class HostMessageHandler {
 	
 	public Set<String> getConnectedPlayerNames() {
 		return clientConnections.keySet();
+	}
+	
+	public void gameStart(){
+		
+	}
+	
+	public void gameEnd(){
+		
 	}
 	
 	/*

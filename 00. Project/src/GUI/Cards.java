@@ -119,11 +119,23 @@ public class Cards {
 	}
 	
 	
+	
+	// set all cards invisible, facedown, at deck position instantaneously
+	public void resetCards() {
+		for (int i=0; i<5; ++i) {
+			centerCards[i].setState(deckPosition, false, false, true);
+		}
+		for (int i=0; i<8; ++i) {
+			playerCards[i][0].setState(deckPosition, false, false, true);
+			playerCards[i][1].setState(deckPosition, false, false, true);
+		}
+	}
+	
 	// QueueAction params:
 	// card, 
 	// position, visible, faceUp, instant, waitTime, letPrevActionsFinish
 	
-	public void resetCards() {
+	public void collectCards() {
 		// flip all cards face down
 		for (int i=0; i<5; ++i) {
 			actionQueue.add(new QueuedAction(centerCards[i],
@@ -161,12 +173,17 @@ public class Cards {
 	}
 	
 	
-	public void dealCards(int dealer, String[] playerName) {
+	public void dealCards(int dealer, double waitTime, String[] playerName) {
+		
+		// add a spacer to let previous actions finish
+		actionQueue.add(new QueuedAction(centerCards[0],
+				null, null, null, false, waitTime, true));
+		
 		// set non-existant players' cards invisible (instant)
 		for (int i=0; i<8; ++i) {
 			if (playerName[i]==null) {
 				actionQueue.add(new QueuedAction(playerCards[i][0], 
-						null, false, null, true, 0.0, i==0));
+						null, false, null, true, 0.0, false));
 				actionQueue.add(new QueuedAction(playerCards[i][1], 
 						null, false, null, true, 0.0, false));
 			}
@@ -196,11 +213,12 @@ public class Cards {
 	}
 	
 	
-	public void dealFlop() {
+	public void dealFlop(double waitTime) {
+		
 		// turn visible
 		for(int i=0; i<3; ++i) {
 			actionQueue.add(new QueuedAction(centerCards[i],
-					null, true, null, false, 100.0, i==0));
+					null, true, null, false, i==0 ? waitTime : 100.0, i==0));
 		}
 		// flip
 		for(int i=0; i<3; ++i) {
@@ -208,19 +226,21 @@ public class Cards {
 					null, null, true, false, 100.0, i==0));
 		}
 	}
-	public void dealTurn() {
+	public void dealTurn(double waitTime) {
+		
 		// turn visible
 		actionQueue.add(new QueuedAction(centerCards[3],
-				null, true, null, false, 100.0, true));
+				null, true, null, false, waitTime, true));
 		// flip
 		actionQueue.add(new QueuedAction(centerCards[3],
 				null, null, true, false, 100.0, true));
 
 	}
-	public void dealRiver() {
+	public void dealRiver(double waitTime) {
+		
 		// turn visible
 		actionQueue.add(new QueuedAction(centerCards[4],
-				null, true, null, false, 100.0, true));
+				null, true, null, false, waitTime, true));
 		// flip
 		actionQueue.add(new QueuedAction(centerCards[4],
 				null, null, true, false, 100.0, true));
@@ -235,16 +255,18 @@ public class Cards {
 	}
 	
 	public void fold(int player) {
-		// flip cards face down
-		actionQueue.add(new QueuedAction(playerCards[player][0],
-				null, null, false, false, 0.0, true));
-		actionQueue.add(new QueuedAction(playerCards[player][1],
-				null, null, false, false, 100.0, false));
-		// set cards invisible
-		actionQueue.add(new QueuedAction(playerCards[player][0],
-				null, false, null, false, 0.0, true));
-		actionQueue.add(new QueuedAction(playerCards[player][1],
-				null, false, null, false, 100.0, false));
+		if (playerCards[player][0].isFaceUp()) {
+			// flip cards face down
+			actionQueue.add(new QueuedAction(playerCards[player][0],
+					null, null, false, false, 0.0, true));
+			actionQueue.add(new QueuedAction(playerCards[player][1],
+					null, null, false, false, 100.0, false));
+			// set cards invisible
+			actionQueue.add(new QueuedAction(playerCards[player][0],
+					null, false, null, false, 0.0, true));
+			actionQueue.add(new QueuedAction(playerCards[player][1],
+					null, false, null, false, 100.0, false));
+		}
 	}
 	
 	

@@ -33,12 +33,10 @@ public class HostMessageHandler {
 	private Map<String, ClientConnection> clientConnections;
 	
 	private Host.Host host;
-	private Thread hostThread;	// will be notified when object is received
 	private ServerSocket server=null;
 	private int port;
 	protected String allowedPlayer=null;
 	protected Timer nowTimer;
-	
 	private Listening listeningThread = null;
 	
 	
@@ -52,7 +50,6 @@ public class HostMessageHandler {
 	public HostMessageHandler(int port, Host.Host host, Thread hostThread){
 		this.port=port;
 		this.host=host;
-		this.hostThread=hostThread;
 		allowedPlayer=null;
 		
 		try{
@@ -112,6 +109,14 @@ public class HostMessageHandler {
 		return clientConnections.keySet();
 	}
 	
+	public void gameStart(){
+		
+	}
+	
+	public void gameEnd(){
+		
+	}
+	
 	/*
 	 * Inner class
 	 * when new client is connected to server.
@@ -154,7 +159,7 @@ public class HostMessageHandler {
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
 							+port+"] as client "+playerName);
 					
-					host.players[host.playerCount++] = playerName;
+					//host.players[host.playerCount++] = playerName;
 					
 					sendAll(host.players.clone());
 					

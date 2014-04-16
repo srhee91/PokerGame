@@ -3,13 +3,11 @@ package GUI;
 import java.awt.Font;
 import java.io.IOException;
 
-import javax.sound.midi.Receiver;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
@@ -51,6 +49,8 @@ public class LobbyMode extends TableMode {
 		mainStatusFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 32), true);
 		startButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		
+	
+		
 		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig.png", 
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig_down.png",
 				mainPanelPosition[0]+mainStartButtonOffset[0],
@@ -84,12 +84,7 @@ public class LobbyMode extends TableMode {
 			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/NUM_ANIMATIONS));
 		}
 		
-		
 		playerNamesLocal = new String[8];
-		for (int i=0; i<8; ++i)
-			playerNamesLocal[i] = null;
-		numPlayers = 0;
-		hostIndexLocal = -1;
 	}
 
 	@Override
@@ -97,9 +92,26 @@ public class LobbyMode extends TableMode {
 		
 		super.update(container, game, delta);
 		
-		// if HostSearcher is running, stop it
-		if (HostSearcher.isRunning())
-			HostSearcher.stop();
+		
+		// on-enter-mode actions
+		if (GUI.currentMode != 3) {
+			
+			if (GUI.currentMode==2) {
+				// stop the host searcher if we came from joinMode
+				HostSearcher.stop();
+			}
+			
+			// clear players info
+			for (int i=0; i<8; ++i)
+				playerNamesLocal[i] = null;
+			numPlayers = 0;
+			hostIndexLocal = -1;
+			
+			
+			GUI.currentMode = 3;
+		}
+		
+
 		/*
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
@@ -109,6 +121,13 @@ public class LobbyMode extends TableMode {
 		else if (container.getInput().isKeyPressed(Input.KEY_4))
 			game.enterState(4);
 		*/
+		
+		// check if we're still connected to host
+		if (GUI.hostConnectionError_flag) {
+			GUI.hostConnectionError_flag = false;
+			startButton.setEnable(false);
+			popupHostConnectionLost.setVisible(null);
+		}
 		
 		// check for new player list, convert to local order
 		if (GUI.cmh != null) {
@@ -120,7 +139,6 @@ public class LobbyMode extends TableMode {
 					if (((String)receivedObject).equals("start")) {
 						// go to ongoing mode
 						GUI.ongoingMode.setPlayerNamesLocal(playerNamesLocal);
-						GUI.ongoingMode.setButtonsEnable(false);
 						game.enterState(4);
 					}
 				
@@ -148,7 +166,11 @@ public class LobbyMode extends TableMode {
 					
 					// update local players list
 					for (int i=0; i<8; ++i) {
-						playerNamesLocal[i] = playerNames[(i + GUI.playerIndexInHost)%8];
+						 String name = playerNames[localToHostIndex(i)];
+						 if (i!=0 && name!=null && infoFont.getWidth(name)>90) {
+							 name = name.substring(0,5)+"...";
+						 }
+						 playerNamesLocal[i] = name;
 					}
 					hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
 				
@@ -166,6 +188,8 @@ public class LobbyMode extends TableMode {
 		super.render(container, game, g);
 		
 		drawPlayerNamesAndStatuses(container, g);
+		
+		popupHostConnectionLost.render(container, g);
 	}
 	
 	

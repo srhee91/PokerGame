@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public abstract class HostSearcher {
 	
 	static int IP1,IP2,IP3;
-	static String IP4[]=new String[255];
+	static String IP4[]=new String[256];
 	static volatile boolean stop = true;
 	static int port;
 	
@@ -29,26 +29,24 @@ public abstract class HostSearcher {
 		IP2=byteToInt(myIP.getAddress()[1]);
 		IP3=byteToInt(myIP.getAddress()[2]);
 
+		new SearcherListening().start();
 		
 		for(int i=0;i<255;i++) IP4[i]=null;
+		IP4[255]="";
+		new CheckThread(255).start();
 		stop=false;
-		checkAvailable();
-		
-		new SearcherListening().start();
 	}
 	
 	protected static int byteToInt(byte b) {
-		int ret = b;
-		if (ret < 0)
-			ret += 256;
-		return ret;
+		if (b>0) 
+			return (int)b;
+		else
+			return (int)b+256;
 	}
 	
 	public static void checkAvailable(){
-		
-		
 		for (int i=0;i<255;i++){
-			//if (IP4[i]!=null)
+			if (IP4[i]!=null)
 				new CheckThread(i).start();
 		}
 	}
@@ -57,7 +55,7 @@ public abstract class HostSearcher {
 		ArrayList<String[]> ret = new ArrayList<String[]>();
 		String IPprefix=IP1+"."+IP2+"."+IP3+".";
 		for(int i=0;i<255;i++){
-			if(IP4[i]!=null) {
+			if(IP4[i]!=null && IP4[i].length()>0) {
 				String[] nameAndIp = new String[2];
 				nameAndIp[0] = IP4[i];
 				nameAndIp[1] = IPprefix+i;
@@ -83,7 +81,6 @@ public abstract class HostSearcher {
 
 class CheckThread extends Thread{	// 255 of these; sends out IP address
 	int i;
-	Object mutex=new Object();
 	public CheckThread(int i){
 		this.i=i;
 	}
@@ -100,11 +97,12 @@ class CheckThread extends Thread{	// 255 of these; sends out IP address
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
-		synchronized(mutex){
+		synchronized(HostSearcher.IP4[i]){
 			HostSearcher.IP4[i]=null;
 			DatagramPacket packet=null;
 			try {
-				packet=new DatagramPacket(IP,1,InetAddress.getByAddress(IP), HostSearcher.port);
+				//System.out.println("check "+i);
+				packet=new DatagramPacket(IP,0,InetAddress.getByAddress(IP), HostSearcher.port);
 				socket.send(packet);
 			} catch(Exception e){
 				e.printStackTrace();
@@ -137,5 +135,6 @@ class SearcherListening extends Thread{		// 1 of these; listens for replies from
 			}
 			
 		}
+		socket.close();
 	}
 }

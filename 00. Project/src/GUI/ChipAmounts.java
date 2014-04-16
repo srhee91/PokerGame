@@ -49,7 +49,7 @@ public class ChipAmounts {
 		
 		private double currX, currY;
 		private boolean started, completed;
-		private final double moveSpeed = 1.0;	// pixels per ms
+		private final double moveSpeed = 0.7;	// pixels per ms
 		
 		private SendAmount(StaticAmount source, StaticAmount destination, int amount) {
 			this.source = source;
@@ -169,6 +169,10 @@ public class ChipAmounts {
 	
 	public void setPotAmount(int pot, int amount) {
 		potAmounts[pot].setAmount(amount);
+	}
+	
+	public int getPlayerAmount(int player) {
+		return playerAmounts[player].amount;
 	}
 	
 	public boolean sendOngoing() {

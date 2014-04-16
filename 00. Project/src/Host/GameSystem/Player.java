@@ -7,7 +7,6 @@ import Network.UserAction;
 
 public class Player implements Serializable {
 
-	public int hand_rank = 0;
 	public Card hand[];
 	public int totalChip;
 	public int betAmount;
@@ -22,6 +21,26 @@ public class Player implements Serializable {
 		totalChip = GameSystem.INIT_CHIP;
 		hasLeft = false;
 		betAmount = 0;
+	}
+	
+	// copy constructor
+	public Player(Player player) {
+		
+		hand = new Card[2];
+		for (int i=0; i<2; i++) {
+			hand[i] = new Card(player.hand[i].getKind(), player.hand[i].getNumber());
+		}
+		totalChip = player.totalChip;
+		betAmount = player.betAmount;
+		
+		if (player.latestAction==null)
+			latestAction = null;
+		else
+			latestAction = new UserAction(player.latestAction.action, player.latestAction.raiseAmount);
+		
+		hasFolded = player.hasFolded;
+		hasLeft = player.hasLeft;
+		count = player.count;
 	}
 	
 	//Checks if the player went all in.

@@ -18,7 +18,7 @@ import java.util.Random;
 //3. start the game
 //   - has all the flows here
 //   - uses methods in GameSystem
-public class HostTestInText {
+public class HostTestInText2 {
 	
 	public GameSystem game;
 	public Player player;
@@ -28,7 +28,7 @@ public class HostTestInText {
 	public int playerLeftCount;
 	public String players[];
 		
-	public HostTestInText(){
+	public HostTestInText2(){
 		playerCount = 4;
 	}
 					
@@ -92,21 +92,14 @@ public class HostTestInText {
 					else if(game.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(game.flops[k]);
 					
 					System.out.println();
-					int j=0;
 					for(int k=0; k<GameSystem.MAXPLAYER; k++){
-						if(game.player[k] != null && game.whoseTurn!=-1 ){
+						if(game.player[k] != null){
 							if(game.dealer == k)	System.out.println("***Dealer***");
 							if(game.whoseTurn == k)	System.out.println("---Your Turn---");
 							System.out.println("Player "+k+":\n" + game.player[k]);
-							j=k;
 						}
 					}
-					
-					if(game.whoseTurn==-1||player_count+1 == (game.playerCount())){
-						//game.whoseTurn = k;
-						game.whoseTurn=j;
-						break;
-					}
+
 					System.out.println("It's player " + game.whoseTurn +"'s turn!");
 					System.out.print("Fold=0 Call=1 Bet=2\n:");
 				
@@ -223,7 +216,7 @@ public class HostTestInText {
 	//main method - a process created by Poker.java or GUI
 	public static void main(String args[]){
 
-		HostTestInText host = new HostTestInText();		
+		HostTestInText2 host = new HostTestInText2();		
 
 		host.startGame();	
 	}	

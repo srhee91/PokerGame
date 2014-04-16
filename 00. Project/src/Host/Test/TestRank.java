@@ -255,6 +255,7 @@ public class TestRank {
 	}
 	public static void main(String[] args){
 		Rank obj1=new Rank();
+		/*
 		straightflush_check(obj1);
 		fullhouse_check(obj1);
 		fourcard_check(obj1);
@@ -263,7 +264,7 @@ public class TestRank {
 		threeofkind_check(obj1);
 		twopair_check(obj1);
 		onepair_check(obj1);
-		highcard_check(obj1);
+		highcard_check(obj1);*/
 		
 		
 		

@@ -10,8 +10,6 @@ public class Gamestate implements Serializable {
 	
 	public Player player[];
 	
-	public int me;		//player index
-	
 	//**Instance variables that hold throughout the entire game;
 	public int whoseTurn;		//player index
 	public int dealer;			//player index
@@ -25,5 +23,8 @@ public class Gamestate implements Serializable {
 	public Pot potTotal;
 	public int highestBet;	
 	
-	public int leftover;	
+	public int blind;
+	public int leftover;
+	
+	public boolean showdown;
 }

@@ -21,11 +21,14 @@ public class GUI extends StateBasedGame
 	public static LobbyMode lobbyMode;
 	public static OngoingMode ongoingMode;
 	
+	public static int currentMode;
+	
+	
 	public static ClientMessageHandler cmh;
 	
 	protected static String playerName;
 	protected static int playerIndexInHost = -1;
-	
+	public static boolean hostConnectionError_flag;
 	
 	public GUI(String name) {
 		super(name);		
@@ -34,10 +37,14 @@ public class GUI extends StateBasedGame
 	@Override
 	public void initStatesList(GameContainer container) throws SlickException
 	{
+		hostConnectionError_flag = false;
+		
 		startMode = new StartMode();
 		joinMode = new JoinMode();
 		lobbyMode = new LobbyMode();
 		ongoingMode = new OngoingMode();
+		
+		currentMode = -1;
 		
 		this.addState(startMode);
 		this.addState(joinMode);

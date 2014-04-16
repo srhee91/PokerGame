@@ -225,6 +225,10 @@ public class JoinList {
 		updateJoinButtons();
 	}
 	
+	public String[] getRow(int i) {
+		return rowsData.get(i);
+	}
+	
 	
 	public void setVisible(boolean visible) {
 		this.visible = visible;

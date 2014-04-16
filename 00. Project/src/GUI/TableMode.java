@@ -8,6 +8,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.gui.AbstractComponent;
+import org.newdawn.slick.gui.ComponentListener;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class TableMode extends Mode {
@@ -41,24 +43,34 @@ public class TableMode extends Mode {
 	private TrueTypeFont playerLabelFont;
 	
 	
-	public boolean hostConnectionError_flag;
+	protected PopupMessageOneButton popupHostConnectionLost;
 	
 	
 	@Override
-	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+	public void init(GameContainer container, final StateBasedGame game) throws SlickException {
 		
 		super.init(container, game);
-		
-		hostConnectionError_flag = false;
 		
 		// load background image of table surface
 		background = new Image(GUI.RESOURCES_PATH + "table_background.jpg");
 		
 		// load font
 		infoFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 16), true);
-		
 		mainLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 12), true);
 		playerLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 22), true);
+		
+		
+		popupHostConnectionLost = new PopupMessageOneButton(container, "Lost connection to host process!",
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// ok action
+						// no need to re-enable any buttons
+						GUI.cmh.close();
+						GUI.cmh = null;
+						game.enterState(1);	// go back to StartMode
+					}
+				});
 	}
 
 	
@@ -67,6 +79,12 @@ public class TableMode extends Mode {
 		
 	}
 	
+	protected int hostToLocalIndex(int hostIndex) {
+		return (hostIndex + 8 - GUI.playerIndexInHost) % 8;
+	}
+	protected int localToHostIndex(int localIndex) {
+		return (localIndex + GUI.playerIndexInHost) % 8;
+	}
 	
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {

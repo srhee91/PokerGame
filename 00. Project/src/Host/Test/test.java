@@ -1,9 +1,8 @@
 package Host.Test;
 
-import GameState.PlayerInfo;
-import GameState.TableInfo;
 import Host.GameSystem.Card;
-import Host.GameSystem.PokerInfo;
+import Host.GameSystem.GameSystem;
+import Host.GameSystem.Player;
 import Host.GameSystem.Pot;
 
 public class test {
@@ -17,10 +16,9 @@ public class test {
 	
 	public void testPot(){
 		//initialization
-		PlayerInfo player[] = new PlayerInfo[8];
+		Player player[] = new Player[8];
 		Card cards[] = new Card[2];
 		Pot pot = new Pot();
-		TableInfo current = new TableInfo();
 
 		//Test 1 ( Every player has equal amount of chip and All-in case )
 		test1(player,cards,pot);
@@ -32,17 +30,17 @@ public class test {
 		test4(player,cards,pot);
 		
 	}
-	public void test1(PlayerInfo player[], Card cards[], Pot pot){
+	public void test1(Player player[], Card cards[], Pot pot){
 		int tempbet=100;
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo();
-			player[i].hands = cards;
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			player[i] = new Player();
+			player[i].hand = cards;
 			player[i].totalChip = tempbet;
 		}
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
 			player[i].bet(player[i].totalChip);
 		}
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
+		for(int i=0; i<GameSystem.MAXPLAYER; i++)
 		{
 			System.out.println("Player "+ i+1 + " : " + player[i].totalChip + "chips and " + player[i].betAmount + "bet");
 		
@@ -52,11 +50,11 @@ public class test {
 		pot.printPot();
 		System.out.println("Winner takes all");
 	}
-	public void test2(PlayerInfo player[], Card cards[], Pot pot){
+	public void test2(Player player[], Card cards[], Pot pot){
 		int tempbet=100;
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo();
-			player[i].hands = cards;
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			player[i] = new Player();
+			player[i].hand = cards;
 			player[i].totalChip = tempbet;
 			tempbet+=50;
 		}
@@ -65,7 +63,7 @@ public class test {
 		if(player[7].bet(player[0].betAmount)==false){
 			player[7].bet(player[7].totalChip);
 		}
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
+		for(int i=0; i<GameSystem.MAXPLAYER; i++)
 		{
 			System.out.println("Player "+ i + " : " + player[i].totalChip + "chips and " + player[i].betAmount + "bet");
 		
@@ -74,18 +72,18 @@ public class test {
 		pot.gatherPots(player, 100);
 		pot.printPot();
 	}
-	public void test3(PlayerInfo player[], Card cards[], Pot pot){
+	public void test3(Player player[], Card cards[], Pot pot){
 		int tempbet=100;
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo();
-			player[i].hands = cards;
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			player[i] = new Player();
+			player[i].hand = cards;
 			player[i].totalChip = tempbet;
 			tempbet+=50;
 		}
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
 			player[i].bet(player[i].totalChip);
 		}
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
+		for(int i=0; i<GameSystem.MAXPLAYER; i++)
 		{
 			System.out.println("Player "+ i + " : " + player[i].totalChip + "chips and " + player[i].betAmount + "bet");
 		
@@ -95,18 +93,18 @@ public class test {
 		pot.printPot();	
 			
 	}
-	public void test4(PlayerInfo player[], Card cards[], Pot pot){
+	public void test4(Player player[], Card cards[], Pot pot){
 		int tempbet=100;
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++){
-			player[i] = new PlayerInfo();
-			player[i].hands = cards;
+		for(int i=0; i<GameSystem.MAXPLAYER; i++){
+			player[i] = new Player();
+			player[i].hand = cards;
 			player[i].totalChip = tempbet;
 			tempbet+=50;
 		}
-		for(int i=1; i<PokerInfo.MAXPLAYER; i+=2){
+		for(int i=1; i<GameSystem.MAXPLAYER; i+=2){
 			player[i].bet(player[i].totalChip);
 		}
-		for(int i=0; i<PokerInfo.MAXPLAYER; i++)
+		for(int i=0; i<GameSystem.MAXPLAYER; i++)
 		{
 			System.out.println("Player "+ i + " : " + player[i].totalChip + "chips and " + player[i].betAmount + "bet");
 		

@@ -3,7 +3,9 @@ package Host;
 import java.util.*;
 
 import GameState.*;
+import GameState.Gamestate;
 import Host.GameSystem.GameSystem;
+import Host.GameSystem.Pot;
 import Network.*;
 
 
@@ -105,25 +107,88 @@ public class Host{
 		
 		//each hand
 		while(game.playerCount() > 1){
+			
 			game.newHand();
 			
 			//each round
 			for(int i=0; i<4; i++){
-				game.flopState = i;
-				game.highestBetter = game.nextTurn();
+
+				game.newRound();
+				
+				
+				// send a pre-round extra gamestate:
+				// causes GUI to show animation of bets being collected
+				// and next flopstate cards revealed.  this way, the first player's turn doesn't start
+				// immediately after the deal/flop reveal.
+				int temp = game.whoseTurn;
+				game.whoseTurn = -1;
+				sendGameState();
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				game.whoseTurn = temp;
+				
+				
 				
 				//each turn
 				do{
+
 					sendGameState();
 					UserAction ua = receiveUserAction();
 					updateAction(ua);
 
-				}while(game.nextTurn() != game.highestBetter);
+				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1
+						&& game.potTotal.getCurrentPot().winnerByFold == -1);
+				
+				
+				// send a post-round extra gamestate:
+				// allows GUI to show last player action and update his bet for this round
+				temp = game.whoseTurn;
+				game.whoseTurn = -1;
+				sendGameState();
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				game.whoseTurn = temp;
+				
+								
 				
 				game.updateRound();
+				
+				
+				
+				
+				//testing
 				game.potTotal.printPot();
+				
+				/*special case handling*/
+				//if everyone folds
+				if(game.potTotal.getCurrentPot().winnerByFold != -1)
+					break;
+				
+				//if everyone went all in in current pot
+				Pot currentPot = game.potTotal.getCurrentPot();
+				int notAllIn = 0;
+				for(int j=0; j<GameSystem.MAXPLAYER; j++)
+					if(currentPot.playerInvolved[i] && !game.player[i].isAllIn())
+						notAllIn++;
+				
+				if(notAllIn <= 1){
+					game.showdown = true;
+					break;
+				}
 			}
+			
+			//TODO need to figure out what to send, what the gui need to show winning hands
+			//		examples : pot, showdown, ...
 			game.updateHand();
+			//TODO send gamestate and receive if anyone left the game.
+			sendGameState();
+						
 		}
 		//celebrate the winner
 		//losers will just become a spectator without any notification
@@ -146,7 +211,19 @@ public class Host{
 			}
 		
 		}*/
-		
+		/*
+		// DEBUG: print game state
+		Gamestate gameState = game.getGamestate();
+		for(int k=0; k<8; k++){
+			if(gameState.player[k] != null){
+				if(gameState.dealer == k)	System.out.println("***Dealer***");
+				if(gameState.whoseTurn == k)	System.out.println("---Your Turn---");
+				System.out.println("Player "+k+":\n" + gameState.player[k]);
+			}
+		}
+		System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
+		// DONE printing game state
+		*/
 		hmh.sendAll(game.getGamestate());	
 	}
 	
@@ -169,22 +246,41 @@ public class Host{
 	
 	public void updateAction(UserAction ua){
 		//bet/fold/call/raise...
-//		if(action)?
-//		game.player[game.whoseTurn].bet(betAmount - game.player[game.whoseTurn].betAmount);
-//		game.highestBet = betAmount;
-//		game.player[game.whoseTurn].fold();
-		
+
 		switch (ua.action) {
-		case CHECK_CALL:
-			game.player[game.whoseTurn].bet(ua.raiseAmount);
-			break;
+		
 		case FOLD:
 			game.player[game.whoseTurn].fold();
+			game.potTotal.fold(game.whoseTurn);
+			
+			//Special 
+			Pot currentPot = game.potTotal.getCurrentPot();
+			int numPlaying = 0;
+			for(int i=0; i<GameSystem.MAXPLAYER; i++){
+				if(currentPot.playerInvolved[i]){
+					numPlaying++;
+					currentPot.winnerByFold = i;
+				}
+			}
+			if(numPlaying > 1){
+				currentPot.winnerByFold = -1;
+			}
+			
 			break;
-		case RAISE_BET:
+		
+		case CHECK:
+		case CALL:
+			game.player[game.whoseTurn].bet(ua.raiseAmount);
+			break;
+		
+		case BET:
+		case RAISE:
+		case ALL_IN:
 			game.player[game.whoseTurn].bet(ua.raiseAmount);
 			game.highestBetter = game.whoseTurn;
 			game.highestBet = ua.raiseAmount;
+			break;
+		default:
 			break;
 		}
 		
@@ -209,7 +305,7 @@ public class Host{
 		
 		// wait for start msg from host client
 		host.waitToStart();
-		
+		host.hmh.gameStart();
 		
 		host.hb.close();
 		
@@ -217,7 +313,7 @@ public class Host{
 		host.startGame();	
 		//host.endGame();
 		 
-		
+		host.hmh.gameEnd();
 		
 		
 		/*

@@ -5,7 +5,6 @@ import java.util.*;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.AbstractComponent;
 import org.newdawn.slick.gui.ComponentListener;
@@ -17,7 +16,7 @@ import Network.HostSearcher;
 public class JoinMode extends Mode {
 
 	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS"};//, "PLAYERS"};
-	private final int[] joinListColumnWidths = {220, 180};//, 120};
+	private final int[] joinListColumnWidths = {280, 180};//, 120};
 	
 	private final String nameTakenString = "The entered player name is already being used.";
 	private final String failedJoinString = "Selected game lobby is no longer availabe.";
@@ -29,9 +28,6 @@ public class JoinMode extends Mode {
 	private PopupMessageOneButton popupFailedJoin;
 	private PopupMessageOneButton popupNameTaken;
 	
-	protected List<String[]> gamesInfo;
-	protected List<Boolean>  gamesJoinable;
-		
 	
 	// status flags
 	public boolean joinHostSuccess_flag;
@@ -80,11 +76,12 @@ public class JoinMode extends Mode {
 							int index){								// join action
 						
 						// JOIN GAME
-						String ipString = gamesInfo.get(index)[1];
+						String ipString = joinList.getRow(index)[1];
 						JoinHostThread jht = new JoinHostThread(ipString, GUI.playerName);
 						jht.start();
 						
-						showPopupLoading(source);
+						joinList.setVisible(false);
+						popupLoading.setVisible(source);
 					}
 				},
 				new ComponentListener() {	
@@ -94,7 +91,9 @@ public class JoinMode extends Mode {
 						System.out.println("refresh games list!");
 						
 						// REFRESH
-						onRefresh();
+						HostSearcher.checkAvailable();
+						joinList.setLoading(true);
+						refreshTimeNano = System.nanoTime();	// record time
 					}
 				},
 				new ComponentListener() {			// cancel action
@@ -105,49 +104,18 @@ public class JoinMode extends Mode {
 					}
 				});
 		
-		
-		gamesInfo = new ArrayList<String[]>();
-		gamesJoinable = new ArrayList<Boolean>();
-		/*
-		String[] data = {"host_name", "192.128.234.122", "3/8"};
-		for (int i=0; i<20; ++i) {
-			gamesInfo.add(data);
-			gamesJoinable.add(7854%(i+1)==0);
-		}*/
-		joinList.setRowsData(gamesInfo);
-		joinList.setRowsJoinable(gamesJoinable);
 	}
 	
-	
-	protected void onRefresh() {
-		HostSearcher.checkAvailable();
-		joinList.setLoading(true);
-		refreshTimeNano = System.nanoTime();	// record time
-	}
-	
+
 	
 	public void updateGamesList() {
 		
-		gamesInfo = HostSearcher.getValidNamesAndIps();
-		gamesJoinable.clear();
+		List<String[]> gamesInfo = HostSearcher.getValidNamesAndIps();
+		List<Boolean> gamesJoinable = new ArrayList<Boolean>();
 		for (int i=0; i<gamesInfo.size(); ++i)
 			gamesJoinable.add(true);
 		joinList.setRowsData(gamesInfo);
 		joinList.setRowsJoinable(gamesJoinable);
-	}
-	
-	
-	private void showPopupLoading(AbstractComponent source) {
-		joinList.setVisible(false);
-		popupLoading.setVisible(source);
-	}
-	private void showPopupNameTaken(AbstractComponent source) {
-		joinList.setVisible(false);
-		popupNameTaken.setVisible(source);
-	}
-	private void showPopupFailedJoin(AbstractComponent source) {
-		joinList.setVisible(false);
-		popupFailedJoin.setVisible(source);
 	}
 	
 	
@@ -165,13 +133,22 @@ public class JoinMode extends Mode {
 			game.enterState(4);
 		*/
 		
-		// if HostSearcher is not running, start it
-		if (!HostSearcher.isRunning())
+		
+		// on-enter-mode actions
+		if (GUI.currentMode != 2) {			
+			// start the host searcher (will automatically call checkAvailable())
 			HostSearcher.start(4320);
+			joinList.setLoading(true);
+			refreshTimeNano = System.nanoTime();	// record time
+			
+			GUI.currentMode = 2;
+		}
+		
+	
 		
 		// if joinlist is refreshing, check if 1 second has passed
 		if (joinList.isLoading()) {
-			if (System.nanoTime() - refreshTimeNano >= 2000000000L) {
+			if (System.nanoTime() - refreshTimeNano >= 1000000000L) {
 				joinList.setLoading(false);
 				updateGamesList();
 			}
@@ -189,10 +166,12 @@ public class JoinMode extends Mode {
 				
 			} else if (joinHostNameTaken_flag) {
 				popupLoading.setInvisible();
-				showPopupNameTaken(popupLoading.getPopupSource());
+				joinList.setVisible(false);
+				popupNameTaken.setVisible(popupLoading.getPopupSource());
 			} else if (joinHostError_flag) {
 				popupLoading.setInvisible();
-				showPopupFailedJoin(popupLoading.getPopupSource());
+				joinList.setVisible(false);
+				popupFailedJoin.setVisible(popupLoading.getPopupSource());
 			}
 		}
 		

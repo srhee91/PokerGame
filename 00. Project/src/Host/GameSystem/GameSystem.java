@@ -21,12 +21,12 @@ public class GameSystem{
 	public int highestBet;
 	public int highestBetter;
 	
-	public Deck deck;
+	private Deck deck;
 	
 	public int blind;
 	public int leftover;
 	
-	
+	public boolean showdown;
 	
 	public GameSystem() {
 		
@@ -66,10 +66,8 @@ public class GameSystem{
 		deck = new Deck();
 		deck.shuffle();
 		
-		for(int i=0; i<MAXPLAYER; i++){
-			if(player[i] != null)
-				player[i].dealHands(deck.drawHands());
-		}
+		for(int i=0; i<MAXPLAYER; i++)
+			if(player[i] != null)	player[i].dealHands(deck.drawHands());
 		
 		flops = deck.drawFlops();
 		potTotal = new Pot(leftover);
@@ -78,22 +76,40 @@ public class GameSystem{
 		whoseTurn = dealer;
 		highestBet = blind;
 		initBlinds();
+		
+		flopState = 0;
+	}
+	public void newRound(){
+		
+		highestBetter = nextTurn();
+
+		for(int i=0; i<MAXPLAYER; i++)
+			if(player[i] != null)	player[i].latestAction = null;
 	}
 	
 	public void updateRound(){
+		
 		potTotal.gatherPots(player, highestBet);
 		
 		highestBet = 0;
 		whoseTurn = dealer;
+		
+		flopState++;
+
 	}
 	public void updateHand(){
 
-		//find winner
-		//pot to winner
+		//find and give pot to winner
 		potTotal.potToWinner(this);
+		
+		for(int i=0; i<MAXPLAYER; i++){
+			if(player[i]!=null && player[i].totalChip == 0)	player[i]=null;
+		}
 		
 		//update dealer
 		dealer = nextPlayer(dealer);
+		
+		flopState = 4;
 	}
 
 	
@@ -128,9 +144,8 @@ public class GameSystem{
 	public int playerCount(){
 		
 		int count = 0;
-		for(int i=0; i<MAXPLAYER; i++){
+		for(int i=0; i<MAXPLAYER; i++)
 			if(player[i]!=null)	count++;
-		}
 		
 		return count;
 	}
@@ -138,17 +153,29 @@ public class GameSystem{
 	public Gamestate getGamestate(){
 		Gamestate gamestate = new Gamestate();
 		
-		//gamestate.me = me;
-		gamestate.player = player;
+		gamestate.player = new Player[GameSystem.MAXPLAYER];
+		for(int i=0; i< GameSystem.MAXPLAYER; i++)
+			if(player[i] == null)	gamestate.player[i] = null;
+			else					gamestate.player[i] = new Player(player[i]);
+		
 		gamestate.whoseTurn = whoseTurn;
 		gamestate.dealer = dealer;
 		gamestate.bigBlinder = bigBlinder;
 		gamestate.smallBlinder = smallBlinder;
-		gamestate.flops = flops;
+		
+		gamestate.flops = new Card[5];
+		for(int i=0; i<5; i++)
+			gamestate.flops[i] = new Card(flops[i].getKind(), flops[i].getNumber());
+
 		gamestate.flopState = flopState;
-		gamestate.potTotal = potTotal;
+		
+		gamestate.potTotal = new Pot(potTotal);
 		gamestate.highestBet = highestBet;
+		
+		gamestate.blind = blind;
 		gamestate.leftover = leftover;
+		
+		gamestate.showdown = showdown;
 		
 		return gamestate;
 	}

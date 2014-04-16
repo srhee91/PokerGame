@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -16,9 +15,7 @@ import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
 import GameState.Gamestate;
-import Host.GameSystem.GameSystem;
 import Host.GameSystem.Player;
-import Network.HostSearcher;
 import Network.UserAction;
 
 public class OngoingMode extends TableMode {
@@ -31,13 +28,16 @@ public class OngoingMode extends TableMode {
 	private final int[] mainRaiseTextFieldOffset = {340, 35};
 	private final int[] mainChipAmountOffset = {37, -30};
 	private final int[] mainDealerChipOffset = {7, -30};
-	
+	private final int[] mainTotalAmountOffset = {10, 15};		// added (center-left align)
 	
 	private final int[][] playerCardOffsets = {{7, 32}, {89, 32}};
 	private final int[] playerChipAmountOffset = {72, 145};
 	private final int[] playerDealerChipOffset = {42, 145};
+	protected final int playerNameOffset[] = {8, 15};			// added, overloads. (center-left align)
+	private final int[] playerTotalAmountOffset = {162, 15};		// added (center-right align)
 	
-
+	
+	//private final Color winnerLabelColor = new Color(212, 65, 238, 242);
 	private final Color thinkingLabelColor = new Color(128, 128, 128, 242);
 	private final Color foldLabelColor = new Color(206, 0, 0, 242);
 	private final Color raiseLabelColor = new Color(92, 184, 17, 242);
@@ -45,36 +45,46 @@ public class OngoingMode extends TableMode {
 	private final Color allInLabelColor = new Color(156, 51, 237, 242);
 	//...
 	
+	private PopupMessageOneButton popupRaiseInvalid;
+	
+	private PopupMessageTwoButtons popupAllInConfirm;
+	private final String allInConfirmString = "Are you sure you want to go all in?";
+	
+	private PopupMessageOneButton popupLostGame;
+	private final String lostGameString = "You lost. Press OK to return to main menu.";
+	
 	private Cards cards;
 	private ChipAmounts chipAmounts;
 	private DealerChip dealerChip;
 
 	private TrueTypeFont infoFontBig;
-	
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont allInButtonFont;
+	private TrueTypeFont totalAmountFont;		// added
 	
 	Button foldButton;
 	Button checkButton;
 	Button raiseButton;
 	Button allInButton;
-	
 	RaiseTextField raiseTextField;
 
+	//private String checkButtonString;	// changes between check or call
+	//private String raiseButtonString;	// changes between bet and raise
+
+	private boolean checkOrCall;	// true=check
+	private boolean betOrRaise;		// true = bet;
 	
 	private String[] playerNamesLocal;
 	
+	private Gamestate prevGameState;
 	private Gamestate gameState;
 	
+	private int lastFlopState;
 	
-	// game state flags
-	private boolean playerCardsDealt = false;
-	private boolean flopDealt = false;
-	private boolean turnDealt = false;
-	private boolean riverDealt = false;
+	
 	
 	@Override
-	public void init(GameContainer container, StateBasedGame game)throws SlickException {
+	public void init(GameContainer container, final StateBasedGame game)throws SlickException {
 		
 		super.init(container, game);
 		
@@ -82,7 +92,7 @@ public class OngoingMode extends TableMode {
 		infoFontBig = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 26), true);
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
-
+		totalAmountFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);
 		
 		// initialize cards
 		int[][][] playerCardPositions = new int[8][2][2];
@@ -97,7 +107,7 @@ public class OngoingMode extends TableMode {
 			playerCardPositions[i][1][1] = playerPanelPositions[i][1]+playerCardOffsets[1][1];
 		}
 		cards = new Cards(playerCardPositions);
-		cards.resetCards();
+		cards.collectCards();
 		
 		// initialize chip amounts
 		int[][] playerAmountPositions = new int[8][2];
@@ -107,7 +117,7 @@ public class OngoingMode extends TableMode {
 			playerAmountPositions[i][0] = playerPanelPositions[i][0]+playerChipAmountOffset[0];
 			playerAmountPositions[i][1] = playerPanelPositions[i][1]+playerChipAmountOffset[1];
 		}
-		chipAmounts = new ChipAmounts(infoFont, infoFontBig, 9999, playerAmountPositions);
+		chipAmounts = new ChipAmounts(infoFont, infoFontBig, 0, playerAmountPositions);
 		
 		// initialize dealer chip
 		int[][] dealerChipPositions = new int[8][2];
@@ -120,8 +130,54 @@ public class OngoingMode extends TableMode {
 		dealerChip = new DealerChip(dealerChipPositions, 0);
 		
 		
-		
+		popupLostGame = new PopupMessageOneButton(container, lostGameString,
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// ok action
+						// disconnect from host, return to main menu
+						GUI.cmh.close();
+						game.enterState(1);
+					}
+				});
 
+		
+		popupRaiseInvalid = new PopupMessageOneButton(container, "",	// raise error msg will be set manually
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// ok action
+						// close popup, re-enable gui, erase raise amount
+						raiseTextField.setText("");
+						setButtonsEnable(true);
+					}
+				});
+		
+		
+		popupAllInConfirm = new PopupMessageTwoButtons(container, allInConfirmString,
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// ok action
+						//if (GUI.cmh!=null) {
+							try {
+								GUI.cmh.send(new UserAction(UserAction.Action.ALL_IN, 
+										gameState.player[GUI.playerIndexInHost].totalChip));
+							} catch (IOException e) {
+								System.out.println("failed to send raise (all in)!");
+							}
+						//}
+						// do not re-enable buttons
+					}
+				},
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// cancel action
+						// close popup, enable buttons
+						setButtonsEnable(true);
+					}
+				});
 		
 		// load buttons and textfield
 		
@@ -134,13 +190,14 @@ public class OngoingMode extends TableMode {
 				mainPanelPosition[0] + mainCheckButtonOffset[0], mainPanelPosition[1] + mainCheckButtonOffset[1],
 				new ComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent source) {
-						System.out.println("checked/called!");
-						
+					public void componentActivated(AbstractComponent source) {						
 						try {
-							if (GUI.cmh!=null)
-								GUI.cmh.send(new UserAction(UserAction.Action.CHECK_CALL,
+							//if (GUI.cmh!=null) {
+								GUI.cmh.send(new UserAction(
+										checkOrCall ? UserAction.Action.CHECK : UserAction.Action.CALL,
 										gameState.highestBet));
+								setButtonsEnable(false);
+							//}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -152,12 +209,12 @@ public class OngoingMode extends TableMode {
 				mainPanelPosition[0] + mainFoldButtonOffset[0], mainPanelPosition[1] + mainFoldButtonOffset[1],
 				new ComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent source) {
-						System.out.println("folded!");
-						
+					public void componentActivated(AbstractComponent source) {						
 						try {
-							if (GUI.cmh!=null)
+							//if (GUI.cmh!=null) {
 								GUI.cmh.send(new UserAction(UserAction.Action.FOLD, 0));
+								setButtonsEnable(false);
+							//}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -169,19 +226,43 @@ public class OngoingMode extends TableMode {
 				mainPanelPosition[0] + mainRaiseButtonOffset[0], mainPanelPosition[1] + mainRaiseButtonOffset[1],
 				new ComponentListener() {
 					@Override
-					public void componentActivated(AbstractComponent source) {
-						System.out.println("raised!");
-						
+					public void componentActivated(AbstractComponent source) {						
 						try {
-							if (GUI.cmh!=null) {
+							//if (GUI.cmh!=null) {
 								
 								String raiseAmtString = raiseTextField.getText();
 								int raiseAmount = 0;
 								if (!raiseAmtString.isEmpty()) {
 									raiseAmount = Integer.parseInt(raiseAmtString);
+									
+									if (raiseAmount <= gameState.highestBet) {
+										// must raise to above the highest bet
+										raiseTextField.setText("");
+										setButtonsEnable(false);
+										popupRaiseInvalid.setMessageString(betOrRaise
+												? "Must bet an amount above $"+gameState.highestBet
+												: "Must raise to an amount above $"+gameState.highestBet);
+										popupRaiseInvalid.setVisible(raiseButton);
+									} else if (raiseAmount >= gameState.player[GUI.playerIndexInHost].totalChip) {
+										// assume this means all in, show all in popup 
+										raiseTextField.setText(""+gameState.player[GUI.playerIndexInHost].totalChip);
+										setButtonsEnable(false);
+										popupAllInConfirm.setVisible(raiseButton);
+									} else {
+										GUI.cmh.send(new UserAction(
+												betOrRaise ? UserAction.Action.BET : UserAction.Action.RAISE,
+												raiseAmount));
+										setButtonsEnable(false);
+									}
+									
+								} else {
+									// no amount entered
+									setButtonsEnable(false);
+									popupRaiseInvalid.setMessageString("No amount entered!");
+									popupRaiseInvalid.setVisible(raiseButton);
 								}
-								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, raiseAmount));
-							}
+								
+							//}
 						} catch (IOException e) {
 							System.out.println("Failed to send user action");
 						}
@@ -194,15 +275,10 @@ public class OngoingMode extends TableMode {
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {
-						System.out.println("all in!");
-						
-						try {
-							if (GUI.cmh!=null)
-								GUI.cmh.send(new UserAction(UserAction.Action.RAISE_BET, 
-									100));		// TODO: CHANGE THIS
-						} catch (IOException e) {
-							System.out.println("Failed to send user action");
-						}
+						// show all in popup
+						raiseTextField.setText(""+gameState.player[GUI.playerIndexInHost].totalChip);
+						setButtonsEnable(false);
+						popupAllInConfirm.setVisible(allInButton);
 					}
 		});
 		
@@ -217,18 +293,37 @@ public class OngoingMode extends TableMode {
 	}
 	
 	
-	private int hostToLocalIndex(int hostIndex) {
-		return (hostIndex + 8 - GUI.playerIndexInHost) % 8;
-	}
 	
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		
 		super.update(container, game, delta);
 		
-		// if HostSearcher is running, stop it
-		if (HostSearcher.isRunning())
-				HostSearcher.stop();
+		// on-enter-mode actions
+		if (GUI.currentMode != 4) {
+			
+			prevGameState = null;
+			
+			lastFlopState = 3;
+			checkOrCall = true;
+			betOrRaise = true;
+			
+			// reset cards
+			cards.resetCards();
+			
+			// clear all chip amounts
+			for (int i=0; i<8; i++) {
+				chipAmounts.setPlayerAmount(i, 0);
+				chipAmounts.setPotAmount(i, 0);
+			}
+			
+			// disable buttons
+			setButtonsEnable(false);
+			
+			GUI.currentMode = 4;
+		}
+		
+
 		/*
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
@@ -239,6 +334,16 @@ public class OngoingMode extends TableMode {
 			game.enterState(3);
 		*/
 		
+		
+		// check if we're still connected to host
+		if (GUI.hostConnectionError_flag) {
+			GUI.hostConnectionError_flag = false;
+			setButtonsEnable(false);
+			popupHostConnectionLost.setVisible(null);
+		}
+		
+		
+		
 		// check for received gamestates from host
 		if (GUI.cmh != null) {
 			Object receivedObject = GUI.cmh.getReceivedObject();
@@ -246,6 +351,7 @@ public class OngoingMode extends TableMode {
 				
 				if (receivedObject instanceof Gamestate) {
 				
+					prevGameState = gameState;
 					gameState = (Gamestate)receivedObject;
 					
 					
@@ -267,29 +373,69 @@ public class OngoingMode extends TableMode {
 					// DONE printing game state
 					
 					
+					// check if we've lost the game
+					if (gameState.player[GUI.playerIndexInHost]==null) {
+						setButtonsEnable(false);
+						popupLostGame.setVisible(null);
+					}
 					
-					int hostDealerIndex = gameState.dealer;
-					int localDealerIndex = hostToLocalIndex(hostDealerIndex);
-					Host.GameSystem.Card[] flop = gameState.flops;
-					
-					
-					// update dealer chip position
-					dealerChip.moveTo(localDealerIndex);
-					
-					
-					
-					// update player total chips
+
+					// enable/disable buttons based on if it's our turn
+					if (gameState.whoseTurn==GUI.playerIndexInHost) {
+						setButtonsEnable(true);
+					} else {
+						setButtonsEnable(false); 
+					}
+
+					// fold player's cards 
 					for (int i=0; i<8; i++) {
-							int localIndex = hostToLocalIndex(i);
+						if (gameState.player[i]!=null
+								&& gameState.player[i].hasFolded) {
+							cards.fold(hostToLocalIndex(i));
+						}
+					}
+
+					
+					// update player chip amounts (bet amounts)
+					boolean sendQueued = false;
+					for (int i=0; i<8; i++) {
+						int localIndex = hostToLocalIndex(i);
+						// if the updated chip amount is less, send the difference to the main pot
+						// otherwise, just update it
 						if (gameState.player[i] != null) {
-							int amount = gameState.player[i].totalChip;
-							chipAmounts.setPlayerAmount(localIndex, amount);
-							System.out.println("\tplayer "+i+" current bet: "+amount);
+							int amount = gameState.player[i].betAmount;
+							int oldAmount = chipAmounts.getPlayerAmount(localIndex);
+							if (amount < oldAmount) {
+								chipAmounts.addSendToQueue(
+										oldAmount - amount,
+										true, localIndex,
+										false, 0,	// send to main pot
+										0.0, false);
+								sendQueued = true;
+							} else {
+								chipAmounts.setPlayerAmount(localIndex, amount);
+							}
 						} else {
+							// if player does not exist, set amount to 0
 							chipAmounts.setPlayerAmount(localIndex, 0);
 						}
 					}
-						
+					if (sendQueued) {
+						// split main pot into side pots if necessary
+						Host.GameSystem.Pot pot = gameState.potTotal;
+						for (int i=0; i<8; i++) {
+							if (pot==null)
+								break;
+							chipAmounts.addSendToQueue(
+									pot.totalPot,
+									false, 0,	// take from main pot
+									false, i,	// send to whichever sidepot
+									0.0, true);
+							pot = pot.splitPot;
+						}
+					}
+					
+					/*
 					// update pot amounts
 					System.out.println("");
 					Host.GameSystem.Pot pot = gameState.potTotal;
@@ -301,93 +447,69 @@ public class OngoingMode extends TableMode {
 						} else {
 							chipAmounts.setPotAmount(i, 0);
 						}
-					}
-					
+					}*/
+	
+// FLOPSTATE PROCESSING --------------------------------------------------------------------------------------
 					
 					switch (gameState.flopState) {
 					
 					case 0:
 						
-						// deal if cards haven't been dealt
-						if (!playerCardsDealt) {
+						// when a new hand starts...
+						if (lastFlopState != 0) {
+							
+							// update dealer chip position
+							int localDealerIndex = hostToLocalIndex(gameState.dealer);
+							dealerChip.moveTo(localDealerIndex);
+							
+							// reset and deal cards, show main player's cards
 							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
-							
-							for(int i=0; i<8; i++) {
-								if(gameState.player[i]!=null)
-									System.out.println("player " + i + "cards"+gameState.player[i].hand);
-							}
-							
 							cards.playerCards[0][0].setFaceImage(hand[0]);
 							cards.playerCards[0][1].setFaceImage(hand[1]);
-							
-							cards.dealCards(hostToLocalIndex(hostDealerIndex), playerNamesLocal);
+							cards.collectCards();
+							cards.dealCards(localDealerIndex, 1000.0, playerNamesLocal);
 							cards.showPlayerCards(0);
-							
-							playerCardsDealt = true;
-						}
-						else {
-							
 						}
 						break;
 						
 					case 1:
 						
-						if (!flopDealt) {
+						if (lastFlopState==0) {
 							
-							
+							// flip over flop cards
 							for (int i=0; i<3; ++i) {
-								cards.centerCards[i].setFaceImage(flop[i]);
+								cards.centerCards[i].setFaceImage(gameState.flops[i]);
 							}
-							
-							cards.dealFlop();
-							
-							flopDealt = true;
-						}
-						else {
-							
-						}
+							cards.dealFlop(1000.0);
+						} 
 						break;
 					case 2:
 						
-						if (!turnDealt) {
+						if (lastFlopState==1) {
 							
-	
-							cards.centerCards[3].setFaceImage(flop[3]);
-	
-							
-							cards.dealTurn();
-							
-							turnDealt = true;
-						}
-						else {
-							
+							// flip over turn card
+							cards.centerCards[3].setFaceImage(gameState.flops[3]);							
+							cards.dealTurn(1000.0);
 						}
 						break;
 					case 3:
-						
-						if (!riverDealt) {
-							cards.centerCards[4].setFaceImage(flop[4]);
-	
-							
-							cards.dealRiver();
-							
-							riverDealt = true;
-						}
-						else {
-							
+						if (lastFlopState==2) {
+
+							// flip over river card
+							cards.centerCards[4].setFaceImage(gameState.flops[4]);
+							cards.dealRiver(1000.0);
 						}
 						break;
 					}
 					
-					
-					if (gameState.whoseTurn==GUI.playerIndexInHost) {
-						setButtonsEnable(true); 
-					} else {
-						setButtonsEnable(false); 
-					}
+
+					lastFlopState = gameState.flopState;	
 					
 					
-				} else {
+// END GAMESTATE PROCESSING ------------------------------------------------------------------------
+				}	
+				
+				else {
 					System.out.println("unexpected object type received in OngoingMode");
 				}
 			}
@@ -399,18 +521,7 @@ public class OngoingMode extends TableMode {
 		if (container.getInput().isKeyPressed(Input.KEY_F)) {
 			
 			cards.resetCards();
-			
-			boolean[] existPlayer = new boolean[8];
-			for (int i=0; i<8; ++i) {
-				existPlayer[i] = playerNamesLocal[i]!=null;
-			}
-			
-			//cards.dealCards((int)(Math.random()*8.0), playerNamesLocal);
-			String[] t = new String[8];
-			for (int i=0; i<8; ++i) {
-				if (Math.random()<0.5)
-				t[i] = "e";
-			}
+
 			cards.dealCards((int)(Math.random()*8.0), t);
 			cards.showPlayerCards(0);
 			
@@ -425,13 +536,6 @@ public class OngoingMode extends TableMode {
 			cards.showPlayerCards((int)(Math.random()*8.0));
 			cards.fold((int)(Math.random()*8.0));
 			cards.fold(0);
-		}
-		else if (container.getInput().isKeyPressed(Input.KEY_G)) {
-			checkButton.setEnable(!checkButton.getEnable());
-			foldButton.setEnable(!foldButton.getEnable());
-			raiseButton.setEnable(!raiseButton.getEnable());
-			allInButton.setEnable(!allInButton.getEnable());
-			raiseTextField.setEnable(!raiseTextField.getEnable());
 		}
 		else if (container.getInput().isKeyPressed(Input.KEY_H)) {
 			checkButton.setAlphaWhileDisabled(1.5f-checkButton.getAlphaWhileDisabled());
@@ -449,13 +553,9 @@ public class OngoingMode extends TableMode {
 			chipAmounts.addSendToQueue(amount, srcIsPlayer, srcIndex,
 					destIsPlayer, destIndex, 0.0, true);
 		}
-		else if (container.getInput().isKeyPressed(Input.KEY_J)) {
-			int dealer = (int)Math.floor(Math.random()*8.0);
-			dealerChip.moveTo(dealer);
-		}
 		*/
 		
-		
+				
 		
 		// update all cards
 		cards.update(delta);
@@ -467,13 +567,40 @@ public class OngoingMode extends TableMode {
 		dealerChip.update(delta);
 	}
 	
+
+
 	
 	protected void setButtonsEnable(boolean enable) {
+		
 		checkButton.setEnable(enable);
 		foldButton.setEnable(enable);
 		raiseButton.setEnable(enable);
 		allInButton.setEnable(enable);
 		raiseTextField.setEnable(enable);
+		
+		if (enable && gameState!=null) {
+			
+			// update call/check label
+			int highestBet = gameState.highestBet;
+			int currentBet = gameState.player[GUI.playerIndexInHost].betAmount;
+			checkOrCall = (highestBet==currentBet);
+			// update bet/raise label
+			if (highestBet==0 || 
+					(gameState.flopState==0 && gameState.bigBlinder==GUI.playerIndexInHost
+					&& gameState.highestBet==gameState.blind)) {
+				betOrRaise = true;
+				raiseTextField.setRaiseByString("Bet:");
+			} else {
+				betOrRaise = false;
+				raiseTextField.setRaiseByString("Raise to:");
+			}
+		
+			// if current bet is more than what I have, the only options are all in and fold
+			if (highestBet >= gameState.player[GUI.playerIndexInHost].totalChip) {
+				checkButton.setEnable(false);
+				raiseButton.setEnable(false);
+			}
+		} 
 	}
 	
 	@Override
@@ -499,10 +626,40 @@ public class OngoingMode extends TableMode {
 			cards.draw();
 		}
 		
+				
 		drawLabels(g);
+		drawTotalAmounts(g);
 		drawInteractiveElements(container, g);
+		
+		popupHostConnectionLost.render(container, g);
+		popupRaiseInvalid.render(container, g);
+		popupAllInConfirm.render(container, g);
+		popupLostGame.render(container, g);
 	}
 
+	
+	
+	private void drawTotalAmounts(Graphics g) {
+		if (gameState==null)
+			return;
+		
+		for (int i=0; i<8; i++) {
+			Player player = gameState.player[localToHostIndex(i)];
+			if (player != null) {
+				if (i==0) {
+					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,
+							"$"+player.totalChip,
+							mainPanelPosition[0]+mainTotalAmountOffset[0],
+							mainPanelPosition[1]+mainTotalAmountOffset[1]);
+				} else {
+					GUI.drawStringRightCenter(g, totalAmountFont, Color.white,
+							"$"+player.totalChip,
+							playerPanelPositions[i][0]+playerTotalAmountOffset[0],
+							playerPanelPositions[i][1]+playerTotalAmountOffset[1]);
+				}
+			}
+		}
+	}
 	
 	private void drawLabels(Graphics g) {
 		if (gameState==null)
@@ -519,22 +676,28 @@ public class OngoingMode extends TableMode {
 				}
 				else {
 					
-					int betAmount = gameState.player[i].betAmount;
+					//int betAmount = gameState.player[i].betAmount;
 					
 					UserAction lastAction = gameState.player[i].latestAction;
 					if (lastAction!=null) {
 						switch (lastAction.action) {
-						case CHECK_CALL:
-							drawPlayerLabel(g, localIndex, "Call $"+betAmount, Color.white, checkLabelColor);
+						case CHECK:
+							drawPlayerLabel(g, localIndex, "Check", Color.white, checkLabelColor);
+							break;
+						case CALL:
+							drawPlayerLabel(g, localIndex, "Call $"+lastAction.raiseAmount, Color.white, checkLabelColor);
 							break;
 						case FOLD:
 							drawPlayerLabel(g, localIndex, "Fold", Color.white, foldLabelColor);
 							break;
-						case RAISE_BET:
-							drawPlayerLabel(g, localIndex, "Raise $"+betAmount, Color.white, raiseLabelColor);
+						case BET:
+							drawPlayerLabel(g, localIndex, "Bet $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
+							break;
+						case RAISE:
+							drawPlayerLabel(g, localIndex, "Raise to $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
 							break;
 						default:
-							drawPlayerLabel(g, localIndex, "All in $"+betAmount, Color.white, allInLabelColor);
+							drawPlayerLabel(g, localIndex, "All In $"+lastAction.raiseAmount, Color.white, allInLabelColor);
 							break;
 						}
 					}
@@ -548,9 +711,11 @@ public class OngoingMode extends TableMode {
 	
 	private void drawInteractiveElements(GUIContext container, Graphics g) {
 		g.setColor(Color.white);
-		checkButton.render(container, g, buttonFont, Color.white, "Check");
+		checkButton.render(container, g, buttonFont, Color.white,
+				checkOrCall ? "Check" : "Call $"+gameState.highestBet);
 		foldButton.render(container, g,  buttonFont, Color.white, "Fold");
-		raiseButton.render(container, g, buttonFont, Color.white, "Raise");
+		raiseButton.render(container, g, buttonFont, Color.white,
+				betOrRaise ? "Bet" : "Raise");
 		allInButton.render(container, g, allInButtonFont, Color.white, "All In");
 		
 		raiseTextField.render(container, g);
@@ -560,12 +725,14 @@ public class OngoingMode extends TableMode {
 	
 	private void drawPlayerNames(Graphics g) {
 
-		GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[0], mainPanelPosition[0]+mainNameOffset[0],
+		GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[0],
+				mainPanelPosition[0]+mainNameOffset[0],
 				mainPanelPosition[1]+mainNameOffset[1]);
 		
 		for (int i=1; i<8; ++i) {
 			if (playerNamesLocal[i] != null) {
-				GUI.drawStringCenter(g, infoFont, Color.white, playerNamesLocal[i], playerPanelPositions[i][0]+playerNameOffset[0],
+				GUI.drawStringLeftCenter(g, infoFont, Color.white, playerNamesLocal[i],
+						playerPanelPositions[i][0]+playerNameOffset[0],
 						playerPanelPositions[i][1]+playerNameOffset[1]);
 			}
 		}

@@ -115,6 +115,23 @@ public class Host{
 
 				game.newRound();
 				
+				
+				// send a pre-round extra gamestate:
+				// causes GUI to show animation of bets being collected
+				// and next flopstate cards revealed.  this way, the first player's turn doesn't start
+				// immediately after the deal/flop reveal.
+				int temp = game.whoseTurn;
+				game.whoseTurn = -1;
+				sendGameState();
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				game.whoseTurn = temp;
+				
+				
+				
 				//each turn
 				do{
 
@@ -125,9 +142,10 @@ public class Host{
 				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1
 						&& game.potTotal.getCurrentPot().winnerByFold == -1);
 				
-				// extra gamestate at end of each round.
-				// send gamestate with whoseTurn=-1
-				int temp = game.whoseTurn;
+				
+				// send a post-round extra gamestate:
+				// allows GUI to show last player action and update his bet for this round
+				temp = game.whoseTurn;
 				game.whoseTurn = -1;
 				sendGameState();
 				try {
@@ -137,9 +155,12 @@ public class Host{
 				}
 				game.whoseTurn = temp;
 				
-				
+								
 				
 				game.updateRound();
+				
+				
+				
 				
 				//testing
 				game.potTotal.printPot();

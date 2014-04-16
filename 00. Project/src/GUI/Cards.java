@@ -173,12 +173,17 @@ public class Cards {
 	}
 	
 	
-	public void dealCards(int dealer, String[] playerName) {
+	public void dealCards(int dealer, double waitTime, String[] playerName) {
+		
+		// add a spacer to let previous actions finish
+		actionQueue.add(new QueuedAction(centerCards[0],
+				null, null, null, false, waitTime, true));
+		
 		// set non-existant players' cards invisible (instant)
 		for (int i=0; i<8; ++i) {
 			if (playerName[i]==null) {
 				actionQueue.add(new QueuedAction(playerCards[i][0], 
-						null, false, null, true, 0.0, i==0));
+						null, false, null, true, 0.0, false));
 				actionQueue.add(new QueuedAction(playerCards[i][1], 
 						null, false, null, true, 0.0, false));
 			}
@@ -208,11 +213,12 @@ public class Cards {
 	}
 	
 	
-	public void dealFlop() {
+	public void dealFlop(double waitTime) {
+		
 		// turn visible
 		for(int i=0; i<3; ++i) {
 			actionQueue.add(new QueuedAction(centerCards[i],
-					null, true, null, false, 100.0, i==0));
+					null, true, null, false, i==0 ? waitTime : 100.0, i==0));
 		}
 		// flip
 		for(int i=0; i<3; ++i) {
@@ -220,19 +226,21 @@ public class Cards {
 					null, null, true, false, 100.0, i==0));
 		}
 	}
-	public void dealTurn() {
+	public void dealTurn(double waitTime) {
+		
 		// turn visible
 		actionQueue.add(new QueuedAction(centerCards[3],
-				null, true, null, false, 100.0, true));
+				null, true, null, false, waitTime, true));
 		// flip
 		actionQueue.add(new QueuedAction(centerCards[3],
 				null, null, true, false, 100.0, true));
 
 	}
-	public void dealRiver() {
+	public void dealRiver(double waitTime) {
+		
 		// turn visible
 		actionQueue.add(new QueuedAction(centerCards[4],
-				null, true, null, false, 100.0, true));
+				null, true, null, false, waitTime, true));
 		// flip
 		actionQueue.add(new QueuedAction(centerCards[4],
 				null, null, true, false, 100.0, true));

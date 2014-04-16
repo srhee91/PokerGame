@@ -19,13 +19,13 @@ public class StartMode extends Mode
 {
 	private Image background;
 
-	private final int[] menuPanelPosition = {40, 300};
-	private final int[] menuPanelSize = {220, 180};
+	private final int[] menuPanelPosition = {40, 355};
+	private final int[] menuPanelSize = {220, 125};
 	
 	private final int[] hostGameButtonOffset = {10, 15};
 	private final int[] joinGameButtonOffset = {10, 70};
-	private final int[] spectateGameButtonOffset = {10, 125};
-	private final int[] exitButtonOffset = {10, 220};
+	//private final int[] spectateGameButtonOffset = {10, 125};
+	private final int[] exitButtonOffset = {10, 165};
 	
 
 	private final String namePromptString = "Enter player name:";
@@ -36,7 +36,7 @@ public class StartMode extends Mode
 	
 	private Button hostGameButton;
 	protected Button joinGameButton;
-	private Button spectateGameButton;
+	//private Button spectateGameButton;
 	private Button exitButton;
 		
 	
@@ -163,7 +163,7 @@ public class StartMode extends Mode
 					}
 				});
 		//joinGameButton.setAlphaWhileDisabled(1.0f);
-		
+		/*
 		spectateGameButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightblue_down.png",
 				menuPanelPosition[0]+spectateGameButtonOffset[0],
@@ -178,7 +178,7 @@ public class StartMode extends Mode
 					}
 				});
 		//spectateGameButton.setAlphaWhileDisabled(1.0f);
-		
+		*/
 		exitButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_darkred.png",
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_darkred_down.png",
 				menuPanelPosition[0]+exitButtonOffset[0],
@@ -200,7 +200,7 @@ public class StartMode extends Mode
 	private void setMenuEnable(boolean enable) {
 		hostGameButton.setEnable(enable);
 		joinGameButton.setEnable(enable);
-		spectateGameButton.setEnable(enable);
+		//spectateGameButton.setEnable(enable);
 		exitButton.setEnable(enable);
 	}
 	
@@ -284,7 +284,7 @@ public class StartMode extends Mode
 		
 		hostGameButton.render(container, g, buttonFont, Color.white, "Host Game");
 		joinGameButton.render(container, g, buttonFont, Color.white, "Join Game");
-		spectateGameButton.render(container, g, buttonFont, Color.white, "Spectate Game");
+		//spectateGameButton.render(container, g, buttonFont, Color.white, "Spectate Game");
 		exitButton.render(container, g, buttonFont, Color.white, "Exit");
 	}
 	

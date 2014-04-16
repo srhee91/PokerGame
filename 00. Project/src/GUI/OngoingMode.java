@@ -410,7 +410,7 @@ public class OngoingMode extends TableMode {
 										oldAmount - amount,
 										true, localIndex,
 										false, 0,	// send to main pot
-										sendQueued ? 0.0 : 1000, false);
+										0.0, false);
 								sendQueued = true;
 							} else {
 								chipAmounts.setPlayerAmount(localIndex, amount);
@@ -467,7 +467,7 @@ public class OngoingMode extends TableMode {
 							cards.playerCards[0][0].setFaceImage(hand[0]);
 							cards.playerCards[0][1].setFaceImage(hand[1]);
 							cards.collectCards();
-							cards.dealCards(localDealerIndex, playerNamesLocal);
+							cards.dealCards(localDealerIndex, 1000.0, playerNamesLocal);
 							cards.showPlayerCards(0);
 						}
 						break;
@@ -480,7 +480,7 @@ public class OngoingMode extends TableMode {
 							for (int i=0; i<3; ++i) {
 								cards.centerCards[i].setFaceImage(gameState.flops[i]);
 							}
-							cards.dealFlop();
+							cards.dealFlop(1000.0);
 						} 
 						break;
 					case 2:
@@ -489,7 +489,7 @@ public class OngoingMode extends TableMode {
 							
 							// flip over turn card
 							cards.centerCards[3].setFaceImage(gameState.flops[3]);							
-							cards.dealTurn();
+							cards.dealTurn(1000.0);
 						}
 						break;
 					case 3:
@@ -497,7 +497,7 @@ public class OngoingMode extends TableMode {
 
 							// flip over river card
 							cards.centerCards[4].setFaceImage(gameState.flops[4]);
-							cards.dealRiver();
+							cards.dealRiver(1000.0);
 						}
 						break;
 					}

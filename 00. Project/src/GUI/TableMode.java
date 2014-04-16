@@ -65,7 +65,6 @@ public class TableMode extends Mode {
 					
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// ok action
-						popupHostConnectionLost.setInvisible();
 						// no need to re-enable any buttons
 						GUI.cmh.close();
 						GUI.cmh = null;

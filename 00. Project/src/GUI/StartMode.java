@@ -6,7 +6,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.AbstractComponent;
@@ -15,7 +14,6 @@ import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
 import GuiActionThreads.StartHostThread;
-import Network.HostSearcher;
 
 public class StartMode extends Mode
 {
@@ -116,7 +114,6 @@ public class StartMode extends Mode
 							
 							// GO TO JOIN MODE
 							GUI.playerName = popupEnterName.getText();							
-							GUI.joinMode.onRefresh();
 							game.enterState(2);	
 							setMenuEnable(true);
 						}
@@ -223,9 +220,11 @@ public class StartMode extends Mode
 			game.enterState(4);
 		*/
 		
-		// if HostSearcher is not running, start it
-		//if (!HostSearcher.isRunning())
-			//HostSearcher.start(4320);
+		
+		// on-enter-mode actions
+		if (GUI.currentMode != 1) {
+			GUI.currentMode = 1;
+		}
 		
 		
 		// if loading screen is up, check status of whatever's loading

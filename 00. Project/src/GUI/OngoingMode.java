@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -16,9 +15,7 @@ import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.StateBasedGame;
 
 import GameState.Gamestate;
-import Host.GameSystem.GameSystem;
 import Host.GameSystem.Player;
-import Network.HostSearcher;
 import Network.UserAction;
 
 public class OngoingMode extends TableMode {
@@ -110,7 +107,7 @@ public class OngoingMode extends TableMode {
 			playerCardPositions[i][1][1] = playerPanelPositions[i][1]+playerCardOffsets[1][1];
 		}
 		cards = new Cards(playerCardPositions);
-		cards.resetCards();
+		cards.collectCards();
 		
 		// initialize chip amounts
 		int[][] playerAmountPositions = new int[8][2];
@@ -151,7 +148,6 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// ok action
 						// close popup, re-enable gui, erase raise amount
-						popupRaiseInvalid.setInvisible();
 						raiseTextField.setText("");
 						setButtonsEnable(true);
 					}
@@ -163,7 +159,6 @@ public class OngoingMode extends TableMode {
 					
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// ok action
-						popupAllInConfirm.setInvisible();
 						//if (GUI.cmh!=null) {
 							try {
 								GUI.cmh.send(new UserAction(UserAction.Action.ALL_IN, 
@@ -180,7 +175,6 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// cancel action
 						// close popup, enable buttons
-						popupAllInConfirm.setInvisible();
 						setButtonsEnable(true);
 					}
 				});
@@ -292,11 +286,6 @@ public class OngoingMode extends TableMode {
 		for (int i=0; i<8; ++i) {
 			playerNamesLocal[i] = null;
 		}
-		
-		lastFlopState = 3;
-		
-		checkOrCall = true;
-		betOrRaise = true;
 	}
 	
 	protected void setPlayerNamesLocal(String[] names) {
@@ -310,9 +299,31 @@ public class OngoingMode extends TableMode {
 		
 		super.update(container, game, delta);
 		
-		// if HostSearcher is running, stop it
-		if (HostSearcher.isRunning())
-				HostSearcher.stop();
+		// on-enter-mode actions
+		if (GUI.currentMode != 4) {
+			
+			prevGameState = null;
+			
+			lastFlopState = 3;
+			checkOrCall = true;
+			betOrRaise = true;
+			
+			// reset cards
+			cards.resetCards();
+			
+			// clear all chip amounts
+			for (int i=0; i<8; i++) {
+				chipAmounts.setPlayerAmount(i, 0);
+				chipAmounts.setPotAmount(i, 0);
+			}
+			
+			// disable buttons
+			setButtonsEnable(false);
+			
+			GUI.currentMode = 4;
+		}
+		
+
 		/*
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
@@ -386,7 +397,7 @@ public class OngoingMode extends TableMode {
 
 					
 					// update player chip amounts (bet amounts)
-					boolean betCollected = false;
+					boolean sendQueued = false;
 					for (int i=0; i<8; i++) {
 						int localIndex = hostToLocalIndex(i);
 						// if the updated chip amount is less, send the difference to the main pot
@@ -399,8 +410,8 @@ public class OngoingMode extends TableMode {
 										oldAmount - amount,
 										true, localIndex,
 										false, 0,	// send to main pot
-										0.1, false);
-								betCollected = true;
+										sendQueued ? 0.0 : 1000, false);
+								sendQueued = true;
 							} else {
 								chipAmounts.setPlayerAmount(localIndex, amount);
 							}
@@ -409,7 +420,7 @@ public class OngoingMode extends TableMode {
 							chipAmounts.setPlayerAmount(localIndex, 0);
 						}
 					}
-					if (betCollected) {
+					if (sendQueued) {
 						// split main pot into side pots if necessary
 						Host.GameSystem.Pot pot = gameState.potTotal;
 						for (int i=0; i<8; i++) {
@@ -455,7 +466,7 @@ public class OngoingMode extends TableMode {
 							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
 							cards.playerCards[0][0].setFaceImage(hand[0]);
 							cards.playerCards[0][1].setFaceImage(hand[1]);
-							cards.resetCards();
+							cards.collectCards();
 							cards.dealCards(localDealerIndex, playerNamesLocal);
 							cards.showPlayerCards(0);
 						}

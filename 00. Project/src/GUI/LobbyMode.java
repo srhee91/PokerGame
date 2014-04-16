@@ -3,13 +3,11 @@ package GUI;
 import java.awt.Font;
 import java.io.IOException;
 
-import javax.sound.midi.Receiver;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
@@ -86,12 +84,7 @@ public class LobbyMode extends TableMode {
 			waitingAnimations[A].setCurrentFrame(A*(waitingAnimations[A].getFrameCount()/NUM_ANIMATIONS));
 		}
 		
-		
 		playerNamesLocal = new String[8];
-		for (int i=0; i<8; ++i)
-			playerNamesLocal[i] = null;
-		numPlayers = 0;
-		hostIndexLocal = -1;
 	}
 
 	@Override
@@ -99,9 +92,26 @@ public class LobbyMode extends TableMode {
 		
 		super.update(container, game, delta);
 		
-		// if HostSearcher is running, stop it
-		if (HostSearcher.isRunning())
-			HostSearcher.stop();
+		
+		// on-enter-mode actions
+		if (GUI.currentMode != 3) {
+			
+			if (GUI.currentMode==2) {
+				// stop the host searcher if we came from joinMode
+				HostSearcher.stop();
+			}
+			
+			// clear players info
+			for (int i=0; i<8; ++i)
+				playerNamesLocal[i] = null;
+			numPlayers = 0;
+			hostIndexLocal = -1;
+			
+			
+			GUI.currentMode = 3;
+		}
+		
+
 		/*
 		// temporary method for transitioning between modes
 		if (container.getInput().isKeyPressed(Input.KEY_1))
@@ -129,7 +139,6 @@ public class LobbyMode extends TableMode {
 					if (((String)receivedObject).equals("start")) {
 						// go to ongoing mode
 						GUI.ongoingMode.setPlayerNamesLocal(playerNamesLocal);
-						GUI.ongoingMode.setButtonsEnable(false);
 						game.enterState(4);
 					}
 				

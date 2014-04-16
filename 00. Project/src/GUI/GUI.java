@@ -21,6 +21,9 @@ public class GUI extends StateBasedGame
 	public static LobbyMode lobbyMode;
 	public static OngoingMode ongoingMode;
 	
+	public static int currentMode;
+	
+	
 	public static ClientMessageHandler cmh;
 	
 	protected static String playerName;
@@ -40,6 +43,8 @@ public class GUI extends StateBasedGame
 		joinMode = new JoinMode();
 		lobbyMode = new LobbyMode();
 		ongoingMode = new OngoingMode();
+		
+		currentMode = -1;
 		
 		this.addState(startMode);
 		this.addState(joinMode);

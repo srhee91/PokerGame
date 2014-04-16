@@ -119,11 +119,23 @@ public class Cards {
 	}
 	
 	
+	
+	// set all cards invisible, facedown, at deck position instantaneously
+	public void resetCards() {
+		for (int i=0; i<5; ++i) {
+			centerCards[i].setState(deckPosition, false, false, true);
+		}
+		for (int i=0; i<8; ++i) {
+			playerCards[i][0].setState(deckPosition, false, false, true);
+			playerCards[i][1].setState(deckPosition, false, false, true);
+		}
+	}
+	
 	// QueueAction params:
 	// card, 
 	// position, visible, faceUp, instant, waitTime, letPrevActionsFinish
 	
-	public void resetCards() {
+	public void collectCards() {
 		// flip all cards face down
 		for (int i=0; i<5; ++i) {
 			actionQueue.add(new QueuedAction(centerCards[i],

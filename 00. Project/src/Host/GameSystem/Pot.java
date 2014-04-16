@@ -32,6 +32,17 @@ public class Pot implements Serializable  {
 		playerInvolved = new boolean[GameSystem.MAXPLAYER];
 		for(int i=0; i< GameSystem.MAXPLAYER; i++)	playerInvolved[i] = true;
 	}
+	public Pot(int leftover, Player[] player) {
+		totalPot = leftover;
+		splitPot = null;
+		winnerByFold = -1;
+		
+		playerInvolved = new boolean[GameSystem.MAXPLAYER];
+		for(int i=0; i< GameSystem.MAXPLAYER; i++)
+			if(player[i] != null)	playerInvolved[i] = true;
+			else					playerInvolved[i] = false;
+	}
+	
 	
 	//copy constructor
 	public Pot(Pot pot) {
@@ -65,54 +76,56 @@ public class Pot implements Serializable  {
 		if(splitPot != null)	splitPot.gatherPots(player, highestBet);
 		
 		else {
-			
 			//check for someone who are not involved in the current pot
 			for(int i=0; i<player.length; i++) {
 				if(player[i] != null){
 					if(player[i].betAmount == 0 && highestBet > 0) {
 						playerInvolved[i] = false;
 					}
+					if(player[i].hasFolded)
+						playerInvolved[i] = false;
 				}
 				else{
 					playerInvolved[i] = false;
 				}
 			}
-			
-			//check if someone went all in, and find the lowest all in
-			int lowestBet = GameSystem.INIT_CHIP*8 + 1; 
-			for(int i=0; i<player.length; i++)
-			{
-				if(player[i] != null && !player[i].hasFolded){
-					if(player[i].betAmount > 0 && highestBet > player[i].betAmount){
-						if(lowestBet > player[i].betAmount) lowestBet = player[i].betAmount;
-					}
-				}
-			}
-			//if someone went all in.....
-			if(lowestBet != (GameSystem.INIT_CHIP*8 + 1))
-			{
-				//subtract the all in amount and add it to this totalPot; Then, splitPot the rest;
+				
+			if(winnerByFold == -1){
+				//check if someone went all in, and find the lowest all in
+				int lowestBet = GameSystem.INIT_CHIP*8 + 1; 
 				for(int i=0; i<player.length; i++)
 				{
-					if(player[i] != null){
-						if(player[i].betAmount > lowestBet){
-							totalPot += lowestBet;
-							player[i].betAmount -= lowestBet;
-						}
-						else {
-							totalPot += player[i].betAmount;
-							player[i].betAmount = 0;
+					if(player[i] != null && !player[i].hasFolded){
+						if(player[i].betAmount > 0 && highestBet > player[i].betAmount){
+							if(lowestBet > player[i].betAmount) lowestBet = player[i].betAmount;
 						}
 					}
 				}
-				//splitPot the rest;
-				splitPot = new Pot();
-				splitPot.gatherPots(player, highestBet-lowestBet);
-				
-				return;
+				//if someone went all in.....
+				if(lowestBet != (GameSystem.INIT_CHIP*8 + 1))
+				{
+					//subtract the all in amount and add it to this totalPot; Then, splitPot the rest;
+					for(int i=0; i<player.length; i++)
+					{
+						if(player[i] != null){
+							if(player[i].betAmount > lowestBet){
+								totalPot += lowestBet;
+								player[i].betAmount -= lowestBet;
+							}
+							else {
+								totalPot += player[i].betAmount;
+								player[i].betAmount = 0;
+							}
+						}
+					}
+					//splitPot the rest;
+					splitPot = new Pot(0, player);
+					splitPot.gatherPots(player, highestBet-lowestBet);
+					
+					return;
+				}
 			}
-			
-			
+				
 			//if it gets to this point its normal pot (no all ins)
 			//save the total pot
 			for(int i=0; i<player.length; i++)
@@ -122,7 +135,6 @@ public class Pot implements Serializable  {
 					player[i].betAmount = 0;
 				}
 			}
-			
 		}
 	}
 

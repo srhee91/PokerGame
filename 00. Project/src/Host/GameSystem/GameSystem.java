@@ -55,7 +55,7 @@ public class GameSystem{
 		}
 		
 		blind = INIT_BLIND;
-		dealer = INIT_DEALER;
+		dealer = -1;
 		leftover = 0;
 	}
 	
@@ -63,14 +63,23 @@ public class GameSystem{
 	//1. new deck
 	//2. assign cards
 	public void newHand(){
+		
 		deck = new Deck();
 		deck.shuffle();
 		
 		for(int i=0; i<MAXPLAYER; i++)
-			if(player[i] != null)	player[i].dealHands(deck.drawHands());
+			if(player[i] != null){
+				player[i].dealHands(deck.drawHands());
+				player[i].latestAction = null;
+			}
 		
 		flops = deck.drawFlops();
-		potTotal = new Pot(leftover);
+		
+		//update dealer
+		if(dealer == -1)	dealer = INIT_DEALER;
+		else				dealer = nextPlayer(dealer);
+		
+		potTotal = new Pot(leftover, player);
 		leftover = 0;
 
 		whoseTurn = dealer;
@@ -83,11 +92,13 @@ public class GameSystem{
 		
 		highestBetter = nextTurn();
 
-		for(int i=0; i<MAXPLAYER; i++)
-			if(player[i] != null)	player[i].latestAction = null;
 	}
 	
 	public void updateRound(){
+		
+		for(int i=0; i<MAXPLAYER; i++)
+			if(player[i] != null && 
+				!player[i].hasFolded &&	!player[i].isAllIn() )	player[i].latestAction = null;
 		
 		potTotal.gatherPots(player, highestBet);
 		
@@ -105,11 +116,9 @@ public class GameSystem{
 		for(int i=0; i<MAXPLAYER; i++){
 			if(player[i]!=null && player[i].totalChip == 0)	player[i]=null;
 		}
-		
-		//update dealer
-		dealer = nextPlayer(dealer);
-		
+				
 		flopState = 4;
+		
 	}
 
 	
@@ -117,8 +126,14 @@ public class GameSystem{
 	public void initBlinds(){
 		//initial small/big blinds
 		//updates
-		player[nextTurn()].bet(blind/2);
-		player[nextTurn()].bet(blind);
+		if(playerCount() > 2){
+			player[nextTurn()].bet(blind/2);
+			player[nextTurn()].bet(blind);
+		}
+		else {
+			player[whoseTurn].bet(blind/2);
+			player[nextTurn()].bet(blind);
+		}
 	}
 	
 	public int nextTurn(){

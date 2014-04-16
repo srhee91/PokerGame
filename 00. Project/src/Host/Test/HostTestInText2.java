@@ -21,12 +21,8 @@ import java.util.Random;
 public class HostTestInText2 {
 	
 	public GameSystem game;
-	public Player player;
-	public boolean last_standing=false;
 	
 	public int playerCount;
-	public int playerLeftCount;
-	public String players[];
 		
 	public HostTestInText2(){
 		playerCount = 4;
@@ -47,7 +43,6 @@ public class HostTestInText2 {
 	//1. turn change
 	//2. player action
 	public void startGame(){
-		Random generator = new Random();
 		//each game
 		game = new GameSystem(playerCount);
 		
@@ -61,8 +56,7 @@ public class HostTestInText2 {
 		//each hand
 		while(game.playerCount() > 1){
 			game.newHand();
-			int player_count=1;
-			System.out.println("player count = " + game.playerCount());
+
 			//TEST TEST TEST// V_01
 //			System.out.println("\nwhen the hand is dealt");
 //			for(int i=0; i<GameSystem.MAXPLAYER; i++)
@@ -83,102 +77,10 @@ public class HostTestInText2 {
 
 				//each turn
 				do{					
-					//TEST V_02!!//
-					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFlops :");
 					
-					if(game.flopState == 0)	System.out.println("-");
-					else if(game.flopState == 1)	for(int k=0; k<3; k++)	System.out.println(game.flops[k]);
-					else if(game.flopState == 2)	for(int k=0; k<4; k++)	System.out.println(game.flops[k]);
-					else if(game.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(game.flops[k]);
+					sendGameState();
+					updateAction();
 					
-					System.out.println();
-					for(int k=0; k<GameSystem.MAXPLAYER; k++){
-						if(game.player[k] != null){
-							if(game.dealer == k)	System.out.println("***Dealer***");
-							if(game.whoseTurn == k)	System.out.println("---Your Turn---");
-							System.out.println("Player "+k+":\n" + game.player[k]);
-						}
-					}
-
-					System.out.println("It's player " + game.whoseTurn +"'s turn!");
-					System.out.print("Fold=0 Call=1 Bet=2\n:");
-				
-					//Scanner s = new Scanner(System.in);
-					//int input = s.nextInt();
-					//random input generation
-					int input = generator.nextInt(3);
-				
-					System.out.println(input);
-					if(game.player[game.whoseTurn].totalChip<game.highestBet&&game.player[game.whoseTurn].totalChip==0){
-						input=1;
-					}
-			
-				
-					if(input == 0){
-						if(player_count+1 == (game.playerCount())){
-							System.out.println("player count = "+player_count);
-							System.out.println("player count 2  = "+game.playerCount());
-							last_standing = true;
-							//if every1 folds the hand ends
-							//
-						}
-						if(last_standing==false){
-							game.player[game.whoseTurn].fold();
-							player_count++;
-						}
-					}
-					else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
-					else if(input == 2){
-						System.out.print("How much you want to bet? :");
-						int whileloop=0;
-						
-						while(whileloop==0){
-							input = generator.nextInt(1000);
-							if(game.player[game.whoseTurn].totalChip<game.highestBet||game.player[game.whoseTurn].totalChip<=20){
-								
-								
-									input=game.player[game.whoseTurn].totalChip;
-									whileloop=2;
-								
-							}
-							else if(input>=20&&input>=game.highestBet&&input<=1000&&input<game.player[game.whoseTurn].totalChip){
-								whileloop=1;
-							}
-							else{
-								
-							}
-						}
-						System.out.println(input);
-						game.player[game.whoseTurn].bet(input);
-						if(whileloop == 1){
-							game.highestBetter = game.whoseTurn;
-							game.highestBet = input;
-						}
-					}
-					else{
-						
-					}
-					//TEST V_02!!//
-					
-					//TEST TEST TEST// V_01
-//					System.out.println("It's player " + game.whoseTurn +"'s turn!");
-//					System.out.print("Fold=0 Call=1 Bet=2\n:");
-//					Scanner s = new Scanner(System.in);
-//					int input = s.nextInt();
-//					if(input == 0)		game.player[game.whoseTurn].fold();
-//					else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
-//					else {
-//						System.out.print("How much you want to bet? :");
-//						input = s.nextInt();
-//						game.player[game.whoseTurn].bet(input);
-//						highestBetter = game.whoseTurn;
-//						game.highestBet = input;
-//					}
-//					
-//					for(int k=0; k<GameSystem.MAXPLAYER; k++)
-//						if(game.player[k] != null)	System.out.println("Player "+k+":\n" + game.player[k]);
-//						else						System.out.println("Player "+k+" Does not exist.");
-					//TEST TEST TEST// V_01
 
 				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1
 						&& game.potTotal.getCurrentPot().winnerByFold == -1);
@@ -189,17 +91,19 @@ public class HostTestInText2 {
 				game.potTotal.printPot();
 				
 				/*special case handling*/
+				Pot currentPot = game.potTotal.getCurrentPot();
+				System.out.println("WinnerByFold : " + currentPot.winnerByFold);
 				//if everyone folds
-				if(game.potTotal.getCurrentPot().winnerByFold != -1)
+				if(currentPot.winnerByFold != -1)
 					break;
 				
 				//if everyone went all in in current pot
-				Pot currentPot = game.potTotal.getCurrentPot();
 				int notAllIn = 0;
 				for(int j=0; j<GameSystem.MAXPLAYER; j++)
 					if(currentPot.playerInvolved[i] && !game.player[i].isAllIn())
 						notAllIn++;
 				
+				System.out.println("Not All In (Showdown)  : " + notAllIn);
 				if(notAllIn <= 1){
 					game.showdown = true;
 					break;
@@ -210,8 +114,110 @@ public class HostTestInText2 {
 		//celebrate the winner
 		//losers will just become a spectator without any notification
 		//celebrateWinner();
+		System.out.println("----- THE END ------");
+		//TODO what to do when the game ends?
+
 	}
+
+	
+	public void sendGameState()
+	{
+		//TEST V_02!!//
+		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nFlops :");
 		
+		if(game.flopState == 0)	System.out.println("-");
+		else if(game.flopState == 1)	for(int k=0; k<3; k++)	System.out.println(game.flops[k]);
+		else if(game.flopState == 2)	for(int k=0; k<4; k++)	System.out.println(game.flops[k]);
+		else if(game.flopState == 3)	for(int k=0; k<5; k++)	System.out.println(game.flops[k]);
+		
+		System.out.println();
+		for(int k=0; k<GameSystem.MAXPLAYER; k++){
+			if(game.player[k] != null){
+				if(game.dealer == k)	System.out.println("***Dealer***");
+				if(game.whoseTurn == k)	System.out.println("---Your Turn---");
+				System.out.println("Player "+k+":\n" + game.player[k]);
+			}
+		}
+
+	}
+
+	public void updateAction()
+	{
+//First, receive Action
+		System.out.println("It's player " + game.whoseTurn +"'s turn!");
+		System.out.print("Fold=0 Call=1 Bet=2\n:");
+	
+		//random input generation
+		Random generator = new Random();
+		int input = generator.nextInt(3);
+	
+		if(game.player[game.whoseTurn].totalChip<game.highestBet){
+			input = generator.nextInt(2);
+		}
+		System.out.println(input);
+	
+//Now, update Action
+		if(input == 0){
+			game.player[game.whoseTurn].fold();
+			game.potTotal.fold(game.whoseTurn);
+			
+			//Special 
+			Pot currentPot = game.potTotal.getCurrentPot();
+			int numPlaying = 0;
+			for(int i=0; i<GameSystem.MAXPLAYER; i++){
+				if(currentPot.playerInvolved[i]){
+					numPlaying++;
+					currentPot.winnerByFold = i;
+				}
+			}
+			if(numPlaying > 1){
+				currentPot.winnerByFold = -1;
+			}
+		}
+		else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
+		else if(input == 2){
+
+//input for raise
+			System.out.print("How much you want to bet? :");
+			int whileloop=0;
+			
+			while(whileloop==0){
+				input = generator.nextInt(1000);
+				if(input>=20 && input>game.highestBet && input<game.player[game.whoseTurn].totalChip && input>game.player[game.whoseTurn].betAmount){
+					whileloop=1;
+				}
+			}
+			System.out.println(input);
+
+			
+			game.player[game.whoseTurn].bet(input);
+			game.highestBetter = game.whoseTurn;
+			game.highestBet = input;
+		}
+		//TEST V_02!!//
+		
+		//TEST TEST TEST// V_01
+//		System.out.println("It's player " + game.whoseTurn +"'s turn!");
+//		System.out.print("Fold=0 Call=1 Bet=2\n:");
+//		Scanner s = new Scanner(System.in);
+//		int input = s.nextInt();
+//		if(input == 0)		game.player[game.whoseTurn].fold();
+//		else if(input == 1)	game.player[game.whoseTurn].bet(game.highestBet);
+//		else {
+//			System.out.print("How much you want to bet? :");
+//			input = s.nextInt();
+//			game.player[game.whoseTurn].bet(input);
+//			highestBetter = game.whoseTurn;
+//			game.highestBet = input;
+//		}
+//		
+//		for(int k=0; k<GameSystem.MAXPLAYER; k++)
+//			if(game.player[k] != null)	System.out.println("Player "+k+":\n" + game.player[k]);
+//			else						System.out.println("Player "+k+" Does not exist.");
+		//TEST TEST TEST// V_01
+
+
+	}
 	
 	//main method - a process created by Poker.java or GUI
 	public static void main(String args[]){

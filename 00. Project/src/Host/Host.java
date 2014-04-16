@@ -198,6 +198,9 @@ public class Host{
 		//celebrate the winner
 		//losers will just become a spectator without any notification
 		//celebrateWinner();
+		System.out.println("----- THE END ------");
+		//TODO what to do when the game ends?
+
 	}
 	
 	

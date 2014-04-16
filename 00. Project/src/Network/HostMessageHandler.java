@@ -38,7 +38,7 @@ public class HostMessageHandler {
 	protected String allowedPlayer=null;
 	protected Timer nowTimer;
 	private Listening listeningThread = null;
-	
+	private boolean blocking;
 	
 	/*
 	 * Constructor 
@@ -51,6 +51,7 @@ public class HostMessageHandler {
 		this.port=port;
 		this.host=host;
 		allowedPlayer=null;
+		blocking=false;
 		
 		try{
 			server=new ServerSocket(port);
@@ -110,11 +111,11 @@ public class HostMessageHandler {
 	}
 	
 	public void gameStart(){
-		
+		blocking=true;
 	}
 	
 	public void gameEnd(){
-		
+		blocking=false;
 	}
 	
 	/*
@@ -241,12 +242,12 @@ public class HostMessageHandler {
 	// call this function will send game state to specific client,
 	// which are arguments
 	public synchronized void send(String playerName, Object ob){
-		/*int turn=((GameState.Gamestate)ob).whoseTurn;
-		allowedPlayer=host.players[turn];
-		
-		nowTimer=new Timer();
-		nowTimer.schedule(new autoResponse(), 3000);*/
-		
+		if (blocking==true){
+			int turn=((GameState.Gamestate)ob).whoseTurn;
+			allowedPlayer=host.players[turn];
+			nowTimer=new Timer();
+			nowTimer.schedule(new autoResponse(), 3000);
+		}
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;
 		try{
 			oos.writeObject(ob);

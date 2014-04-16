@@ -146,14 +146,14 @@ public class Host{
 					game.showdown = true;
 					break;
 				}
-				
+				sendGameState();
 			}
 			
 			//TODO need to figure out what to send, what the gui need to show winning hands
 			//		examples : pot, showdown, ...
 			game.updateHand();
 			//TODO send gamestate and receive if anyone left the game.
-			//sendGameState();
+			sendGameState();
 						
 		}
 		//celebrate the winner

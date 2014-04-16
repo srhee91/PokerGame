@@ -135,5 +135,6 @@ class SearcherListening extends Thread{		// 1 of these; listens for replies from
 			}
 			
 		}
+		socket.close();
 	}
 }

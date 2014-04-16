@@ -160,7 +160,7 @@ public class HostMessageHandler {
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
 							+port+"] as client "+playerName);
 					
-					//host.players[host.playerCount++] = playerName;
+					host.players[host.playerCount++] = playerName;
 					
 					sendAll(host.players.clone());
 					
@@ -195,9 +195,11 @@ public class HostMessageHandler {
 				try{
 					Object ac;
 					ac=myois.readObject();
-					//if ((ac instanceof UserAction)&&(playerName!=allowedPlayer)) continue;
-					//nowTimer.cancel();
-					//allowedPlayer=null;
+					if (blocking==true){
+						if (playerName!=allowedPlayer) continue;
+						nowTimer.cancel();
+						allowedPlayer=null;
+					}
 					host.objReceived=ac;
 					if (host.isWaiting) {
 						synchronized(host){

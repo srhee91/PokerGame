@@ -255,7 +255,7 @@ public class Cards {
 	}
 	
 	public void fold(int player) {
-		if (playerCards[player][0].isFaceUp()) {
+		if (playerCards[player][0].isVisible()) {
 			// flip cards face down
 			actionQueue.add(new QueuedAction(playerCards[player][0],
 					null, null, false, false, 0.0, true));

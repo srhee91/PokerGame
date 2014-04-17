@@ -385,6 +385,7 @@ public class OngoingMode extends TableMode {
 					if (gameState.player[GUI.playerIndexInHost]==null && gameState.flopState==0
 							&& gameState.whoseTurn >= 0) {
 						popupLostGame.setVisible(null);
+						return;
 					}
 					
 					

@@ -169,7 +169,7 @@ public class Host{
 				
 				/*special case handling*/
 				//if everyone folds
-				if(game.potTotal.getCurrentPot().winnerByFold != -1)
+				if(game.potTotal.winnerByFold != -1)
 					break;
 				
 				//if everyone went all in in current pot

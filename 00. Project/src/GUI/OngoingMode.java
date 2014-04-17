@@ -579,7 +579,7 @@ public class OngoingMode extends TableMode {
 							
 							// reset and deal cards, show main player's cards					
 							cards.collectCards();
-							cards.dealCards(localDealerIndex, 1000.0, playerNamesLocal);
+							cards.dealCards(localDealerIndex, 500.0, playerNamesLocal);
 							cards.showPlayerCards(0);
 						}
 						break;
@@ -595,7 +595,7 @@ public class OngoingMode extends TableMode {
 					case 2:
 						if (lastFlopState == 1) {
 							// flip over turn card						
-							cards.dealTurn(1000.0);
+							cards.dealTurn(500.0);
 							
 						} else {
 							// flip over flop and turn cards
@@ -606,7 +606,7 @@ public class OngoingMode extends TableMode {
 						
 					case 3:
 						if (lastFlopState==2) {
-							cards.dealRiver(1000.0);
+							cards.dealRiver(500.0);
 							
 						} else if (lastFlopState==1) {
 							// flip over turn and river cards
@@ -614,7 +614,7 @@ public class OngoingMode extends TableMode {
 							cards.dealRiver(0.0);
 						} else {
 							// flip over flop, turn, and river cards
-							cards.dealFlop(1000.0);
+							cards.dealFlop(500.0);
 							cards.dealTurn(0.0);
 							cards.dealRiver(0.0);
 						}

@@ -224,7 +224,7 @@ public class HostMessageHandler {
 	
 	class autoResponse extends TimerTask{
 		public void run() {
-			nowTimer.cancel();
+			//nowTimer.cancel();
 			UserAction ac=new UserAction(UserAction.Action.FOLD,0);
 			host.objReceived=ac;
 			if (host.isWaiting) {

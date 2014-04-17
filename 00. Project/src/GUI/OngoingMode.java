@@ -80,7 +80,7 @@ public class OngoingMode extends TableMode {
 	private Gamestate gameState;
 	
 	private int lastFlopState;
-	private boolean lostGame;
+
 	
 	
 	@Override
@@ -310,7 +310,6 @@ public class OngoingMode extends TableMode {
 		if (GUI.currentMode != 4) {
 			
 			//prevGameState = null;
-			lostGame = false;
 			
 			lastFlopState = 3;
 			checkOrCall = true;
@@ -383,16 +382,11 @@ public class OngoingMode extends TableMode {
 					
 					
 					// check if we lost the game during the last gameState
-					if (lostGame) {
+					if (gameState.player[GUI.playerIndexInHost]==null && gameState.flopState==0
+							&& gameState.whoseTurn >= 0) {
 						popupLostGame.setVisible(null);
 					}
 					
-					// check if we've lost the game
-					if (gameState.player[GUI.playerIndexInHost]==null) {
-						setButtonsEnable(false);
-						lostGame = true;
-						return;
-					}
 					
 					
 					
@@ -504,13 +498,25 @@ public class OngoingMode extends TableMode {
 							// send that amount to each winner of this pot
 							boolean first = true;
 							for (int i=0; i<8; i++) {
+								double wait = 0;
+								switch (lastFlopState) {
+								case 0:
+									wait = 2.5;
+									break;
+								case 1:
+									wait = 1.0;
+									break;
+								case 2:
+									wait = 0.5;
+									break;
+								}
 								if (gameState.player[i]!=null && pot.winner[i]) {
 									chipAmounts.addSendToQueue(
 											amountPerWinner,
 											false, potIndex,
 											true, hostToLocalIndex(i),
 											//500.0, true);
-											first ? 500.0 : 0.0, false);
+											first ? 500.0+wait*1000.0 : 0.0, false);
 									first = false;
 								}
 							}

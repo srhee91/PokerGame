@@ -231,10 +231,10 @@ public class HostMessageHandler {
 				synchronized(host){
 					host.isWaiting = false;
 					host.objSender = allowedPlayer;
+					allowedPlayer=null;
 					host.notify();
 				}
 			}	
-			allowedPlayer=null;
 		}
 		
 	}
@@ -244,13 +244,10 @@ public class HostMessageHandler {
 	// call this function will send game state to specific client,
 	// which are arguments
 	public synchronized void send(String playerName, Object ob){
-		System.out.println("a2");
 		if (blocking==true){
 			int turn=((GameState.Gamestate)ob).whoseTurn;
-			if (turn!=-1){ 
-				System.out.println("turn:"+turn);
+			if (turn>=0){ 
 				allowedPlayer=host.players[turn];
-				System.out.println("allow:"+allowedPlayer);
 				nowTimer=new Timer();
 				nowTimer.schedule(new autoResponse(), 10000);
 			}

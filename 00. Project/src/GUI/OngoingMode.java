@@ -393,10 +393,26 @@ public class OngoingMode extends TableMode {
 						lostGame = true;
 					}
 					
+					
+					
+					// update call/check and bet/raise flags
+					int currentBet = gameState.player[GUI.playerIndexInHost].betAmount;
+					checkOrCall = (gameState.highestBet==currentBet);
+					// update bet/raise label
+					if (gameState.highestBet==0 || 
+							(gameState.flopState==0 && gameState.bigBlinder==GUI.playerIndexInHost
+							&& gameState.highestBet==gameState.blind)) {
+						betOrRaise = true;
+						
+					} else {
+						betOrRaise = false;
+					}
+					
 
 					// enable/disable buttons based on if it's our turn
 					setButtonsEnable(gameState.whoseTurn==GUI.playerIndexInHost);
 
+					
 					
 					// update faces of all centercards and player cards
 					for (int i=0; i<5; i++) {
@@ -709,25 +725,10 @@ public class OngoingMode extends TableMode {
 		
 		if (enable && gameState!=null) {
 			
-			// update call/check label
-			int highestBet = gameState.highestBet;
-			int currentBet = gameState.player[GUI.playerIndexInHost].betAmount;
-			checkOrCall = (highestBet==currentBet);
-			// update bet/raise label
-			if (highestBet==0 || 
-					(gameState.flopState==0 && gameState.bigBlinder==GUI.playerIndexInHost
-					&& gameState.highestBet==gameState.blind)) {
-				betOrRaise = true;
-				raiseTextField.setRaiseByString("Bet:");
-			} else {
-				betOrRaise = false;
-				raiseTextField.setRaiseByString("Raise to:");
-			}
-		
 			// if current bet is more than what I have, the only options are all in and fold
 			Player player = gameState.player[GUI.playerIndexInHost];
 			int playerTotalPlusBet = player.totalChip + player.betAmount;
-			if (highestBet >= playerTotalPlusBet) {
+			if (gameState.highestBet >= playerTotalPlusBet) {
 				checkButton.setEnable(false);
 				raiseButton.setEnable(false);
 			}
@@ -853,6 +854,7 @@ public class OngoingMode extends TableMode {
 				betOrRaise ? "Bet" : "Raise");
 		allInButton.render(container, g, allInButtonFont, Color.white, "All In");
 		
+		raiseTextField.setRaiseByString(betOrRaise ? "Bet:" : "Raise to:");
 		raiseTextField.render(container, g);
 	}
 

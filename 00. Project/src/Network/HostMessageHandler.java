@@ -36,9 +36,9 @@ public class HostMessageHandler {
 	private ServerSocket server=null;
 	private int port;
 	protected String allowedPlayer=null;
-	protected Timer nowTimer;
+	protected volatile Timer nowTimer;
 	private Listening listeningThread = null;
-	private boolean blocking;
+	private volatile boolean blocking;
 	
 	/*
 	 * Constructor 
@@ -224,7 +224,7 @@ public class HostMessageHandler {
 	
 	class autoResponse extends TimerTask{
 		public void run() {
-			//nowTimer.cancel();
+			nowTimer.cancel();
 			UserAction ac=new UserAction(UserAction.Action.FOLD,0);
 			host.objReceived=ac;
 			if (host.isWaiting) {

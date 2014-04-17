@@ -144,6 +144,10 @@ public class Host{
 				
 				game.updateRound();
 				
+				/*special case handling*/
+				//if everyone folds
+				if(game.potTotal.getCurrentPot().winnerByFold != -1)
+					break;
 				
 				
 				// send a second post-round extra gamestate:
@@ -167,10 +171,6 @@ public class Host{
 				game.potTotal.printPot();
 				
 				/*special case handling*/
-				//if everyone folds
-				if(game.potTotal.getCurrentPot().winnerByFold != -1)
-					break;
-				
 				//if everyone went all in in current pot
 				Pot currentPot = game.potTotal.getCurrentPot();
 				int notAllIn = 0;

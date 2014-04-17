@@ -236,6 +236,9 @@ public class OngoingMode extends TableMode {
 								if (!raiseAmtString.isEmpty()) {
 									raiseAmount = Integer.parseInt(raiseAmtString);
 									
+									Player player = gameState.player[GUI.playerIndexInHost];
+									int playerTotalPlusBet = player.totalChip + player.betAmount;
+									
 									if (raiseAmount <= gameState.highestBet) {
 										// must raise to above the highest bet
 										raiseTextField.setText("");
@@ -244,9 +247,9 @@ public class OngoingMode extends TableMode {
 												? "Must bet an amount above $"+gameState.highestBet
 												: "Must raise to an amount above $"+gameState.highestBet);
 										popupRaiseInvalid.setVisible(raiseButton);
-									} else if (raiseAmount >= gameState.player[GUI.playerIndexInHost].totalChip) {
+									} else if (raiseAmount >= playerTotalPlusBet) {
 										// assume this means all in, show all in popup 
-										raiseTextField.setText(""+gameState.player[GUI.playerIndexInHost].totalChip);
+										raiseTextField.setText(""+playerTotalPlusBet);
 										setButtonsEnable(false);
 										popupAllInConfirm.setVisible(raiseButton);
 									} else {
@@ -277,7 +280,9 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						// show all in popup
-						raiseTextField.setText(""+gameState.player[GUI.playerIndexInHost].totalChip);
+						Player player = gameState.player[GUI.playerIndexInHost];
+						int playerTotalPlusBet = player.totalChip + player.betAmount;
+						raiseTextField.setText(""+playerTotalPlusBet);
 						setButtonsEnable(false);
 						popupAllInConfirm.setVisible(allInButton);
 					}
@@ -457,6 +462,8 @@ public class OngoingMode extends TableMode {
 					} else if (gameState.whoseTurn==-3) {
 												
 						
+						int leftOvers[] = new int[8];
+						
 						// distribute each pot to its winners
 						Host.GameSystem.Pot pot = gameState.potTotal;
 						for (int potIndex=0; potIndex<8; potIndex++) {
@@ -472,6 +479,7 @@ public class OngoingMode extends TableMode {
 									numWinners++;
 							}
 							int amountPerWinner = pot.totalPot / numWinners;
+							leftOvers[potIndex] = amountPerWinner % numWinners;
 							
 							System.out.println("amt = $"+pot.totalPot);
 							System.out.println("amt per winner = $"+amountPerWinner);
@@ -498,10 +506,9 @@ public class OngoingMode extends TableMode {
 							for (int potIndex=1; potIndex<8; potIndex++) {
 								if (pot==null)
 									break;
-								int leftOver = chipAmounts.getPotAmount(potIndex);
-								if (leftOver > 0) {
+								if (leftOvers[potIndex] > 0) {
 									chipAmounts.addSendToQueue(
-											leftOver,
+											leftOvers[potIndex],
 											false, potIndex,
 											false, 0,	 // send to main pot
 											0.0, true);
@@ -552,8 +559,7 @@ public class OngoingMode extends TableMode {
 							int localDealerIndex = hostToLocalIndex(gameState.dealer);
 							dealerChip.moveTo(localDealerIndex);
 							
-							// reset and deal cards, show main player's cards
-							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;							
+							// reset and deal cards, show main player's cards					
 							cards.collectCards();
 							cards.dealCards(localDealerIndex, 1000.0, playerNamesLocal);
 							cards.showPlayerCards(0);
@@ -719,7 +725,9 @@ public class OngoingMode extends TableMode {
 			}
 		
 			// if current bet is more than what I have, the only options are all in and fold
-			if (highestBet >= gameState.player[GUI.playerIndexInHost].totalChip) {
+			Player player = gameState.player[GUI.playerIndexInHost];
+			int playerTotalPlusBet = player.totalChip + player.betAmount;
+			if (highestBet >= playerTotalPlusBet) {
 				checkButton.setEnable(false);
 				raiseButton.setEnable(false);
 			}

@@ -144,16 +144,13 @@ public class Host{
 				
 				game.updateRound();
 				
-				/*special case handling*/
-				//if everyone folds
-				if(game.potTotal.getCurrentPot().winnerByFold != -1)
-					break;
 				
 				
 				// send a second post-round extra gamestate:
 				// causes GUI to show animation of bets being collected
 				// and next flopstate cards revealed.  this way, the first player's turn doesn't start
 				// immediately after the deal/flop reveal.
+				if(game.potTotal.getCurrentPot().winnerByFold != -1)	game.flopState--;
 				temp = game.whoseTurn;
 				game.whoseTurn = -2;
 				sendGameState();
@@ -171,6 +168,10 @@ public class Host{
 				game.potTotal.printPot();
 				
 				/*special case handling*/
+				//if everyone folds
+				if(game.potTotal.getCurrentPot().winnerByFold != -1)
+					break;
+				
 				//if everyone went all in in current pot
 				Pot currentPot = game.potTotal.getCurrentPot();
 				int notAllIn = 0;
@@ -192,7 +193,7 @@ public class Host{
 			game.whoseTurn = -3;
 			sendGameState();
 			try {
-				Thread.sleep(game.potTotal.countPots(1)*100 + 10000);
+				Thread.sleep(game.potTotal.countPots(1)*100 + 5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

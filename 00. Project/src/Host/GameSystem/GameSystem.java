@@ -90,7 +90,10 @@ public class GameSystem{
 	}
 	public void newRound(){
 		
-		highestBetter = nextTurn();
+		if(nextPlayer(whoseTurn) != -1 )
+			highestBetter = nextTurn();
+		else
+			highestBetter = whoseTurn;
 
 	}
 	

@@ -111,7 +111,7 @@ public class HostMessageHandler {
 	}
 	
 	public void gameStart(){
-		blocking=true;
+		//blocking=true;
 	}
 	
 	public void gameEnd(){

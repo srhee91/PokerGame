@@ -519,7 +519,7 @@ public class OngoingMode extends TableMode {
 						
 							if (gameState.player[i] != null) {
 								int localIndex = hostToLocalIndex(i);
-								int amount = chipAmounts.getPlayerAmount(localIndex);
+								int amount = gameState.player[i].betAmount;
 								chipAmounts.setPlayerAmount(localIndex, amount);
 							}
 						}

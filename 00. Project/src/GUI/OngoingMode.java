@@ -136,8 +136,6 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// ok action
 						// disconnect from host, return to main menu
-						GUI.cmh.close();
-						GUI.cmh = null;
 						game.enterState(1);
 					}
 				});
@@ -306,6 +304,27 @@ public class OngoingMode extends TableMode {
 		
 		super.update(container, game, delta);
 		
+		// update all cards
+		cards.update(delta);
+		
+		// update all chip amounts
+		chipAmounts.update(delta);
+		
+		// update dealer chip
+		dealerChip.update(delta);
+		
+		
+		/*
+		// temporary method for transitioning between modes
+		if (container.getInput().isKeyPressed(Input.KEY_1))
+			game.enterState(1);
+		else if (container.getInput().isKeyPressed(Input.KEY_2))
+			game.enterState(2);
+		else if (container.getInput().isKeyPressed(Input.KEY_3))
+			game.enterState(3);
+		*/
+		
+		
 		// on-enter-mode actions
 		if (GUI.currentMode != 4) {
 			
@@ -329,17 +348,6 @@ public class OngoingMode extends TableMode {
 			
 			GUI.currentMode = 4;
 		}
-		
-
-		/*
-		// temporary method for transitioning between modes
-		if (container.getInput().isKeyPressed(Input.KEY_1))
-			game.enterState(1);
-		else if (container.getInput().isKeyPressed(Input.KEY_2))
-			game.enterState(2);
-		else if (container.getInput().isKeyPressed(Input.KEY_3))
-			game.enterState(3);
-		*/
 		
 		
 		// check if we're still connected to host
@@ -381,13 +389,20 @@ public class OngoingMode extends TableMode {
 					// DONE printing game state
 					
 					
-					// check if we lost the game during the last gameState
-					if (gameState.player[GUI.playerIndexInHost]==null && gameState.flopState==0
-							&& gameState.whoseTurn >= 0) {
-						popupLostGame.setVisible(null);
+					
+					
+					// check if we've lost the game.  if so, show the lostGame popup
+					// when the first gamestate of the next hand is received.
+					if (gameState.player[GUI.playerIndexInHost]==null) {
+						
+						if (gameState.flopState==0) { //&& gameState.whoseTurn >= 0) {
+							popupLostGame.setVisible(null);
+							// disable cmh now so no further gameStates are received
+							GUI.cmh.close();
+							GUI.cmh = null;
+						}
 						return;
 					}
-					
 					
 					
 					
@@ -435,8 +450,31 @@ public class OngoingMode extends TableMode {
 				
 					
 					// update chip amounts (depends on whoseTurn)
-					
-					if (gameState.whoseTurn==-2) {
+					if (gameState.whoseTurn >= -1) {				// UPDATE BETS ----------------------
+						
+						// update bets without animation if this gamestate comes
+						// before/after a player's turn
+						for (int i=0; i<8; i++) {
+						
+							if (gameState.player[i] != null) {
+								int localIndex = hostToLocalIndex(i);
+								int amount = gameState.player[i].betAmount;
+								chipAmounts.setPlayerAmount(localIndex, amount);
+							}
+						}
+						
+						// update pot amounts (should be redundant)
+						Host.GameSystem.Pot pot = gameState.potTotal;
+						for (int i=0; i<8; i++) {
+							if (pot==null)
+								break;
+							if (chipAmounts.getPotAmount(i) != pot.totalPot) {
+								System.out.println("pot "+i+" inconsistent with gamestate!");
+								chipAmounts.setPotAmount(i, pot.totalPot);
+							}
+							pot = pot.splitPot;
+						}
+					} else if (gameState.whoseTurn==-2) {			// COLLECT BETS---------------------
 						
 						// show animation to collect bets
 						for (int i=0; i<8; i++) {
@@ -471,7 +509,7 @@ public class OngoingMode extends TableMode {
 							}
 							pot = pot.splitPot;
 						}
-					} else if (gameState.whoseTurn==-3) {
+					} else {										// DISTRIBUTE WINNINGS-------------
 												
 						
 						int leftOvers[] = new int[8];
@@ -543,31 +581,7 @@ public class OngoingMode extends TableMode {
 						}
 												
 						
-					} else if (gameState.whoseTurn >= -1) {
-						
-						// update bets without animation if this gamestate comes
-						// before/after a player's turn
-						for (int i=0; i<8; i++) {
-						
-							if (gameState.player[i] != null) {
-								int localIndex = hostToLocalIndex(i);
-								int amount = gameState.player[i].betAmount;
-								chipAmounts.setPlayerAmount(localIndex, amount);
-							}
-						}
-						
-						// update pot amounts (should be redundant)
-						Host.GameSystem.Pot pot = gameState.potTotal;
-						for (int i=0; i<8; i++) {
-							if (pot==null)
-								break;
-							if (chipAmounts.getPotAmount(i) != pot.totalPot) {
-								System.out.println("pot "+i+" inconsistent with gamestate!");
-								chipAmounts.setPotAmount(i, pot.totalPot);
-							}
-							pot = pot.splitPot;
-						}
-					}
+					} 
 					
 					
 					
@@ -594,8 +608,8 @@ public class OngoingMode extends TableMode {
 					case 1:
 						
 						if (lastFlopState==0) {
-							
-							cards.dealFlop(1000.0);
+							// flip over flop cards
+							cards.dealFlop(500.0);
 						} 
 						break;
 						
@@ -606,7 +620,7 @@ public class OngoingMode extends TableMode {
 							
 						} else {
 							// flip over flop and turn cards
-							cards.dealFlop(1000.0);
+							cards.dealFlop(500.0);
 							cards.dealTurn(0.0);							
 						}
 						break;
@@ -617,7 +631,7 @@ public class OngoingMode extends TableMode {
 							
 						} else if (lastFlopState==1) {
 							// flip over turn and river cards
-							cards.dealTurn(1000.0);
+							cards.dealTurn(500.0);
 							cards.dealRiver(0.0);
 						} else {
 							// flip over flop, turn, and river cards
@@ -627,7 +641,7 @@ public class OngoingMode extends TableMode {
 						}
 						break;
 						
-					case 4:
+					case 4:	// SHOW 
 
 						// if showdown occurred, need to check which flopstate
 						// we were in when everyone went all in
@@ -643,17 +657,13 @@ public class OngoingMode extends TableMode {
 							// reveal any flop cards that haven't been revealed yet
 							switch (lastFlopState) {
 							case 0:
-								cards.dealFlop(0.0);
-								cards.dealTurn(0.0);
-								cards.dealRiver(0.0);
-								break;
+								cards.dealFlop(0.0);	// fall thru
 							case 1:
-								cards.dealTurn(0.0);
-								cards.dealRiver(0.0);
-								break;
+								cards.dealTurn(0.0);	// fall thru
 							case 2:
 								cards.dealRiver(0.0);
 								break;
+							default:
 							}	
 						}
 						
@@ -708,17 +718,6 @@ public class OngoingMode extends TableMode {
 					destIsPlayer, destIndex, 0.0, true);
 		}
 		*/
-		
-				
-		
-		// update all cards
-		cards.update(delta);
-		
-		// update all chip amounts
-		chipAmounts.update(delta);
-		
-		// update dealer chip
-		dealerChip.update(delta);
 	}
 	
 

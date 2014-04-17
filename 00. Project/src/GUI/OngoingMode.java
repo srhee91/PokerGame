@@ -383,7 +383,6 @@ public class OngoingMode extends TableMode {
 					
 					
 					// check if we've lost the game
-					// TODO: move this, prolly after flopstate 4
 					if (gameState.player[GUI.playerIndexInHost]==null) {
 						setButtonsEnable(false);
 						lostGame = true;
@@ -394,9 +393,17 @@ public class OngoingMode extends TableMode {
 					setButtonsEnable(gameState.whoseTurn==GUI.playerIndexInHost);
 
 					
-					// update faces of all centercards
-					for (int i=0; i<5; ++i) {
+					// update faces of all centercards and player cards
+					for (int i=0; i<5; i++) {
 						cards.centerCards[i].setFaceImage(gameState.flops[i]);
+					}
+					for (int i=0; i<8; i++) {
+						if (gameState.player[i] !=null) {
+							int localIndex = hostToLocalIndex(i);
+							Host.GameSystem.Card[] hand = gameState.player[i].hand;
+							cards.playerCards[localIndex][0].setFaceImage(hand[0]);
+							cards.playerCards[localIndex][1].setFaceImage(hand[1]);
+						}
 					}
 					
 					
@@ -546,7 +553,7 @@ public class OngoingMode extends TableMode {
 							dealerChip.moveTo(localDealerIndex);
 							
 							// reset and deal cards, show main player's cards
-							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;
+							Host.GameSystem.Card[] hand = gameState.player[GUI.playerIndexInHost].hand;							
 							cards.collectCards();
 							cards.dealCards(localDealerIndex, 1000.0, playerNamesLocal);
 							cards.showPlayerCards(0);

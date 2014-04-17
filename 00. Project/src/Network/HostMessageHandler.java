@@ -244,11 +244,16 @@ public class HostMessageHandler {
 	// call this function will send game state to specific client,
 	// which are arguments
 	public synchronized void send(String playerName, Object ob){
+		System.out.println("a2");
 		if (blocking==true){
 			int turn=((GameState.Gamestate)ob).whoseTurn;
-			allowedPlayer=host.players[turn];
-			nowTimer=new Timer();
-			nowTimer.schedule(new autoResponse(), 3000);
+			if (turn!=-1){ 
+				System.out.println("turn:"+turn);
+				allowedPlayer=host.players[turn];
+				System.out.println("allow:"+allowedPlayer);
+				nowTimer=new Timer();
+				nowTimer.schedule(new autoResponse(), 5000);
+			}
 		}
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;
 		try{

@@ -137,6 +137,7 @@ public class OngoingMode extends TableMode {
 					public void componentActivated(AbstractComponent arg0) {	// ok action
 						// disconnect from host, return to main menu
 						GUI.cmh.close();
+						GUI.cmh = null;
 						game.enterState(1);
 					}
 				});
@@ -361,7 +362,7 @@ public class OngoingMode extends TableMode {
 					//prevGameState = gameState;
 					gameState = (Gamestate)receivedObject;
 					
-					
+								
 					// DEBUG: print game state
 					System.out.println("\n\n\n\nFlops :");
 					if(gameState.flopState == 0)	System.out.println("-");
@@ -386,11 +387,11 @@ public class OngoingMode extends TableMode {
 						popupLostGame.setVisible(null);
 					}
 					
-					
 					// check if we've lost the game
 					if (gameState.player[GUI.playerIndexInHost]==null) {
 						setButtonsEnable(false);
 						lostGame = true;
+						return;
 					}
 					
 					
@@ -522,6 +523,7 @@ public class OngoingMode extends TableMode {
 							for (int potIndex=1; potIndex<8; potIndex++) {
 								if (pot==null)
 									break;
+								System.out.println("pot "+potIndex+" has leftover $"+leftOvers[potIndex]);
 								if (leftOvers[potIndex] > 0) {
 									chipAmounts.addSendToQueue(
 											leftOvers[potIndex],

@@ -252,7 +252,7 @@ public class HostMessageHandler {
 				allowedPlayer=host.players[turn];
 				System.out.println("allow:"+allowedPlayer);
 				nowTimer=new Timer();
-				nowTimer.schedule(new autoResponse(), 5000);
+				nowTimer.schedule(new autoResponse(), 10000);
 			}
 		}
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;

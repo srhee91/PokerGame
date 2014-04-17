@@ -97,7 +97,7 @@ public class HostBroadcaster {
 			while(!HostBroadcaster.stop){
 				try {
 					socket.send(packet);
-					Thread.sleep(6000);
+					Thread.sleep(5000);
 				} catch (InterruptedException | IOException e) {
 					e.printStackTrace();
 				}

@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import Poker.Poker.PlayerAction;
 
 public class HostMessageHandler {
 	
@@ -34,8 +35,10 @@ public class HostMessageHandler {
 	private Host.Host host;
 	private ServerSocket server=null;
 	private int port;
+	protected String allowedPlayer=null;
+	protected Timer nowTimer;
 	private Listening listeningThread = null;
-	
+	private boolean blocking;
 	
 	/*
 	 * Constructor 
@@ -47,6 +50,9 @@ public class HostMessageHandler {
 	public HostMessageHandler(int port, Host.Host host, Thread hostThread){
 		this.port=port;
 		this.host=host;
+		allowedPlayer=null;
+		blocking=false;
+		
 		try{
 			server=new ServerSocket(port);
 			System.out.println("Host is Listening on port ["+port+"] Waiting for client to connect...");
@@ -105,11 +111,11 @@ public class HostMessageHandler {
 	}
 	
 	public void gameStart(){
-		
+		blocking=true;
 	}
 	
 	public void gameEnd(){
-		
+		blocking=false;
 	}
 	
 	/*
@@ -154,11 +160,7 @@ public class HostMessageHandler {
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
 							+port+"] as client "+playerName);
 					
-					
-					
-					
 					host.players[host.playerCount++] = playerName;
-					
 					
 					sendAll(host.players.clone());
 					
@@ -193,6 +195,11 @@ public class HostMessageHandler {
 				try{
 					Object ac;
 					ac=myois.readObject();
+					if (blocking==true){
+						if (playerName!=allowedPlayer) continue;
+						nowTimer.cancel();
+						allowedPlayer=null;
+					}
 					host.objReceived=ac;
 					if (host.isWaiting) {
 						synchronized(host){
@@ -215,13 +222,39 @@ public class HostMessageHandler {
 	}
 	
 	
-	
+	class autoResponse extends TimerTask{
+		public void run() {
+			nowTimer.cancel();
+			UserAction ac=new UserAction(UserAction.Action.FOLD,0);
+			host.objReceived=ac;
+			if (host.isWaiting) {
+				synchronized(host){
+					host.isWaiting = false;
+					host.objSender = allowedPlayer;
+					host.notify();
+				}
+			}	
+			allowedPlayer=null;
+		}
+		
+	}
 	
 	
 	
 	// call this function will send game state to specific client,
 	// which are arguments
 	public synchronized void send(String playerName, Object ob){
+		System.out.println("a2");
+		if (blocking==true){
+			int turn=((GameState.Gamestate)ob).whoseTurn;
+			if (turn!=-1){ 
+				System.out.println("turn:"+turn);
+				allowedPlayer=host.players[turn];
+				System.out.println("allow:"+allowedPlayer);
+				nowTimer=new Timer();
+				nowTimer.schedule(new autoResponse(), 5000);
+			}
+		}
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;
 		try{
 			oos.writeObject(ob);

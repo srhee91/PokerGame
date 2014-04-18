@@ -76,7 +76,7 @@ public class OngoingMode extends TableMode {
 	
 	private String[] playerNamesLocal;
 	
-	//private Gamestate prevGameState;
+	private Gamestate prevGameState;
 	private Gamestate gameState;
 	
 	private int lastFlopState;
@@ -328,7 +328,8 @@ public class OngoingMode extends TableMode {
 		// on-enter-mode actions
 		if (GUI.currentMode != 4) {
 			
-			//prevGameState = null;
+			prevGameState = null;
+			gameState = null;
 			
 			lastFlopState = 3;
 			checkOrCall = true;
@@ -366,12 +367,15 @@ public class OngoingMode extends TableMode {
 				
 				if (receivedObject instanceof Gamestate) {
 				
-					//prevGameState = gameState;
+					prevGameState = gameState;
 					gameState = (Gamestate)receivedObject;
 					
 								
 					// DEBUG: print game state
-					System.out.println("\n\n\n\nFlops :");
+					System.out.println("---------------------------------------------------------------------");
+					System.out.println("highest bet: "+gameState.highestBet);
+					
+					System.out.println("Flops :");
 					if(gameState.flopState == 0)	System.out.println("-");
 					else if(gameState.flopState == 1)	for(int k=0; k<3; k++)	System.out.println(gameState.flops[k]);
 					else if(gameState.flopState == 2)	for(int k=0; k<4; k++)	System.out.println(gameState.flops[k]);
@@ -447,23 +451,31 @@ public class OngoingMode extends TableMode {
 					
 					if (gameState.whoseTurn==-2) {			// PRE-ROUND---------------------	
 						
-						// update dealer chip position
-						dealerChip.moveTo(hostToLocalIndex(gameState.dealer));
 						
 						
-						// collect bets (if any)
-						for (int i=0; i<8; i++) {
+						if (gameState.flopState==0) {
 							
-							if (gameState.player[i] != null) {
+							// update dealer chip position
+							dealerChip.moveTo(hostToLocalIndex(gameState.dealer));
+						
+						}
+						// collect bets (if any)
+						// don't collect during flopstate 0: this will take player's winnings back to pot
+						else {
+							
+							for (int i=0; i<8; i++) {
 								
-								int localIndex = hostToLocalIndex(i);
-								int amount = chipAmounts.getPlayerAmount(localIndex);
-								if (amount > 0) {
-									chipAmounts.addSendToQueue(
-											amount,
-											true, localIndex,
-											false, 0,	// send to main pot
-											0.0, false);
+								if (gameState.player[i] != null) {
+									
+									int localIndex = hostToLocalIndex(i);
+									int amount = chipAmounts.getPlayerAmount(localIndex);
+									if (amount > 0) {
+										chipAmounts.addSendToQueue(
+												amount,
+												true, localIndex,
+												false, 0,	// send to main pot
+												0.0, false);
+									}
 								}
 							}
 						}
@@ -803,11 +815,19 @@ public class OngoingMode extends TableMode {
 	
 	
 	private void drawTotalAmounts(Graphics g) {
-		if (gameState==null)
+		if (gameState==null || prevGameState==null)
 			return;
 		
 		for (int i=0; i<8; i++) {
-			Player player = gameState.player[localToHostIndex(i)];
+			Player player;
+			
+			// do not update total amounts during flopstate 4:
+			// allow winnings to be added by next gamestate
+			if (gameState.flopState==4)
+				player = prevGameState.player[localToHostIndex(i)];
+			else
+				player = gameState.player[localToHostIndex(i)];
+			
 			if (player != null) {
 				if (i==0) {
 					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,

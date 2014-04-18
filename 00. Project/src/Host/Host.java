@@ -267,6 +267,7 @@ public class Host{
 		*/
 		System.out.println("\n\n\nSending flopstate = "+game.flopState+", whoseturn = "+game.whoseTurn
 				+ "*****************************************************");
+		System.out.println("highest bet: "+gameState.highestBet);
 		
 		
 		hmh.sendAll(gameState);	

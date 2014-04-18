@@ -108,8 +108,6 @@ public class GameSystem{
 		highestBet = 0;
 		whoseTurn = dealer;
 		
-		flopState++;
-
 	}
 	public void updateHand(){
 

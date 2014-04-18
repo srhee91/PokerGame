@@ -169,6 +169,11 @@ public class Host{
 				
 				
 				
+	
+				game.updateRound();
+				
+				
+				
 				
 				// send another post-round gamestate
 				// causes GUI to show animation of bets being collected
@@ -185,10 +190,7 @@ public class Host{
 				
 				
 				
-				
-				game.updateRound();		// flopstate++
-				
-				
+				game.flopState++;
 				
 				
 						

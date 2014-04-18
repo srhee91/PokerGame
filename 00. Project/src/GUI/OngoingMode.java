@@ -503,10 +503,11 @@ public class OngoingMode extends TableMode {
 						
 						
 						// update split pots, taking difference from main pot
-						Host.GameSystem.Pot pot = gameState.potTotal;
-						for (int i=0; i<8; i++) {
+						Host.GameSystem.Pot pot = gameState.potTotal.splitPot;
+						for (int i=1; i<8; i++) {
 							if (pot==null)
 								break;
+							System.out.println("Collect bets: pot "+i+" has "+pot.totalPot);
 							int amount = pot.totalPot;
 							int oldAmount = chipAmounts.getPotAmount(i);
 							if (oldAmount!=amount) {
@@ -518,6 +519,8 @@ public class OngoingMode extends TableMode {
 							}
 							pot = pot.splitPot;
 						}
+						
+						
 					}
 					
 					

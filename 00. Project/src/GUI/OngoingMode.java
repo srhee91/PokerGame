@@ -855,13 +855,14 @@ public class OngoingMode extends TableMode {
 					drawPlayerLabel(g, localIndex, "Thinking...", Color.white, thinkingLabelColor);
 					continue;
 				}
-				
+				/*
 				// check isAllIn() instead of lastAction for the All In label
 				if (gameState.player[i].isAllIn()) {
 					drawPlayerLabel(g, localIndex, "All In $"+gameState.player[i].betAmount,
 							Color.white, allInLabelColor);
 				}
-				else {
+				*/
+				//else {
 
 					UserAction lastAction = gameState.player[i].latestAction;
 					if (lastAction!=null) {
@@ -881,10 +882,14 @@ public class OngoingMode extends TableMode {
 						case RAISE:
 							drawPlayerLabel(g, localIndex, "Raise to $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
 							break;
+						case ALL_IN:
+							drawPlayerLabel(g, localIndex, "All In $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
+							break;
 						default:
 							break;
 						}
-					}
+						
+					//}
 				
 				}
 			}

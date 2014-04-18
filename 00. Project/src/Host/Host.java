@@ -287,6 +287,16 @@ public class Host{
 				+ "*****************************************************");
 		System.out.println("highest bet: "+gameState.highestBet);
 		
+		// print out pot winnerbyFolds
+		Pot pot = gameState.potTotal;
+		for (int i=0; i<8; i++) {
+			if (pot==null)
+				break;
+			System.out.println("Pot "+i+" winnerByFold = "+pot.winnerByFold);
+			pot = pot.splitPot;
+		}
+		
+		System.out.println("showdown = "+gameState.showdown);
 		
 		hmh.sendAll(gameState);	
 	}

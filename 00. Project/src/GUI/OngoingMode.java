@@ -439,18 +439,53 @@ public class OngoingMode extends TableMode {
 					}
 					
 					
-					// fold player's cards if needed
-					for (int i=0; i<8; i++) {
-						if (gameState.player[i]!=null
-								&& gameState.player[i].hasFolded) {
-							cards.fold(hostToLocalIndex(i));
-						}
-					}
+
 
 				
 					
-					// update chip amounts (depends on whoseTurn)
-					if (gameState.whoseTurn >= -1) {				// UPDATE BETS ----------------------
+					// update dealer chip and chip amounts (depends on whoseTurn) ---------------------------------------------
+					
+					if (gameState.whoseTurn==-2) {			// PRE-ROUND---------------------	
+						
+						// update dealer chip position
+						dealerChip.moveTo(hostToLocalIndex(gameState.dealer));
+						
+						
+						// collect bets (if any)
+						for (int i=0; i<8; i++) {
+							
+							if (gameState.player[i] != null) {
+								
+								int localIndex = hostToLocalIndex(i);
+								int amount = chipAmounts.getPlayerAmount(localIndex);
+								if (amount > 0) {
+									chipAmounts.addSendToQueue(
+											amount,
+											true, localIndex,
+											false, 0,	// send to main pot
+											0.0, false);
+								}
+							}
+						}
+						
+						// update split pots, taking difference from main pot
+						Host.GameSystem.Pot pot = gameState.potTotal;
+						for (int i=0; i<8; i++) {
+							if (pot==null)
+								break;
+							int amount = pot.totalPot;
+							int oldAmount = chipAmounts.getPotAmount(i);
+							if (oldAmount!=amount) {
+								chipAmounts.addSendToQueue(
+										amount-oldAmount,
+										false, 0,	// take from main pot
+										false, i,	// send to whichever sidepot
+										0.0, true);
+							}
+							pot = pot.splitPot;
+						}
+					
+					} else if (gameState.whoseTurn >= -1) {				// PER-TURN ----------------------
 						
 						// update bets without animation if this gamestate comes
 						// before/after a player's turn
@@ -474,119 +509,34 @@ public class OngoingMode extends TableMode {
 							}
 							pot = pot.splitPot;
 						}
-					} else if (gameState.whoseTurn==-2) {			// COLLECT BETS---------------------
-						
-						// show animation to collect bets
-						for (int i=0; i<8; i++) {
-							
-							if (gameState.player[i] != null) {
-								
-								int localIndex = hostToLocalIndex(i);
-								int amount = chipAmounts.getPlayerAmount(localIndex);
-								if (amount > 0) {
-									chipAmounts.addSendToQueue(
-											amount,
-											true, localIndex,
-											false, 0,	// send to main pot
-											0.0, false);
-								}
-							}
-						}
-						
-						// show animation for split pots
-						Host.GameSystem.Pot pot = gameState.potTotal;
-						for (int i=0; i<8; i++) {
-							if (pot==null)
-								break;
-							int amount = pot.totalPot;
-							int oldAmount = chipAmounts.getPotAmount(i);
-							if (oldAmount!=amount) {
-								chipAmounts.addSendToQueue(
-										amount-oldAmount,
-										false, 0,	// take from main pot
-										false, i,	// send to whichever sidepot
-										0.0, true);
-							}
-							pot = pot.splitPot;
-						}
-					} else {										// DISTRIBUTE WINNINGS-------------
-												
-						
-						int leftOvers[] = new int[8];
-						
-						// distribute each pot to its winners
-						Host.GameSystem.Pot pot = gameState.potTotal;
-						for (int potIndex=0; potIndex<8; potIndex++) {
-							if (pot==null)
-								break;
-							
-							System.out.println("distributing pot "+potIndex+"...");
-							
-							// calculate winnings per winner
-							int numWinners = 0;
-							for (int i=0; i<8; i++) {
-								if (pot.winner[i])
-									numWinners++;
-							}
-							int amountPerWinner = pot.totalPot / numWinners;
-							leftOvers[potIndex] = amountPerWinner % numWinners;
-							
-							System.out.println("amt = $"+pot.totalPot);
-							System.out.println("amt per winner = $"+amountPerWinner);
-							
-							// send that amount to each winner of this pot
-							boolean first = true;
-							for (int i=0; i<8; i++) {
-								double wait = 0;
-								switch (lastFlopState) {
-								case 0:
-									wait = 2.5;
-									break;
-								case 1:
-									wait = 1.0;
-									break;
-								case 2:
-									wait = 0.5;
-									break;
-								}
-								if (gameState.player[i]!=null && pot.winner[i]) {
-									chipAmounts.addSendToQueue(
-											amountPerWinner,
-											false, potIndex,
-											true, hostToLocalIndex(i),
-											//500.0, true);
-											first ? 500.0+wait*1000.0 : 0.0, false);
-									first = false;
-								}
-							}
-							pot = pot.splitPot;
-						}
-						
-						// collect each pot's leftover into the main pot
-						if (gameState.potTotal != null) {
-							pot = gameState.potTotal.splitPot;
-							for (int potIndex=1; potIndex<8; potIndex++) {
-								if (pot==null)
-									break;
-								System.out.println("pot "+potIndex+" has leftover $"+leftOvers[potIndex]);
-								if (leftOvers[potIndex] > 0) {
-									chipAmounts.addSendToQueue(
-											leftOvers[potIndex],
-											false, potIndex,
-											false, 0,	 // send to main pot
-											0.0, true);
-								}
-								pot = pot.splitPot;
-							}
-						}
-												
-						
+
 					} 
 					
 					
 					
-					// update cards and dealerchip (depends on flopState)
+					// update cards -----------------------------------------------------------------------------------------
 					
+					// fold player's cards if needed
+					for (int i=0; i<8; i++) {
+						if (gameState.player[i]!=null
+								&& gameState.player[i].hasFolded) {
+							cards.fold(hostToLocalIndex(i));
+						}
+					}
+					
+					
+					// if showdown occurred, reveal cards of everyone who hasn't folded
+					if (lastFlopState!=gameState.flopState && gameState.showdown) {
+						// reveal everyone's cards who haven't folded
+						for (int i=0; i<8; i++) {
+							if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
+								cards.showPlayerCards(hostToLocalIndex(i));
+							}
+						}
+					}
+					
+					
+					// deal cards / reveal flop cards depending on flopstate
 					switch (gameState.flopState) {
 					
 					case 0:
@@ -594,13 +544,10 @@ public class OngoingMode extends TableMode {
 						// when a new hand starts...
 						if (lastFlopState != 0) {
 							
-							// update dealer chip position
-							int localDealerIndex = hostToLocalIndex(gameState.dealer);
-							dealerChip.moveTo(localDealerIndex);
-							
 							// reset and deal cards, show main player's cards					
 							cards.collectCards();
-							cards.dealCards(localDealerIndex, 500.0, playerNamesLocal);
+							cards.dealCards(hostToLocalIndex(gameState.dealer),
+									500.0, playerNamesLocal);
 							cards.showPlayerCards(0);
 						}
 						break;
@@ -641,34 +588,110 @@ public class OngoingMode extends TableMode {
 						}
 						break;
 						
-					case 4:	// SHOW 
-
-						// if showdown occurred, need to check which flopstate
-						// we were in when everyone went all in
-						if (gameState.showdown) {
-							
-							// reveal everyone's cards who haven't folded
+					default:						
+						break;
+					}
+					
+					
+					// POST HAND: reveal cards, distribute winnings for each pot-------------
+					
+					if (gameState.whoseTurn==-3) {										
+						
+						// reveal everyone's cards if they haven't already
+						if (!gameState.showdown) {
 							for (int i=0; i<8; i++) {
 								if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
 									cards.showPlayerCards(hostToLocalIndex(i));
 								}
 							}
-							
-							// reveal any flop cards that haven't been revealed yet
-							switch (lastFlopState) {
-							case 0:
-								cards.dealFlop(0.0);	// fall thru
-							case 1:
-								cards.dealTurn(0.0);	// fall thru
-							case 2:
-								cards.dealRiver(0.0);
-								break;
-							default:
-							}	
 						}
 						
-						break;
-					}
+						
+						int leftOvers[] = new int[8];
+						
+						// distribute each pot to its winners
+						Host.GameSystem.Pot pot = gameState.potTotal;
+						for (int potIndex=0; potIndex<8; potIndex++) {
+							
+							if (pot==null)
+								break;
+							
+							
+							// flip over the cards of players who aren't involved in this pot
+							// TODO:
+							
+							
+							
+							System.out.println("distributing pot "+potIndex+"...");
+							
+							// calculate winnings per winner
+							int numWinners = 0;
+							for (int i=0; i<8; i++) {
+								if (pot.winner[i])
+									numWinners++;
+							}
+							int amountPerWinner = pot.totalPot / numWinners;
+							leftOvers[potIndex] = amountPerWinner % numWinners;
+							
+							System.out.println("amt = $"+pot.totalPot);
+							System.out.println("amt per winner = $"+amountPerWinner);
+							
+							
+							// set winner labels for this pot to render
+							// TODO:
+							
+							
+							// send that amount to each winner of this pot
+							boolean first = true;
+							for (int i=0; i<8; i++) {
+								double wait = 0;
+								switch (lastFlopState) {
+								case 0:
+									wait = 2.5;
+									break;
+								case 1:
+									wait = 1.0;
+									break;
+								case 2:
+									wait = 0.5;
+									break;
+								}
+								if (gameState.player[i]!=null && pot.winner[i]) {
+									chipAmounts.addSendToQueue(
+											amountPerWinner,
+											false, potIndex,
+											true, hostToLocalIndex(i),
+											//500.0, true);
+											first ? 500.0+wait*1000.0 : 0.0, false);
+									first = false;
+								}
+							}
+							pot = pot.splitPot;
+							
+						}
+						
+						
+						
+						// collect each pot's leftover into the main pot
+						if (gameState.potTotal != null) {
+							pot = gameState.potTotal.splitPot;
+							for (int potIndex=1; potIndex<8; potIndex++) {
+								if (pot==null)
+									break;
+								System.out.println("pot "+potIndex+" has leftover $"+leftOvers[potIndex]);
+								if (leftOvers[potIndex] > 0) {
+									chipAmounts.addSendToQueue(
+											leftOvers[potIndex],
+											false, potIndex,
+											false, 0,	 // send to main pot
+											0.0, true);
+								}
+								pot = pot.splitPot;
+							}
+						}
+					} 
+					
+
 					lastFlopState = gameState.flopState;	
 					
 				}	

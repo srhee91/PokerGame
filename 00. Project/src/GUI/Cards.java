@@ -1,6 +1,7 @@
 package GUI;
 
 import java.util.*;
+
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
@@ -137,6 +138,8 @@ public class Cards {
 	
 	public void collectCards(double waitTime) {
 		
+		System.out.println("###GUI ACTION: collect cards");
+		
 		// add a spacer to let previous actions finish
 		actionQueue.add(new QueuedAction(centerCards[0],
 				null, null, null, false, waitTime, true));
@@ -180,6 +183,9 @@ public class Cards {
 	
 	public void dealCards(int dealer, double waitTime, String[] playerName) {
 		
+		
+		System.out.println("###GUI ACTION: deal cards");
+		
 		// add a spacer to let previous actions finish
 		actionQueue.add(new QueuedAction(centerCards[0],
 				null, null, null, false, waitTime, true));
@@ -220,6 +226,8 @@ public class Cards {
 	
 	public void dealFlop(double waitTime) {
 		
+		System.out.println("###GUI ACTION: reveal flop");
+		
 		// turn visible
 		for(int i=0; i<3; ++i) {
 			actionQueue.add(new QueuedAction(centerCards[i],
@@ -233,6 +241,8 @@ public class Cards {
 	}
 	public void dealTurn(double waitTime) {
 		
+		System.out.println("###GUI ACTION: reveal turn");
+		
 		// turn visible
 		actionQueue.add(new QueuedAction(centerCards[3],
 				null, true, null, false, waitTime, true));
@@ -242,6 +252,8 @@ public class Cards {
 
 	}
 	public void dealRiver(double waitTime) {
+		
+		System.out.println("###GUI ACTION: reveal river");
 		
 		// turn visible
 		actionQueue.add(new QueuedAction(centerCards[4],
@@ -253,6 +265,9 @@ public class Cards {
 	}
 	
 	public void showMainPlayerCards() {
+		
+		System.out.println("###GUI ACTION: reveal main player cards");
+		
 		actionQueue.add(new QueuedAction(playerCards[0][0],
 				null, null, true, false, 0.0, true));
 		actionQueue.add(new QueuedAction(playerCards[0][1],
@@ -260,6 +275,9 @@ public class Cards {
 	}
 	
 	public void showPlayerCards(int player) {
+		
+		System.out.println("###GUI ACTION: reveal player "+player+" cards");
+		
 		actionQueue.add(new QueuedAction(playerCards[player][0],
 				null, null, true, false, 0.0, false));
 		actionQueue.add(new QueuedAction(playerCards[player][1],

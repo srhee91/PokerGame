@@ -79,9 +79,7 @@ public class OngoingMode extends TableMode {
 	private Gamestate prevGameState;
 	private Gamestate gameState;
 	
-	private int lastFlopState;
 
-	
 	
 	@Override
 	public void init(GameContainer container, final StateBasedGame game)throws SlickException {
@@ -331,7 +329,6 @@ public class OngoingMode extends TableMode {
 			prevGameState = null;
 			gameState = null;
 			
-			lastFlopState = 3;
 			checkOrCall = true;
 			betOrRaise = true;
 			
@@ -445,14 +442,12 @@ public class OngoingMode extends TableMode {
 					
 					// update dealer chip and chip amounts (depends on whoseTurn) ---------------------------------------------
 					
-					/*
-					if (gameState.whoseTurn == -5) {				// NEW HAND ------------------------
 					
-					} else if (gameState.whoseTurn==-3) {			// NEW FLOPSTATE -------------------	
+					if (gameState.whoseTurn != -2) {
 						
-					} else*/
-					
-					if (gameState.whoseTurn >= -1) {				// PER-TURN ----------------------
+						// if we're not collecting bets, sync them with the gamstate
+						
+						System.out.println("###GUI ACTION: sync bets");
 						
 						// update bets without animation if this gamestate comes
 						// before/after a player's turn
@@ -477,8 +472,9 @@ public class OngoingMode extends TableMode {
 							pot = pot.splitPot;
 						}
 
-					} else if (gameState.whoseTurn == -2) {		// COLLECT BETS -----
+					} else {									// COLLECT BETS -----
 						
+						System.out.println("###GUI ACTION: collect bets");
 						
 						// collect bets (if any)	
 						
@@ -525,6 +521,9 @@ public class OngoingMode extends TableMode {
 					
 					// update cards and dealerchip ---------------------------------------------------------------
 					
+					int lastFlopState = (prevGameState==null) ? 4 : prevGameState.flopState;
+					
+					
 					// fold player's cards if needed
 					for (int i=0; i<8; i++) {
 						if (gameState.player[i]!=null
@@ -553,8 +552,10 @@ public class OngoingMode extends TableMode {
 						// when a new hand starts...
 						if (lastFlopState != 0) {
 							
-							
+														
 							// update dealer chip position
+							System.out.println("###GUI ACTION: move dealer chip");
+							
 							dealerChip.moveTo(hostToLocalIndex(gameState.dealer));	
 							
 							
@@ -579,7 +580,7 @@ public class OngoingMode extends TableMode {
 							// flip over turn card						
 							cards.dealTurn(0.0);
 							
-						} else {
+						} else if (lastFlopState == 0){
 							// flip over flop and turn cards
 							cards.dealFlop(500.0);
 							cards.dealTurn(0.0);							
@@ -594,7 +595,7 @@ public class OngoingMode extends TableMode {
 							// flip over turn and river cards
 							cards.dealTurn(0.0);
 							cards.dealRiver(0.0);
-						} else {
+						} else if (lastFlopState == 0) {
 							// flip over flop, turn, and river cards
 							cards.dealFlop(0.0);
 							cards.dealTurn(0.0);
@@ -621,10 +622,12 @@ public class OngoingMode extends TableMode {
 							}
 						}
 						
+						// distribute each pot to its winners
+						
+						System.out.println("### GUI ACTION: distribute winnings");
 						
 						int leftOvers[] = new int[8];
 						
-						// distribute each pot to its winners
 						Host.GameSystem.Pot pot = gameState.potTotal;
 						for (int potIndex=0; potIndex<8; potIndex++) {
 							
@@ -632,7 +635,7 @@ public class OngoingMode extends TableMode {
 								break;
 							
 							
-							// flip over the cards of players who aren't involved in this pot
+							// hide cards of players who aren't involved in this pot
 							// TODO:
 							
 							
@@ -659,25 +662,13 @@ public class OngoingMode extends TableMode {
 							// send that amount to each winner of this pot
 							boolean first = true;
 							for (int i=0; i<8; i++) {
-								double wait = 0;
-								switch (lastFlopState) {
-								case 0:
-									wait = 2.5;
-									break;
-								case 1:
-									wait = 1.0;
-									break;
-								case 2:
-									wait = 0.5;
-									break;
-								}
+								
 								if (gameState.player[i]!=null && pot.winner[i]) {
 									chipAmounts.addSendToQueue(
 											amountPerWinner,
 											false, potIndex,
 											true, hostToLocalIndex(i),
-											//500.0, true);
-											first ? 500.0+wait*1000.0 : 0.0, false);
+											first ? 1500.0 : 0.0, false);
 									first = false;
 								}
 							}
@@ -704,14 +695,14 @@ public class OngoingMode extends TableMode {
 								pot = pot.splitPot;
 							}
 						}
-					} 
+					} 	
 					
-
-					lastFlopState = gameState.flopState;	
 					
-				}	
-				
-				else {
+					
+					System.out.println("\n\n\n\n");
+					
+					
+				} else {
 					System.out.println("unexpected object type received in OngoingMode");
 				}
 			}

@@ -8,7 +8,7 @@ public class DealerChip {
 	private Image chip;
 	private double currX, currY;
 	private double destX, destY;
-	private final double moveSpeed = 1.0;	// pixels per ms
+	private final double moveSpeed = 0.7;	// pixels per ms
 	
 	private int[][] dealerChipPositions;
 	

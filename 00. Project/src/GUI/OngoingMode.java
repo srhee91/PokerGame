@@ -542,7 +542,7 @@ public class OngoingMode extends TableMode {
 						// reveal everyone's cards who haven't folded
 						for (int i=0; i<8; i++) {
 							if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
-								cards.showPlayerCards(hostToLocalIndex(i), false);
+								cards.showPlayerCards(hostToLocalIndex(i));
 							}
 						}
 					}
@@ -560,7 +560,7 @@ public class OngoingMode extends TableMode {
 							cards.collectCards();
 							cards.dealCards(hostToLocalIndex(gameState.dealer),
 									500.0, playerNamesLocal);
-							cards.showPlayerCards(0, true);
+							cards.showMainPlayerCards();
 						}
 						break;
 						
@@ -614,7 +614,7 @@ public class OngoingMode extends TableMode {
 						if (!gameState.showdown && gameState.potTotal.winnerByFold==-1) {
 							for (int i=0; i<8; i++) {
 								if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
-									cards.showPlayerCards(hostToLocalIndex(i), false);
+									cards.showPlayerCards(hostToLocalIndex(i));
 								}
 							}
 						}

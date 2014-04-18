@@ -107,7 +107,7 @@ public class OngoingMode extends TableMode {
 			playerCardPositions[i][1][1] = playerPanelPositions[i][1]+playerCardOffsets[1][1];
 		}
 		cards = new Cards(playerCardPositions);
-		cards.collectCards();
+		
 		
 		// initialize chip amounts
 		int[][] playerAmountPositions = new int[8][2];

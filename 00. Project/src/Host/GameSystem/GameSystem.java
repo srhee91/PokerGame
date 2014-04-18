@@ -84,7 +84,7 @@ public class GameSystem{
 
 		whoseTurn = dealer;
 		highestBet = blind;
-		initBlinds();
+		//initBlinds();
 		
 		flopState = 0;
 	}

@@ -108,9 +108,29 @@ public class Host{
 		//each hand
 		while(game.playerCount() > 1){
 			
-			game.newHand();			// flopstate = 0
 			
 			game.showdown = false;
+			
+			
+			game.newHand();			// flopstate = 0
+			
+			
+			// send a pre-hand gamestate
+			// triggers dealer chip update, deal cards, clear winnings.
+			// this way, blinds don't appear immediatley
+			int temp = game.whoseTurn;
+			game.whoseTurn = -5;
+			sendGameState();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			game.whoseTurn = temp;
+			
+			
+			
+			game.initBlinds();
 			
 			
 			//each round
@@ -120,10 +140,9 @@ public class Host{
 				
 
 				// send a pre-round extra gamestate:
-				
-				// triggers deal cards/flop cards revealed.  allows first player to have some time
+				// triggers blinds to appear / flop cards revealed.  allows first player to have some time
 				// before his turn starts
-				int temp = game.whoseTurn;
+				temp = game.whoseTurn;
 				game.whoseTurn = -3;
 				sendGameState();
 				try {
@@ -229,7 +248,7 @@ public class Host{
 			
 			// send a post-hand gamestate to reveal everyone's cards (if needed),
 			// distribute each pot to its winners, and gather pot leftovers into the main pot
-			int temp = game.whoseTurn;
+			temp = game.whoseTurn;
 			game.whoseTurn = -4;
 			sendGameState();
 			try {

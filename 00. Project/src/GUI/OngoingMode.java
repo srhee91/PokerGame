@@ -445,17 +445,14 @@ public class OngoingMode extends TableMode {
 					
 					// update dealer chip and chip amounts (depends on whoseTurn) ---------------------------------------------
 					
-					if (gameState.whoseTurn==-3) {			// NEW FLOPSTATE -------------------	
-						
-						
-						if (gameState.flopState==0) {
-							
-							// update dealer chip position
-							dealerChip.moveTo(hostToLocalIndex(gameState.dealer));
-						}
-						
+					/*
+					if (gameState.whoseTurn == -5) {				// NEW HAND ------------------------
 					
-					} else if (gameState.whoseTurn >= -1) {				// PER-TURN ----------------------
+					} else if (gameState.whoseTurn==-3) {			// NEW FLOPSTATE -------------------	
+						
+					} else*/
+					
+					if (gameState.whoseTurn >= -1) {				// PER-TURN ----------------------
 						
 						// update bets without animation if this gamestate comes
 						// before/after a player's turn
@@ -526,7 +523,7 @@ public class OngoingMode extends TableMode {
 					
 					
 					
-					// update cards -----------------------------------------------------------------------------------------
+					// update cards and dealerchip ---------------------------------------------------------------
 					
 					// fold player's cards if needed
 					for (int i=0; i<8; i++) {
@@ -556,10 +553,15 @@ public class OngoingMode extends TableMode {
 						// when a new hand starts...
 						if (lastFlopState != 0) {
 							
+							
+							// update dealer chip position
+							dealerChip.moveTo(hostToLocalIndex(gameState.dealer));	
+							
+							
 							// reset and deal cards, show main player's cards					
-							cards.collectCards();
+							cards.collectCards(500.0);	// allow time for dealerchip to move
 							cards.dealCards(hostToLocalIndex(gameState.dealer),
-									500.0, playerNamesLocal);
+									0.0, playerNamesLocal);
 							cards.showMainPlayerCards();
 						}
 						break;

@@ -135,11 +135,16 @@ public class Cards {
 	// card, 
 	// position, visible, faceUp, instant, waitTime, letPrevActionsFinish
 	
-	public void collectCards() {
+	public void collectCards(double waitTime) {
+		
+		// add a spacer to let previous actions finish
+		actionQueue.add(new QueuedAction(centerCards[0],
+				null, null, null, false, waitTime, true));
+		
 		// flip all cards face down
 		for (int i=0; i<5; ++i) {
 			actionQueue.add(new QueuedAction(centerCards[i],
-					null, null, false, false, 0.0, i==0));
+					null, null, false, false, 0.0, false));
 		}
 		for (int i=0; i<8; ++i) {
 			actionQueue.add(new QueuedAction(playerCards[i][0],

@@ -135,8 +135,10 @@ public class Host{
 				
 				
 				// no turns happen this round if we're already in showdown
-				if (game.showdown)
+				if (game.showdown) {
+					game.flopState++;
 					continue;
+				}
 				
 				
 				//each turn
@@ -186,15 +188,34 @@ public class Host{
 				}
 			}
 			
+			
+			// send a post-hand gamestate to collect the bets of the last round
+			// keep the flopstate un-incremented
+			int temp = game.whoseTurn;
+			game.whoseTurn = -2;
+			game.flopState--;
+			sendGameState();
+			try {
+				Thread.sleep(1600);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			game.whoseTurn = temp;
+			game.flopState++;
+			
+			
+			
 			//TODO need to figure out what to send, what the gui need to show winning hands
 			//		examples : pot, showdown, ...
 			game.updateHand();
 			//TODO send gamestate and receive if anyone left the game.
 			
 			
+			
+			
 			// send a post-hand gamestate to reveal everyone's cards (if needed),
 			// distribute each pot to its winners, and gather pot leftovers into the main pot
-			int temp = game.whoseTurn;
+			temp = game.whoseTurn;
 			game.whoseTurn = -3;
 			sendGameState();
 			try {
@@ -229,9 +250,10 @@ public class Host{
 			}
 		
 		}*/
-		
-		// DEBUG: print game state
 		Gamestate gameState = game.getGamestate();
+		
+		/*
+		// DEBUG: print game state
 		System.out.println("flopstate = "+gameState.flopState);
 		for(int k=0; k<8; k++){
 			if(gameState.player[k] != null){
@@ -242,8 +264,12 @@ public class Host{
 		}
 		System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
 		// DONE printing game state
+		*/
+		System.out.println("\n\n\nSending flopstate = "+game.flopState+", whoseturn = "+game.whoseTurn
+				+ "*****************************************************");
 		
-		hmh.sendAll(game.getGamestate());	
+		
+		hmh.sendAll(gameState);	
 	}
 	
 	

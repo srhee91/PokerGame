@@ -120,11 +120,11 @@ public class Host{
 				
 
 				// send a pre-round extra gamestate:
-				// causes GUI to show animation of bets being collected
-				// and next flopstate cards revealed.  this way, the first player's turn doesn't start
-				// immediately after the deal/flop reveal.
+				
+				// triggers deal cards/flop cards revealed.  allows first player to have some time
+				// before his turn starts
 				int temp = game.whoseTurn;
-				game.whoseTurn = -2;
+				game.whoseTurn = -3;
 				sendGameState();
 				try {
 					Thread.sleep(1600);
@@ -132,6 +132,8 @@ public class Host{
 					e.printStackTrace();
 				}
 				game.whoseTurn = temp;
+				
+				
 				
 				
 				// no turns happen this round if we're already in showdown
@@ -152,7 +154,8 @@ public class Host{
 						&& game.potTotal.getCurrentPot().winnerByFold == -1);
 				
 				
-				// send a post-round extra gamestate:
+				
+				// send a post-round gamestate:
 				// allows GUI to show last player action and update his bet for this round
 				temp = game.whoseTurn;
 				game.whoseTurn = -1;
@@ -165,8 +168,29 @@ public class Host{
 				game.whoseTurn = temp;
 				
 				
+				
+				
+				// send another post-round gamestate
+				// causes GUI to show animation of bets being collected
+				temp = game.whoseTurn;
+				game.whoseTurn = -2;
+				sendGameState();
+				try {
+					Thread.sleep(1300);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				game.whoseTurn = temp;
+				
+				
+				
+				
+				
 				game.updateRound();		// flopstate++
-								
+				
+				
+				
+				
 						
 				//testing
 				game.potTotal.printPot();
@@ -189,25 +213,13 @@ public class Host{
 			}
 			
 			
-			// send a post-hand gamestate to collect the bets of the last round
-			// keep the flopstate un-incremented
-			int temp = game.whoseTurn;
-			game.whoseTurn = -2;
-			game.flopState--;
-			sendGameState();
-			try {
-				Thread.sleep(1600);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			game.whoseTurn = temp;
-			game.flopState++;
+
 			
 			
 			
 			//TODO need to figure out what to send, what the gui need to show winning hands
 			//		examples : pot, showdown, ...
-			game.updateHand();
+			game.updateHand();		// flopstate = 4
 			//TODO send gamestate and receive if anyone left the game.
 			
 			
@@ -215,8 +227,8 @@ public class Host{
 			
 			// send a post-hand gamestate to reveal everyone's cards (if needed),
 			// distribute each pot to its winners, and gather pot leftovers into the main pot
-			temp = game.whoseTurn;
-			game.whoseTurn = -3;
+			int temp = game.whoseTurn;
+			game.whoseTurn = -4;
 			sendGameState();
 			try {
 				Thread.sleep(game.potTotal.countPots(1)*100 + 5000);
@@ -240,7 +252,7 @@ public class Host{
 		
 		// trigges game-lost popup for everyone who lost/won
 		int temp = game.whoseTurn;
-		game.whoseTurn = -4;
+		game.whoseTurn = -5;
 		game.flopState = 0;
 		sendGameState();
 		try {

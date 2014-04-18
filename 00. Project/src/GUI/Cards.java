@@ -247,11 +247,11 @@ public class Cards {
 
 	}
 	
-	public void showPlayerCards(int player) {
+	public void showPlayerCards(int player, boolean letPrevActionsFinish) {
 		actionQueue.add(new QueuedAction(playerCards[player][0],
-				null, null, true, false, 0.0, false));
+				null, null, true, false, 0.0, letPrevActionsFinish));
 		actionQueue.add(new QueuedAction(playerCards[player][1],
-				null, null, true, false, 100.0, false));
+				null, null, true, false, 100.0, letPrevActionsFinish));
 	}
 	
 	public void fold(int player) {

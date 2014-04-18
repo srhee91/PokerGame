@@ -445,53 +445,15 @@ public class OngoingMode extends TableMode {
 					
 					// update dealer chip and chip amounts (depends on whoseTurn) ---------------------------------------------
 					
-					if (gameState.whoseTurn==-2) {			// PRE-ROUND---------------------	
-						
+					if (gameState.whoseTurn==-3) {			// NEW FLOPSTATE -------------------	
 						
 						
 						if (gameState.flopState==0) {
 							
 							// update dealer chip position
 							dealerChip.moveTo(hostToLocalIndex(gameState.dealer));
-						
-						}
-						// collect bets (if any)
-						// don't collect during flopstate 0: this will take player's winnings back to pot
-						else {
-							
-							for (int i=0; i<8; i++) {
-								
-								if (gameState.player[i] != null) {
-									
-									int localIndex = hostToLocalIndex(i);
-									int amount = chipAmounts.getPlayerAmount(localIndex);
-									if (amount > 0) {
-										chipAmounts.addSendToQueue(
-												amount,
-												true, localIndex,
-												false, 0,	// send to main pot
-												0.0, false);
-									}
-								}
-							}
 						}
 						
-						// update split pots, taking difference from main pot
-						Host.GameSystem.Pot pot = gameState.potTotal;
-						for (int i=0; i<8; i++) {
-							if (pot==null)
-								break;
-							int amount = pot.totalPot;
-							int oldAmount = chipAmounts.getPotAmount(i);
-							if (oldAmount!=amount) {
-								chipAmounts.addSendToQueue(
-										amount-oldAmount,
-										false, 0,	// take from main pot
-										false, i,	// send to whichever sidepot
-										0.0, true);
-							}
-							pot = pot.splitPot;
-						}
 					
 					} else if (gameState.whoseTurn >= -1) {				// PER-TURN ----------------------
 						
@@ -518,7 +480,46 @@ public class OngoingMode extends TableMode {
 							pot = pot.splitPot;
 						}
 
-					} 
+					} else if (gameState.whoseTurn == -2) {		// COLLECT BETS -----
+						
+						
+						// collect bets (if any)	
+						
+						for (int i=0; i<8; i++) {
+							
+							if (gameState.player[i] != null) {
+								
+								int localIndex = hostToLocalIndex(i);
+								int amount = chipAmounts.getPlayerAmount(localIndex);
+								if (amount > 0) {
+									chipAmounts.addSendToQueue(
+											amount,
+											true, localIndex,
+											false, 0,	// send to main pot
+											0.0, false);
+								}
+							}
+						}
+						
+						
+						// update split pots, taking difference from main pot
+						Host.GameSystem.Pot pot = gameState.potTotal;
+						for (int i=0; i<8; i++) {
+							if (pot==null)
+								break;
+							int amount = pot.totalPot;
+							int oldAmount = chipAmounts.getPotAmount(i);
+							if (oldAmount!=amount) {
+								chipAmounts.addSendToQueue(
+										amount-oldAmount,
+										false, 0,	// take from main pot
+										false, i,	// send to whichever sidepot
+										0.0, true);
+							}
+							pot = pot.splitPot;
+						}
+					}
+					
 					
 					
 					
@@ -538,7 +539,7 @@ public class OngoingMode extends TableMode {
 						// reveal everyone's cards who haven't folded
 						for (int i=0; i<8; i++) {
 							if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
-								cards.showPlayerCards(hostToLocalIndex(i));
+								cards.showPlayerCards(hostToLocalIndex(i), false);
 							}
 						}
 					}
@@ -556,7 +557,7 @@ public class OngoingMode extends TableMode {
 							cards.collectCards();
 							cards.dealCards(hostToLocalIndex(gameState.dealer),
 									500.0, playerNamesLocal);
-							cards.showPlayerCards(0);
+							cards.showPlayerCards(0, true);
 						}
 						break;
 						
@@ -564,14 +565,14 @@ public class OngoingMode extends TableMode {
 						
 						if (lastFlopState==0) {
 							// flip over flop cards
-							cards.dealFlop(500.0);
+							cards.dealFlop(0.0);
 						} 
 						break;
 						
 					case 2:
 						if (lastFlopState == 1) {
 							// flip over turn card						
-							cards.dealTurn(500.0);
+							cards.dealTurn(0.0);
 							
 						} else {
 							// flip over flop and turn cards
@@ -582,15 +583,15 @@ public class OngoingMode extends TableMode {
 						
 					case 3:
 						if (lastFlopState==2) {
-							cards.dealRiver(500.0);
+							cards.dealRiver(0.0);
 							
 						} else if (lastFlopState==1) {
 							// flip over turn and river cards
-							cards.dealTurn(500.0);
+							cards.dealTurn(0.0);
 							cards.dealRiver(0.0);
 						} else {
 							// flip over flop, turn, and river cards
-							cards.dealFlop(500.0);
+							cards.dealFlop(0.0);
 							cards.dealTurn(0.0);
 							cards.dealRiver(0.0);
 						}
@@ -603,14 +604,14 @@ public class OngoingMode extends TableMode {
 					
 					// POST HAND: reveal cards, distribute winnings for each pot-------------
 					
-					if (gameState.flopState==4) {										
+					if (gameState.flopState==4) {			// same as whosturn=-4								
 						
 						// reveal everyone's cards if they haven't already
 						// as long winnerbyfold hasn't happened
 						if (!gameState.showdown && gameState.potTotal.winnerByFold==-1) {
 							for (int i=0; i<8; i++) {
 								if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
-									cards.showPlayerCards(hostToLocalIndex(i));
+									cards.showPlayerCards(hostToLocalIndex(i), false);
 								}
 							}
 						}
@@ -883,7 +884,7 @@ public class OngoingMode extends TableMode {
 							drawPlayerLabel(g, localIndex, "Raise to $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
 							break;
 						case ALL_IN:
-							drawPlayerLabel(g, localIndex, "All In $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
+							drawPlayerLabel(g, localIndex, "All In $"+lastAction.raiseAmount, Color.white, allInLabelColor);
 							break;
 						default:
 							break;

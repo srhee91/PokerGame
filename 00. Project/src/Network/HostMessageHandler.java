@@ -250,9 +250,11 @@ public class HostMessageHandler {
 			int turn=((GameState.Gamestate)ob).whoseTurn;
 			if (turn>=0){ 
 				allowedPlayer=host.players[turn];
-				nowTimer=new Timer();
-				System.out.println("TIMER!!!start timer for "+allowedPlayer+System.currentTimeMillis()/1000);
-				nowTimer.schedule(new autoResponse(), 5000);
+				if (playerName==allowedPlayer){
+					nowTimer=new Timer();
+					System.out.println("TIMER!!!start timer for "+allowedPlayer+System.currentTimeMillis()/1000);
+					nowTimer.schedule(new autoResponse(), 5000);
+				}
 			}
 		}
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;

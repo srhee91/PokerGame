@@ -595,7 +595,7 @@ public class OngoingMode extends TableMode {
 					
 					// POST HAND: reveal cards, distribute winnings for each pot-------------
 					
-					if (gameState.whoseTurn==-3) {										
+					if (gameState.flopState==4) {										
 						
 						// reveal everyone's cards if they haven't already
 						if (!gameState.showdown) {

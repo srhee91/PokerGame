@@ -114,16 +114,17 @@ public class GameSystem{
 	public void updateHand(){
 
 		//find and give pot to winner
-		potTotal.potToWinner(this);
-		
-		for(int i=0; i<MAXPLAYER; i++){
-			if(player[i]!=null && player[i].totalChip == 0)	player[i]=null;
-		}
-				
+		potTotal.potToWinner(this);				
 		flopState = 4;
 		
 	}
-
+	
+	public void nullLosers() {
+		for(int i=0; i<MAXPLAYER; i++){
+			if(player[i]!=null && player[i].totalChip == 0)
+				player[i]=null;
+		}
+	}
 	
 	
 	public void initBlinds(){

@@ -249,7 +249,7 @@ public class Cards {
 	
 	public void showPlayerCards(int player) {
 		actionQueue.add(new QueuedAction(playerCards[player][0],
-				null, null, true, false, 0.0, true));
+				null, null, true, false, 0.0, false));
 		actionQueue.add(new QueuedAction(playerCards[player][1],
 				null, null, true, false, 100.0, false));
 	}

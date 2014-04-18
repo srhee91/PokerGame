@@ -398,14 +398,10 @@ public class OngoingMode extends TableMode {
 					// check if we've lost the game.  if so, show the lostGame popup
 					// when the first gamestate of the next hand is received.
 					if (gameState.player[GUI.playerIndexInHost]==null) {
-						
-						if (gameState.flopState==0) { //&& gameState.whoseTurn >= 0) {
-							popupLostGame.setVisible(null);
-							// disable cmh now so no further gameStates are received
-							GUI.cmh.close();
-							GUI.cmh = null;
-						}
-						return;
+						popupLostGame.setVisible(null);
+						// disable cmh now so no further gameStates are received
+						GUI.cmh.close();
+						GUI.cmh = null;
 					}
 					
 					
@@ -610,7 +606,8 @@ public class OngoingMode extends TableMode {
 					if (gameState.flopState==4) {										
 						
 						// reveal everyone's cards if they haven't already
-						if (!gameState.showdown) {
+						// as long winnerbyfold hasn't happened
+						if (!gameState.showdown && gameState.potTotal.winnerByFold==-1) {
 							for (int i=0; i<8; i++) {
 								if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
 									cards.showPlayerCards(hostToLocalIndex(i));

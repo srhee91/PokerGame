@@ -224,6 +224,10 @@ public class Host{
 				e.printStackTrace();
 			}
 			game.whoseTurn = temp;
+			
+			
+			
+			game.nullLosers();
 						
 		}
 		//celebrate the winner
@@ -231,6 +235,20 @@ public class Host{
 		//celebrateWinner();
 		System.out.println("----- THE END ------");
 		//TODO what to do when the game ends?
+		
+		
+		
+		// trigges game-lost popup for everyone who lost/won
+		int temp = game.whoseTurn;
+		game.whoseTurn = -4;
+		game.flopState = 0;
+		sendGameState();
+		try {
+			Thread.sleep(game.potTotal.countPots(1)*100 + 5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		game.whoseTurn = temp;
 
 	}
 	
@@ -324,7 +342,9 @@ public class Host{
 		case ALL_IN:
 			game.player[game.whoseTurn].bet(ua.raiseAmount);
 			game.highestBetter = game.whoseTurn;
-			game.highestBet = ua.raiseAmount;
+			// all-in from poor player could result in a "raise" of lower than highest bet
+			if (ua.raiseAmount > game.highestBet)
+				game.highestBet = ua.raiseAmount;
 			break;
 		default:
 			break;

@@ -111,7 +111,7 @@ public class HostMessageHandler {
 	}
 	
 	public void gameStart(){
-	//	blocking=true;
+		blocking=true;
 	}
 	
 	public void gameEnd(){
@@ -198,6 +198,7 @@ public class HostMessageHandler {
 					if (blocking==true){
 						if (playerName!=allowedPlayer) continue;
 						nowTimer.cancel();
+						System.out.println("TIMER!!! cancel timer "+allowedPlayer+System.currentTimeMillis()/1000);
 						allowedPlayer=null;
 					}
 					host.objReceived=ac;
@@ -227,6 +228,7 @@ public class HostMessageHandler {
 			nowTimer.cancel();
 			UserAction ac=new UserAction(UserAction.Action.FOLD,0);
 			host.objReceived=ac;
+			System.out.println("TIMER!!! auto fold for "+allowedPlayer+System.currentTimeMillis()/1000);
 			if (host.isWaiting) {
 				synchronized(host){
 					host.isWaiting = false;
@@ -249,7 +251,8 @@ public class HostMessageHandler {
 			if (turn>=0){ 
 				allowedPlayer=host.players[turn];
 				nowTimer=new Timer();
-				nowTimer.schedule(new autoResponse(), 10000);
+				System.out.println("TIMER!!!start timer for "+allowedPlayer+System.currentTimeMillis()/1000);
+				nowTimer.schedule(new autoResponse(), 5000);
 			}
 		}
 		ObjectOutputStream oos= clientConnections.get(playerName).oos;

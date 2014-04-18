@@ -170,8 +170,8 @@ public class Host{
 				
 				
 	
-				game.updateRound();
 				
+				game.updateRound();
 				
 				
 				

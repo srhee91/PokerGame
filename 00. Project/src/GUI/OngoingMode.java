@@ -128,6 +128,43 @@ public class OngoingMode extends TableMode {
 		dealerChip = new DealerChip(dealerChipPositions, 0);
 		
 		
+		
+		leaveButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_leave.png",
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_leave_down.png",
+				leaveButtonPosition[0], leaveButtonPosition[1],
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// leave action
+						// disable buttons
+						setButtonsEnable(false);
+						popupLeaveConfirm.setVisible(leaveButton);
+					}
+				});
+		
+		
+		popupLeaveConfirm = new PopupMessageTwoButtons(container, leaveConfirmString,
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {		// ok action
+						// disconnect from host, return to main screen
+						GUI.cmh.close();
+						GUI.cmh = null;
+						game.enterState(1);
+					}
+				}, new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {		// cancel action
+						// re-enable buttons
+						setButtonsEnable(true);
+					}
+				});
+		
+		
+		
+		
 		popupLostGame = new PopupMessageOneButton(container, lostGameString,
 				new ComponentListener() {
 					
@@ -418,7 +455,8 @@ public class OngoingMode extends TableMode {
 					
 
 					// enable/disable buttons based on if it's our turn
-					setButtonsEnable(gameState.whoseTurn==GUI.playerIndexInHost);
+					if (!popupLeaveConfirm.isVisible())
+						setButtonsEnable(true);
 
 					
 					
@@ -751,22 +789,33 @@ public class OngoingMode extends TableMode {
 	
 	protected void setButtonsEnable(boolean enable) {
 		
-		checkButton.setEnable(enable);
-		foldButton.setEnable(enable);
-		raiseButton.setEnable(enable);
-		allInButton.setEnable(enable);
-		raiseTextField.setEnable(enable);
+		leaveButton.setEnable(enable);
 		
-		if (enable && gameState!=null) {
+		if (!enable || gameState==null || gameState.whoseTurn!=GUI.playerIndexInHost) {
+			checkButton.setEnable(false);
+			foldButton.setEnable(false);
+			raiseButton.setEnable(false);
+			allInButton.setEnable(false);
+			raiseTextField.setEnable(false);
+		} else {
+		
+			checkButton.setEnable(true);
+			foldButton.setEnable(true);
+			raiseButton.setEnable(true);
+			allInButton.setEnable(true);
+			raiseTextField.setEnable(true);
 			
-			// if current bet is more than what I have, the only options are all in and fold
-			Player player = gameState.player[GUI.playerIndexInHost];
-			int playerTotalPlusBet = player.totalChip + player.betAmount;
-			if (gameState.highestBet >= playerTotalPlusBet) {
-				checkButton.setEnable(false);
-				raiseButton.setEnable(false);
+			if (enable && gameState!=null) {
+				
+				// if current bet is more than what I have, the only options are all in and fold
+				Player player = gameState.player[GUI.playerIndexInHost];
+				int playerTotalPlusBet = player.totalChip + player.betAmount;
+				if (gameState.highestBet >= playerTotalPlusBet) {
+					checkButton.setEnable(false);
+					raiseButton.setEnable(false);
+				}
 			}
-		} 
+		}
 	}
 	
 	@Override
@@ -797,10 +846,13 @@ public class OngoingMode extends TableMode {
 		drawTotalAmounts(g);
 		drawInteractiveElements(container, g);
 		
+		leaveButton.render(container, g, leaveButtonFont, Color.white, "Leave");
+		
 		popupHostConnectionLost.render(container, g);
 		popupRaiseInvalid.render(container, g);
 		popupAllInConfirm.render(container, g);
 		popupLostGame.render(container, g);
+		popupLeaveConfirm.render(container, g);
 	}
 
 	

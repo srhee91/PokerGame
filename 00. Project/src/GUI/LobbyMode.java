@@ -67,7 +67,7 @@ public class LobbyMode extends TableMode {
 						popupLeaveConfirm.setVisible(leaveButton);
 					}
 				});
-		leaveButton.setAlphaWhileDisabled(0.5f);
+		
 		
 		popupLeaveConfirm = new PopupMessageTwoButtons(container, leaveConfirmString,
 				new ComponentListener() {

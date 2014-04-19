@@ -30,7 +30,7 @@ public class StartMode extends Mode
 
 	private final String namePromptString = "Enter player name:";
 	private final String areYouSureExitString = "Are you sure you want to exit to desktop?";
-	private final String hostFailedString = "Failed to start host.";
+	private final String hostFailedString = "Failed to start host! Retry?";
 	
 	private TrueTypeFont buttonFont;
 	
@@ -42,7 +42,7 @@ public class StartMode extends Mode
 	
 	private PopupMessageTwoButtons popupConfirmExit;
 	private PopupPromptTwoButtons popupEnterName;
-	private PopupMessageOneButton popupFailedHost;
+	private PopupMessageTwoButtons popupFailedHost;
 	
 	
 	// status flags
@@ -59,10 +59,22 @@ public class StartMode extends Mode
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
 				
 		
-		popupFailedHost = new PopupMessageOneButton(container, hostFailedString,
+		popupFailedHost = new PopupMessageTwoButtons(container, hostFailedString,
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// ok action
+						// retry starting host process
+						StartHostThread sht = new StartHostThread(GUI.playerName);
+						sht.start();
+						System.out.println("HostSetup thread started!");
+						
+						setMenuEnable(false);
+						popupLoading.setVisible(hostGameButton);
+					}
+				}, new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// cancel action
 						setMenuEnable(true);
 					}
 				});

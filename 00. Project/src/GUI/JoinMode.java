@@ -19,13 +19,13 @@ public class JoinMode extends Mode {
 	private final int[] joinListColumnWidths = {280, 180};//, 120};
 	
 	private final String nameTakenString = "The entered player name is already being used.";
-	private final String failedJoinString = "Selected game lobby is no longer availabe.";
+	private final String failedJoinString = "Failed to connect to game lobby. Retry?";
 	
 		
 	private Image background;
 	private JoinList joinList;
 	
-	private PopupMessageOneButton popupFailedJoin;
+	private PopupMessageTwoButtons popupFailedJoin;
 	private PopupMessageOneButton popupNameTaken;
 	
 	
@@ -47,12 +47,28 @@ public class JoinMode extends Mode {
 		
 				
 				
-		popupFailedJoin = new PopupMessageOneButton(container, failedJoinString,
+		popupFailedJoin = new PopupMessageTwoButtons(container, failedJoinString,
 				new ComponentListener() {
 					@Override
 					public void componentActivated(AbstractComponent source) {	// ok action
-						updateGamesList();
+						// JOIN GAME
+						JoinHostThread jht = new JoinHostThread(GUI.hostIpString, GUI.playerName);
+						jht.start();
+						
+						joinList.setVisible(false);
+						popupLoading.setVisible(source);
+					}
+				}, new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// cancel action
+
 						joinList.setVisible(true);
+						
+						// REFRESH
+						HostSearcher.checkAvailable();
+						joinList.setLoading(true);
+						refreshTimeNano = System.nanoTime();	// record time
 					}
 				});
 		popupNameTaken = new PopupMessageOneButton(container, nameTakenString,
@@ -76,8 +92,8 @@ public class JoinMode extends Mode {
 							int index){								// join action
 						
 						// JOIN GAME
-						String ipString = joinList.getRow(index)[1];
-						JoinHostThread jht = new JoinHostThread(ipString, GUI.playerName);
+						GUI.hostIpString = joinList.getRow(index)[1];
+						JoinHostThread jht = new JoinHostThread(GUI.hostIpString, GUI.playerName);
 						jht.start();
 						
 						joinList.setVisible(false);

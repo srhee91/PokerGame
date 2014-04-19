@@ -17,6 +17,8 @@ public class TableMode extends Mode {
 	protected Image background;	
 	protected TrueTypeFont infoFont;
 	
+	protected final int leaveButtonPosition[] = {850, 25};
+	
 	protected final int mainPanelPosition[] = {250, 430};
 	protected final int mainPanelSize[] = {500, 150};
 	protected final int mainNameOffset[] = {250, 15};
@@ -39,11 +41,18 @@ public class TableMode extends Mode {
 	protected final int[] playerLabelOffset = {0, 62};
 	protected final int[] playerLabelSize = {170, 40};
 	
+	protected final String leaveConfirmString = "Are you sure you want to leave?";
+	protected final String hostConnectionLostString = "Lost connection to host process!";
+	
 	private TrueTypeFont mainLabelFont;
 	private TrueTypeFont playerLabelFont;
 	
 	
 	protected PopupMessageOneButton popupHostConnectionLost;
+	protected PopupMessageTwoButtons popupLeaveConfirm;
+	
+	protected TrueTypeFont leaveButtonFont;
+	protected Button leaveButton;
 	
 	
 	@Override
@@ -58,9 +67,11 @@ public class TableMode extends Mode {
 		infoFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 16), true);
 		mainLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 12), true);
 		playerLabelFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 22), true);
+		leaveButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 20), true);
 		
 		
-		popupHostConnectionLost = new PopupMessageOneButton(container, "Lost connection to host process!",
+		
+		popupHostConnectionLost = new PopupMessageOneButton(container, hostConnectionLostString,
 				new ComponentListener() {
 					
 					@Override
@@ -90,6 +101,9 @@ public class TableMode extends Mode {
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// draw background
 		background.draw(0, 0, container.getWidth(), container.getHeight());
+		
+		// draw leave button
+		leaveButton.render(container, g, leaveButtonFont, Color.white, "Leave");
 		
 		drawPanels(g);
 	}

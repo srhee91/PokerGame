@@ -422,22 +422,6 @@ public class OngoingMode extends TableMode {
 
 					
 					
-					// update faces of all centercards and player cards
-					for (int i=0; i<5; i++) {
-						cards.centerCards[i].setFaceImage(gameState.flops[i]);
-					}
-					for (int i=0; i<8; i++) {
-						if (gameState.player[i] !=null) {
-							int localIndex = hostToLocalIndex(i);
-							Host.GameSystem.Card[] hand = gameState.player[i].hand;
-							cards.playerCards[localIndex][0].setFaceImage(hand[0]);
-							cards.playerCards[localIndex][1].setFaceImage(hand[1]);
-						}
-					}
-					
-					
-
-
 				
 					
 					// update dealer chip and chip amounts (depends on whoseTurn) ---------------------------------------------
@@ -551,8 +535,21 @@ public class OngoingMode extends TableMode {
 						
 						// when a new hand starts...
 						if (lastFlopState != 0) {
+
+							// update faces of all centercards and player cards
+							for (int i=0; i<5; i++) {
+								cards.centerCards[i].setFaceImage(gameState.flops[i]);
+							}
+							for (int i=0; i<8; i++) {
+								if (gameState.player[i] !=null) {
+									int localIndex = hostToLocalIndex(i);
+									Host.GameSystem.Card[] hand = gameState.player[i].hand;
+									cards.playerCards[localIndex][0].setFaceImage(hand[0]);
+									cards.playerCards[localIndex][1].setFaceImage(hand[1]);
+								}
+							}
 							
-														
+							
 							// update dealer chip position
 							System.out.println("###GUI ACTION: move dealer chip");
 							
@@ -809,7 +806,7 @@ public class OngoingMode extends TableMode {
 	
 	
 	private void drawTotalAmounts(Graphics g) {
-		if (gameState==null || prevGameState==null)
+		if (gameState==null)
 			return;
 		
 		for (int i=0; i<8; i++) {

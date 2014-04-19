@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.io.IOException;
 
 
+
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -41,6 +42,9 @@ public class LobbyMode extends TableMode {
 	private int hostIndexLocal;
 	
 	
+	
+	
+	
 	@Override
 	public void init(GameContainer container, final StateBasedGame game) throws SlickException {
 		
@@ -50,6 +54,41 @@ public class LobbyMode extends TableMode {
 		startButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 28), true);
 		
 	
+		
+		leaveButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_leave.png",
+				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_leave_down.png",
+				leaveButtonPosition[0], leaveButtonPosition[1],
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {	// leave action
+						// disable buttons
+						setButtonsEnable(false);
+						popupLeaveConfirm.setVisible(leaveButton);
+					}
+				});
+		leaveButton.setAlphaWhileDisabled(0.5f);
+		
+		popupLeaveConfirm = new PopupMessageTwoButtons(container, leaveConfirmString,
+				new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {		// ok action
+						// disconnect from host, return to main screen
+						GUI.cmh.close();
+						GUI.cmh = null;
+						game.enterState(1);
+					}
+				}, new ComponentListener() {
+					
+					@Override
+					public void componentActivated(AbstractComponent arg0) {		// cancel action
+						// re-enable buttons
+						setButtonsEnable(true);
+					}
+				});
+		
+		
 		
 		startButton = new Button(container, GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig.png", 
 				GUI.RESOURCES_PATH+GUI.BUTTONS_FOLDER+"button_lightbluebig_down.png",
@@ -87,6 +126,23 @@ public class LobbyMode extends TableMode {
 		playerNamesLocal = new String[8];
 	}
 
+	
+	
+	
+	private void setButtonsEnable(boolean enable) {
+		if (!enable) {
+			startButton.setEnable(false);
+			leaveButton.setEnable(false);
+		} else {
+			// start button enabled only if i'm the host and there are enough players
+			startButton.setEnable(hostIndexLocal==0 && numPlayers>=2);
+			// leave button disabled if i'm the host
+			leaveButton.setEnable(hostIndexLocal!=0);
+		}
+	}
+	
+	
+	
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		
@@ -107,6 +163,8 @@ public class LobbyMode extends TableMode {
 			numPlayers = 0;
 			hostIndexLocal = -1;
 			
+			// disable buttons initially
+			setButtonsEnable(false);
 			
 			GUI.currentMode = 3;
 		}
@@ -173,6 +231,12 @@ public class LobbyMode extends TableMode {
 						 playerNamesLocal[i] = name;
 					}
 					hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
+					
+					
+					// update button states
+					if (!popupLeaveConfirm.isVisible())
+						setButtonsEnable(true);
+					
 				
 				} else {
 					System.out.println("unexpected object type received in LobbyMode");
@@ -187,9 +251,11 @@ public class LobbyMode extends TableMode {
 		
 		super.render(container, game, g);
 		
+		leaveButton.render(container, g, leaveButtonFont, Color.white, "Leave");
 		drawPlayerNamesAndStatuses(container, g);
 		
 		popupHostConnectionLost.render(container, g);
+		popupLeaveConfirm.render(container, g);
 	}
 	
 	
@@ -238,15 +304,12 @@ public class LobbyMode extends TableMode {
 		}
 		else {
 			if (!isHost) {
-				startButton.setEnable(false);
 				GUI.drawStringCenter(g, mainStatusFont, Color.white, "Waiting for host to start game ...", 
 						mainPanelPosition[0]+mainTextOffset[0],
 						mainPanelPosition[1]+mainTextOffset[1]);
 			}
 			else {
-				
 				// draw start button
-				startButton.setEnable(true);
 				startButton.render(container, g, startButtonFont, Color.white, "Start Game");
 			}
 		}

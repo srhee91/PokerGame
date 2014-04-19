@@ -9,8 +9,11 @@ public class Card {
 	private static Set<Card> movingCards = new HashSet<Card>();
 	
 	private Image backImage;
-	private Image faceImage;
-		
+	
+	// face image
+	private Image currFaceImage;
+	private Image destFaceImage;
+	
 	// screen position
 	private double currX;
 	private double currY;
@@ -38,7 +41,9 @@ public class Card {
 	
 	private Card(Image backImage, Image faceImage, int initialX, int initialY, boolean initialVisible) {
 		
-		this.faceImage = faceImage;
+		currFaceImage = faceImage;
+		destFaceImage = currFaceImage;
+		
 		this.backImage = backImage;
 		
 		currX = initialX;
@@ -58,8 +63,20 @@ public class Card {
 	
 	
 	public void setFaceImage(Image faceImage) {
-		this.faceImage = faceImage;
+		destFaceImage = faceImage;
 	}
+	
+	private boolean isFaceVisible() {		
+		if (!isMoving)
+			return currFaceUp;
+		
+		// if we're moving...
+		if (destFaceUp)
+			return theta > 90.0;
+		
+		return theta < 90.0;
+	}
+	
 	
 	
 	public void setFaceImage(Host.GameSystem.Card card) {
@@ -118,6 +135,10 @@ public class Card {
 	
 	// updates current screen position of card if it's not yet at its destination
 	public void update(double delta) {
+		
+		if (!isFaceVisible())
+			currFaceImage = destFaceImage;
+		
 		if (isMoving) {
 			
 			// update screen position
@@ -193,7 +214,7 @@ public class Card {
 		}
 		
 		// determine which side of card is visible right now
-		Image visible = (currFaceUp==(theta<=90.0)) ? faceImage : backImage;
+		Image visible = (currFaceUp==(theta<=90.0)) ? currFaceImage : backImage;
 				
 		if (theta == 0.0) {
 			visible.draw((int)currX, (int)currY, new Color(1.0f, 1.0f, 1.0f, (float)currAlpha));

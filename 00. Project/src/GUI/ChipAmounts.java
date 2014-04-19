@@ -9,7 +9,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 
 public class ChipAmounts {
-		
+	
+	
 	// represents a stack of chips belonging to a player or to a pot
 	private class StaticAmount {
 		private boolean big;
@@ -43,6 +44,7 @@ public class ChipAmounts {
 	}
 	
 	private class SendAmount {
+				
 		private int amount;
 		private StaticAmount source;
 		private StaticAmount destination;
@@ -52,6 +54,7 @@ public class ChipAmounts {
 		private final double moveSpeed = 0.7;	// pixels per ms
 		
 		private SendAmount(StaticAmount source, StaticAmount destination, int amount) {
+
 			this.source = source;
 			this.destination = destination;
 			this.amount = amount;
@@ -94,32 +97,48 @@ public class ChipAmounts {
 	private class QueuedSend {
 		
 		private double waitTime;
-		private boolean letFinish;
+		private boolean letPrevSendsFinish;
 		private SendAmount send;
 		
 		private QueuedSend(int amount, boolean srcIsPlayer, int srcIndex,
 				boolean destIsPlayer, int destIndex,
-				double waitTime, boolean leftFinish) {
+				double waitTime, boolean leftPrevSendsFinish) {
 			this.waitTime = waitTime;
-			this.letFinish = leftFinish;
+			this.letPrevSendsFinish = leftPrevSendsFinish;
 			this.send = new SendAmount(
 					srcIsPlayer ? playerAmounts[srcIndex] : potAmounts[srcIndex],
 					destIsPlayer ? playerAmounts[destIndex] : potAmounts[destIndex],
 					amount);
 		}
-		private void countDown(double delta) {
-			waitTime -= delta;
+		private double countDown(double delta) {
+			double remainingDelta;
+			if (!letPrevSendsFinish || amountsInTransit.isEmpty()) {
+				if (delta >= waitTime) {
+					if (!send.started) {
+						send.start();
+						amountsInTransit.add(send);
+					}
+					waitTime = 0.0;
+					remainingDelta = delta-waitTime;
+				} else {
+					waitTime -= delta;
+					remainingDelta = 0.0;
+				}
+			} else {
+				// we're still waiting for prev sends to finish;
+				// entire delta is "wasted"
+				remainingDelta = 0.0;
+			}
+			return remainingDelta;
+			
+			/*
+			// count down unless we're waiting for previous sends to finish
+			if (!letPrevSendsFinish || amountsInTransit.isEmpty())
+				waitTime -= delta;
 			if (waitTime<=0.0 && !send.started) {	// execute
 				send.start();
 				amountsInTransit.add(send);
-			}
-		}
-		private boolean canRemoveFromQueue() {
-			if (!letFinish) {
-				return send.started;
-			} else {
-				return send.completed;
-			}
+			}*/
 		}
 	}
 	
@@ -185,9 +204,9 @@ public class ChipAmounts {
 	
 	public void addSendToQueue(int amount, boolean srcIsPlayer, int srcIndex,
 			boolean destIsPlayer, int destIndex,
-			double waitTime, boolean removeFromQueueWhenComplete) {
+			double waitTime, boolean letPrevSendsFinish) {
 		sendQueue.add(new QueuedSend(amount, srcIsPlayer, srcIndex,
-				destIsPlayer, destIndex, waitTime, removeFromQueueWhenComplete));
+				destIsPlayer, destIndex, waitTime, letPrevSendsFinish));
 	}
 	
 	
@@ -195,11 +214,24 @@ public class ChipAmounts {
 		// count down time for the head of sendqueue, execute send if time expired
 		// remove after starting/completing when appropriate
 		QueuedSend qs = sendQueue.peek();
+		double remainingDelta = delta;
+		// execute as many actions as possible with this delta
+		while (qs != null) {
+			remainingDelta = qs.countDown(remainingDelta);
+			if (qs.send.started) {
+				sendQueue.remove();
+				qs = sendQueue.peek();
+			} else {
+				break;
+			}
+		}
+		
+		/*
 		if (qs != null) {
 			qs.countDown(delta);
 			if (qs.canRemoveFromQueue())
 				sendQueue.remove();
-		}
+		}*/
 		
 		// update SendAmount positions, remove ones that have completed
 		for (int i=amountsInTransit.size()-1; i>=0; --i) {

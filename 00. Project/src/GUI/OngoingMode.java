@@ -36,6 +36,11 @@ public class OngoingMode extends TableMode {
 	protected final int playerNameOffset[] = {8, 15};			// added, overloads. (center-left align)
 	private final int[] playerTotalAmountOffset = {162, 15};		// added (center-right align)
 	
+	private final int[] timerPanelPosition = {750, 478};
+	private final int[] timerPanelSize = {85, 55};
+	private final int[] yourTurnTextOffset = {43, 10};	// center
+	private final int[] timeTextOffset = {43, 33};		// center
+	
 	
 	//private final Color winnerLabelColor = new Color(212, 65, 238, 242);
 	private final Color thinkingLabelColor = new Color(128, 128, 128, 242);
@@ -61,6 +66,13 @@ public class OngoingMode extends TableMode {
 	private TrueTypeFont buttonFont;
 	private TrueTypeFont allInButtonFont;
 	private TrueTypeFont totalAmountFont;		// added
+	
+	private TrueTypeFont timerFont;
+	private TrueTypeFont yourTurnFont;
+	
+	private final double timePerTurn = 30.99;
+	private long turnStartTimeNano;
+	
 	
 	Button foldButton;
 	Button checkButton;
@@ -91,6 +103,8 @@ public class OngoingMode extends TableMode {
 		buttonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 24), true);
 		allInButtonFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);		
 		totalAmountFont = new TrueTypeFont(new java.awt.Font("Segoe UI Light", Font.PLAIN, 16), true);
+		timerFont = new TrueTypeFont(new java.awt.Font("Segoe UI Semibold", Font.PLAIN, 32), true);
+		yourTurnFont = new TrueTypeFont(new java.awt.Font("Segoe UI", Font.ITALIC, 14), true);	
 		
 		// initialize cards
 		int[][][] playerCardPositions = new int[8][2][2];
@@ -393,6 +407,18 @@ public class OngoingMode extends TableMode {
 		}
 		
 		
+		// check if it's our turn and we're out of time
+		if (gameState!=null && gameState.whoseTurn==GUI.playerIndexInHost
+				&& getRemainingTimeThisTurn()==0.0) {
+			try {
+				GUI.cmh.send(new UserAction(UserAction.Action.FOLD, 0));
+			} catch (IOException e) {
+				System.out.println("Failed to send automatic fold!");
+				e.printStackTrace();
+			}
+			setButtonsEnable(false);
+		}
+		
 		
 		// check for received gamestates from host
 		if (GUI.cmh != null) {
@@ -459,7 +485,9 @@ public class OngoingMode extends TableMode {
 						setButtonsEnable(true);
 
 					
-					
+					// record start time of turn if this gamestate starts a turn
+					if (gameState.whoseTurn >= 0)
+						turnStartTimeNano = System.nanoTime();
 				
 					
 					// update dealer chip and chip amounts (depends on whoseTurn) ---------------------------------------------
@@ -519,6 +547,7 @@ public class OngoingMode extends TableMode {
 						
 						// update split pots, taking difference from main pot
 						Host.GameSystem.Pot pot = gameState.potTotal.splitPot;
+						boolean first = true;
 						for (int i=1; i<8; i++) {
 							if (pot==null)
 								break;
@@ -530,7 +559,8 @@ public class OngoingMode extends TableMode {
 										amount-oldAmount,
 										false, 0,	// take from main pot
 										false, i,	// send to whichever sidepot
-										0.0, true);
+										200.0, true);
+								first = false;
 							}
 							pot = pot.splitPot;
 						}
@@ -845,6 +875,7 @@ public class OngoingMode extends TableMode {
 		drawLabels(g);
 		drawTotalAmounts(g);
 		drawInteractiveElements(container, g);
+		drawTimer(g);
 		
 		leaveButton.render(container, g, leaveButtonFont, Color.white, "Leave");
 		
@@ -857,35 +888,33 @@ public class OngoingMode extends TableMode {
 
 	
 	
-	private void drawTotalAmounts(Graphics g) {
-		if (gameState==null)
-			return;
+	private double getRemainingTimeThisTurn() {
+		double secondsElapsed = (System.nanoTime()-turnStartTimeNano)/1000000000.0;
+		return Math.max(timePerTurn - secondsElapsed, 0.0);
+	}
+	
+	
+	
+	private void drawTimer(Graphics g) {
 		
-		for (int i=0; i<8; i++) {
-			Player player;
+		if (gameState!=null && gameState.whoseTurn==GUI.playerIndexInHost) {
 			
-			// do not update total amounts during flopstate 4:
-			// allow winnings to be added by next gamestate
-			if (gameState.flopState==4)
-				player = prevGameState.player[localToHostIndex(i)];
-			else
-				player = gameState.player[localToHostIndex(i)];
+			g.setColor(new Color(32, 32, 32, 128));
+			g.fillRoundRect(timerPanelPosition[0], timerPanelPosition[1],
+					timerPanelSize[0], timerPanelSize[1], 0);
 			
-			if (player != null) {
-				if (i==0) {
-					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,
-							"$"+player.totalChip,
-							mainPanelPosition[0]+mainTotalAmountOffset[0],
-							mainPanelPosition[1]+mainTotalAmountOffset[1]);
-				} else {
-					GUI.drawStringRightCenter(g, totalAmountFont, Color.white,
-							"$"+player.totalChip,
-							playerPanelPositions[i][0]+playerTotalAmountOffset[0],
-							playerPanelPositions[i][1]+playerTotalAmountOffset[1]);
-				}
-			}
+			GUI.drawStringCenter(g, yourTurnFont, Color.white, "Your turn!",
+					timerPanelPosition[0]+yourTurnTextOffset[0],
+					timerPanelPosition[1]+yourTurnTextOffset[1]);
+			
+			String timeString = String.format("%d", (int)getRemainingTimeThisTurn());
+			GUI.drawStringCenter(g, timerFont, Color.white, timeString, 
+					timerPanelPosition[0]+timeTextOffset[0],
+					timerPanelPosition[1]+timeTextOffset[1]);
 		}
 	}
+	
+
 	
 	private void drawLabels(Graphics g) {
 		
@@ -898,7 +927,12 @@ public class OngoingMode extends TableMode {
 				int localIndex = hostToLocalIndex(i);
 				
 				if (i==gameState.whoseTurn) {
-					drawPlayerLabel(g, localIndex, "Thinking...", Color.white, thinkingLabelColor);
+					if (i!=0) {
+						String timeString = String.format("%d", (int)getRemainingTimeThisTurn());
+						drawPlayerLabel(g, localIndex, "Thinking... "+timeString, Color.white, thinkingLabelColor);
+					} else {
+						drawPlayerLabel(g, localIndex, "Thinking...", Color.white, thinkingLabelColor);
+					}
 					continue;
 				}
 				/*
@@ -942,7 +976,38 @@ public class OngoingMode extends TableMode {
 		}
 	}
 	
+	
+	
+	private void drawTotalAmounts(Graphics g) {
+		if (gameState==null)
+			return;
 		
+		for (int i=0; i<8; i++) {
+			Player player;
+			
+			// do not update total amounts during flopstate 4:
+			// allow winnings to be added by next gamestate
+			if (gameState.flopState==4)
+				player = prevGameState.player[localToHostIndex(i)];
+			else
+				player = gameState.player[localToHostIndex(i)];
+			
+			if (player != null) {
+				if (i==0) {
+					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,
+							"$"+player.totalChip,
+							mainPanelPosition[0]+mainTotalAmountOffset[0],
+							mainPanelPosition[1]+mainTotalAmountOffset[1]);
+				} else {
+					GUI.drawStringRightCenter(g, totalAmountFont, Color.white,
+							"$"+player.totalChip,
+							playerPanelPositions[i][0]+playerTotalAmountOffset[0],
+							playerPanelPositions[i][1]+playerTotalAmountOffset[1]);
+				}
+			}
+		}
+	}
+	
 	
 	private void drawInteractiveElements(GUIContext container, Graphics g) {
 		g.setColor(Color.white);

@@ -39,7 +39,7 @@ public abstract class Music {
 
 class musics extends Thread{
 	public void run(){
-		int time=3000;//3*60000+34000;
+		int time=3*60000+34000;
 		while(true){
 			Music.start();
 			try {

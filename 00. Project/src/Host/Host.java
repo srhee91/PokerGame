@@ -46,7 +46,7 @@ public class Host{
 	
 	public void waitForHostClientConnection() {
 		// wait for connection from host client
-		while (hmh.getNumConnectedPlayers()==0);
+		while (hmh.getConnectedPlayerNames().isEmpty());
 		hostname = hmh.lastJoinedPlayer;
 		System.out.println("Host client has joined: "+hostname);
 	}

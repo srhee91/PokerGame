@@ -73,6 +73,8 @@ public class OngoingMode extends TableMode {
 	private final double timePerTurn = 36000.0;//30.99;
 	private long turnStartTimeNano;
 	
+	private final int minimumRaise = 20;
+	
 	
 	Button foldButton;
 	Button checkButton;
@@ -286,14 +288,15 @@ public class OngoingMode extends TableMode {
 									
 									Player player = gameState.player[GUI.playerIndexInHost];
 									int playerTotalPlusBet = player.totalChip + player.betAmount;
+									int raiseToAtLeast = gameState.highestBet + minimumRaise;
 									
-									if (raiseAmount <= gameState.highestBet) {
+									if (raiseAmount < raiseToAtLeast) {
 										// must raise to above the highest bet
 										raiseTextField.setText("");
 										setButtonsEnable(false);
 										popupRaiseInvalid.setMessageString(betOrRaise
-												? "Must bet an amount above $"+gameState.highestBet
-												: "Must raise to an amount above $"+gameState.highestBet);
+												? "Must bet at least $"+raiseToAtLeast
+												: "Must raise to at least $"+raiseToAtLeast);
 										popupRaiseInvalid.setVisible(raiseButton);
 									} else if (raiseAmount >= playerTotalPlusBet) {
 										// assume this means all in, show all in popup 
@@ -559,7 +562,7 @@ public class OngoingMode extends TableMode {
 										amount-oldAmount,
 										false, 0,	// take from main pot
 										false, i,	// send to whichever sidepot
-										200.0, true);
+										first ? 200.0 : 0.0, first);
 								first = false;
 							}
 							pot = pot.splitPot;
@@ -693,6 +696,7 @@ public class OngoingMode extends TableMode {
 						
 						int leftOvers[] = new int[8];
 						
+						boolean first = true;
 						Host.GameSystem.Pot pot = gameState.potTotal;
 						for (int potIndex=0; potIndex<8; potIndex++) {
 							
@@ -725,7 +729,6 @@ public class OngoingMode extends TableMode {
 							
 							
 							// send that amount to each winner of this pot
-							boolean first = true;
 							for (int i=0; i<8; i++) {
 								
 								if (gameState.player[i]!=null && pot.winner[i]) {
@@ -733,7 +736,7 @@ public class OngoingMode extends TableMode {
 											amountPerWinner,
 											false, potIndex,
 											true, hostToLocalIndex(i),
-											first ? 1500.0 : 0.0, false);
+											first ? 1500.0 : 0.0, first);
 									first = false;
 								}
 							}
@@ -828,20 +831,30 @@ public class OngoingMode extends TableMode {
 			allInButton.setEnable(false);
 			raiseTextField.setEnable(false);
 		} else {
-		
+			
+			Player player = gameState.player[GUI.playerIndexInHost];
+			int playerTotalPlusBet = player.totalChip + player.betAmount;
+			
 			checkButton.setEnable(true);
 			foldButton.setEnable(true);
 			raiseButton.setEnable(true);
 			allInButton.setEnable(true);
 			raiseTextField.setEnable(true);
+			raiseTextField.setText(""+(playerTotalPlusBet+minimumRaise));
+			
 			
 			if (enable && gameState!=null) {
 				
 				// if current bet is more than what I have, the only options are all in and fold
-				Player player = gameState.player[GUI.playerIndexInHost];
-				int playerTotalPlusBet = player.totalChip + player.betAmount;
 				if (gameState.highestBet >= playerTotalPlusBet) {
 					checkButton.setEnable(false);
+					raiseTextField.setText("");
+					raiseButton.setEnable(false);
+				}
+				// if I have enough to call but not to raise by at least the minimum,
+				// my options are call, all in, and fold
+				else if (gameState.highestBet + minimumRaise >= playerTotalPlusBet) {
+					raiseTextField.setText("");
 					raiseButton.setEnable(false);
 				}
 			}

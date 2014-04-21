@@ -57,7 +57,7 @@ public abstract class Music {
 	
 	
 	public static void main(String[] args){
-		//new musics().start();
+
 		manyCardsSound();
 	}
 	

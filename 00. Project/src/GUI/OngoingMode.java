@@ -57,6 +57,7 @@ public class OngoingMode extends TableMode {
 	
 	private PopupMessageOneButton popupLostGame;
 	private final String lostGameString = "You lost. Press OK to return to main menu.";
+	private final String winGameString = "You won!!! Press OK to return to main menu.";
 	
 	private Cards cards;
 	private ChipAmounts chipAmounts;
@@ -181,7 +182,7 @@ public class OngoingMode extends TableMode {
 		
 		
 		
-		popupLostGame = new PopupMessageOneButton(container, lostGameString,
+		popupLostGame = new PopupMessageOneButton(container, "",
 				new ComponentListener() {
 					
 					@Override
@@ -458,9 +459,30 @@ public class OngoingMode extends TableMode {
 					
 					
 					
+					// sync local player list with gamestate (nulls players who have lost)
+					int numPlayersRemaining = 0;
+					for (int i=0; i<8; i++) {
+						if (gameState.player[i]==null) {
+							playerNamesLocal[hostToLocalIndex(i)] = null;
+						} else {
+							numPlayersRemaining++;
+						}
+					}
+					
+					
+					
 					// check if we've lost the game.  if so, show the lostGame popup
 					// when the first gamestate of the next hand is received.
 					if (gameState.player[GUI.playerIndexInHost]==null) {
+						popupLostGame.setMessageString(lostGameString);
+						popupLostGame.setVisible(null);
+						// disable cmh now so no further gameStates are received
+						GUI.cmh.close();
+						GUI.cmh = null;
+					}
+					// check if we've won the game.  if so, show lostGame popup
+					else if (numPlayersRemaining == 1) {
+						popupLostGame.setMessageString(winGameString);
 						popupLostGame.setVisible(null);
 						// disable cmh now so no further gameStates are received
 						GUI.cmh.close();

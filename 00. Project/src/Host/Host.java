@@ -106,7 +106,7 @@ public class Host{
 		game = new GameSystem(playerCount);
 		
 		//each hand
-		while(game.playerCount() > 1){
+		while(game.playerCount() > 1) {
 			
 			
 			game.showdown = false;
@@ -266,6 +266,16 @@ public class Host{
 			
 			
 			game.nullLosers();
+			
+			
+			
+			// check if anyone has disconnected
+			for (int i=0; i<GameSystem.MAXPLAYER; i++) {
+				if (!hmh.isConnected(players[i])) {
+					players[i] = null;
+					game.player[i] = null;
+				}
+			}
 						
 		}
 		//celebrate the winner
@@ -277,16 +287,13 @@ public class Host{
 		
 		
 		// trigges game-lost popup for everyone who lost/won
-		int temp = game.whoseTurn;
 		game.whoseTurn = -5;
-		game.flopState = 0;
 		sendGameState();
 		try {
-			Thread.sleep(game.potTotal.countPots(1)*100 + 5000);
+			Thread.sleep(5000);	// allow some time for GUI to show win/lose popup
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		game.whoseTurn = temp;
 
 	}
 	

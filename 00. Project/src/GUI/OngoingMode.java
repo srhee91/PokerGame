@@ -71,7 +71,7 @@ public class OngoingMode extends TableMode {
 	private TrueTypeFont timerFont;
 	private TrueTypeFont yourTurnFont;
 	
-	private final double timePerTurn = 36000.0;//30.99;
+	private final double timePerTurn = 20.99;//36000.0;//30.99;
 	private long turnStartTimeNano;
 	
 	private final int minimumRaise = 20;
@@ -479,6 +479,7 @@ public class OngoingMode extends TableMode {
 						// disable cmh now so no further gameStates are received
 						GUI.cmh.close();
 						GUI.cmh = null;
+						return;
 					}
 					// check if we've won the game.  if so, show lostGame popup
 					else if (numPlayersRemaining == 1) {
@@ -862,7 +863,7 @@ public class OngoingMode extends TableMode {
 			raiseButton.setEnable(true);
 			allInButton.setEnable(true);
 			raiseTextField.setEnable(true);
-			raiseTextField.setText(""+(playerTotalPlusBet+minimumRaise));
+			raiseTextField.setText(""+(gameState.highestBet+minimumRaise));
 			
 			
 			if (enable && gameState!=null) {

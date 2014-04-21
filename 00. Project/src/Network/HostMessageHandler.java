@@ -121,7 +121,7 @@ public class HostMessageHandler {
 
 	
 	public void gameStart(){
-		//blocking=true;
+		blocking=true;
 	}
 	
 	public void gameEnd(){
@@ -263,7 +263,7 @@ public class HostMessageHandler {
 				if (playerName==allowedPlayer){
 					nowTimer=new Timer();
 					System.out.println("TIMER!!!start timer for "+allowedPlayer+System.currentTimeMillis()/1000);
-					nowTimer.schedule(new autoResponse(), 5000);
+					nowTimer.schedule(new autoResponse(), 25000);
 				}
 			}
 		}

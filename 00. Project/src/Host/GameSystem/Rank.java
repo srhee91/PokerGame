@@ -166,7 +166,7 @@ public class Rank {
 	}
 
 	// finds the best hands of the player
-	private int[] findBestHand(Card[] cards) {
+	public int[] findBestHand(Card[] cards) {
 
 		// combine cards
 
@@ -203,7 +203,7 @@ public class Rank {
 			highHand = noPair(cards);
 			final_rank = 0;
 		}
-		
+		System.out.println("rank:"+final_rank+"  "+Arrays.toString(highHand));
 		return highHand;
 	}
 

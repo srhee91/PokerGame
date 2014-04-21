@@ -164,11 +164,16 @@ public class Host{
 				
 				//each turn
 				do{
-
+					if (game.player[game.highestBetter].hasFolded) {
+						game.highestBetter = game.whoseTurn;
+					}
+					
+					
 					sendGameState();
 					UserAction ua = receiveUserAction();
 					updateAction(ua);
-
+					
+					
 				}while(game.nextTurn() != game.highestBetter && game.whoseTurn != -1
 						&& game.potTotal.getCurrentPot().winnerByFold == -1);
 				
@@ -360,6 +365,7 @@ public class Host{
 			game.player[game.whoseTurn].fold();
 			game.potTotal.fold(game.whoseTurn);
 			
+						
 			//Special 
 			Pot currentPot = game.potTotal.getCurrentPot();
 			int numPlaying = 0;
@@ -384,10 +390,11 @@ public class Host{
 		case RAISE:
 		case ALL_IN:
 			game.player[game.whoseTurn].bet(ua.raiseAmount);
-			game.highestBetter = game.whoseTurn;
 			// all-in from poor player could result in a "raise" of lower than highest bet
-			if (ua.raiseAmount > game.highestBet)
+			if (ua.raiseAmount > game.highestBet) {
+				game.highestBetter = game.whoseTurn;
 				game.highestBet = ua.raiseAmount;
+			}
 			break;
 		default:
 			break;

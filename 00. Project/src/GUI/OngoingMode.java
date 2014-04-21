@@ -70,7 +70,7 @@ public class OngoingMode extends TableMode {
 	private TrueTypeFont timerFont;
 	private TrueTypeFont yourTurnFont;
 	
-	private final double timePerTurn = 30.99;
+	private final double timePerTurn = 36000.0;//30.99;
 	private long turnStartTimeNano;
 	
 	

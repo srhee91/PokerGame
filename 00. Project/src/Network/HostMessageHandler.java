@@ -40,6 +40,8 @@ public class HostMessageHandler {
 	private Listening listeningThread = null;
 	private volatile boolean blocking;
 	
+	private boolean inLobbyMode;
+	
 	/*
 	 * Constructor 
 	 * Used to create HostMessageHandler
@@ -52,6 +54,7 @@ public class HostMessageHandler {
 		this.host=host;
 		allowedPlayer=null;
 		blocking=false;
+		inLobbyMode = true;
 		
 		try{
 			server=new ServerSocket(port);
@@ -122,10 +125,12 @@ public class HostMessageHandler {
 	
 	public void gameStart(){
 		blocking=true;
+		inLobbyMode = false;
 	}
 	
 	public void gameEnd(){
 		blocking=false;
+		inLobbyMode = true;
 	}
 	
 	/*
@@ -172,7 +177,9 @@ public class HostMessageHandler {
 					
 					host.players[host.playerCount++] = playerName;
 					
-					sendAll(host.players.clone());
+					if (inLobbyMode) {
+						sendAll(host.players.clone());
+					}
 					
 				}catch(NullPointerException e){
 					System.out.println("Cannot listen on port listening()");
@@ -225,6 +232,16 @@ public class HostMessageHandler {
 					
 					synchronized (clientConnections) {
 						clientConnections.remove(playerName);
+					}
+					
+					if (inLobbyMode) {
+						// remove player's name from host playerlist
+						for (String s : host.players) {
+							if (s!=null && s.equals(playerName)) {
+								s = null;
+							}
+						}
+						sendAll(host.players.clone());
 					}
 					break;
 				}

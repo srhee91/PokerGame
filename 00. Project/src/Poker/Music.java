@@ -39,7 +39,7 @@ public abstract class Music {
 	
 	public static void start(){
 		try{
-			file=new FileInputStream(new File("D:\\whole.wav"));
+			file=new FileInputStream(new File("whole.wav"));
 			ring=new AudioStream(file);  
 		}catch(Exception e){
 			e.printStackTrace();

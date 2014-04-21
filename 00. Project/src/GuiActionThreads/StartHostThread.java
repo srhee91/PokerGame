@@ -6,6 +6,7 @@ import java.net.*;
 import GUI.GUI;
 import Host.Host;
 import Network.ClientMessageHandler;
+import Network.ClientMessageHandler.LobbyFullException;
 import Network.ClientMessageHandler.NameTakenException;
 
 public class StartHostThread extends Thread {
@@ -66,7 +67,7 @@ public class StartHostThread extends Thread {
 			myIP = InetAddress.getLocalHost();
 			GUI.cmh = new ClientMessageHandler(myIP, 4321, playerName);
 			GUI.startMode.startHostSuccess_flag = true;
-		} catch (IOException | ClassNotFoundException | NameTakenException e) {
+		} catch (IOException | ClassNotFoundException | NameTakenException | LobbyFullException e) {
 			//e.printStackTrace();
 			p.destroy();
 			GUI.startMode.startHostError_flag = true;

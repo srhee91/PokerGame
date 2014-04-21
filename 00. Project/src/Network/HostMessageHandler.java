@@ -147,7 +147,16 @@ public class HostMessageHandler {
 			Socket socket;
 			while(enable){
 				try{
+					
 					socket=server.accept();
+					
+					// check if the lobby is already full
+					boolean lobbyHasSpace = true;
+					synchronized (host.players){ 
+						if (host.playerCount >= host.players.length) {
+							lobbyHasSpace = false;
+						}
+					}
 					
 					// wait for client to send player name, reply whether or not
 					// the name is ok
@@ -155,10 +164,11 @@ public class HostMessageHandler {
 					DataOutputStream dos=new DataOutputStream(socket.getOutputStream());
 					String playerName = dis.readUTF();
 					boolean playerNameOk = !clientConnections.containsKey(playerName);
+					dos.writeBoolean(lobbyHasSpace);
 					dos.writeBoolean(playerNameOk);
 					dos.flush();
 					
-					if (!playerNameOk) {
+					if (!playerNameOk || !lobbyHasSpace) {
 						socket.close();
 						continue;
 					}
@@ -175,11 +185,20 @@ public class HostMessageHandler {
 					System.out.println(socket.getInetAddress().getHostAddress()+" is connected to the port ["
 							+port+"] as client "+playerName);
 					
-					host.players[host.playerCount++] = playerName;
 					
-					if (inLobbyMode) {
+					// update host players list
+					synchronized (host.players) {
+						// find first empty spot in host.players
+						int i;
+						for (i=0; i<host.players.length; i++) {
+							if (host.players[i]==null)
+								break;
+						}
+						host.players[i] = playerName;
+						host.playerCount++;
 						sendAll(host.players.clone());
 					}
+
 					
 				}catch(NullPointerException e){
 					System.out.println("Cannot listen on port listening()");
@@ -236,12 +255,15 @@ public class HostMessageHandler {
 					
 					if (inLobbyMode) {
 						// remove player's name from host playerlist
-						for (String s : host.players) {
-							if (s!=null && s.equals(playerName)) {
-								s = null;
+						synchronized (host.players) { 
+							for (int i=0; i<host.players.length; i++) {
+								if (host.players[i]!=null && host.players[i].equals(playerName)) {
+									host.players[i] = null;
+									host.playerCount--;
+								}
 							}
+							sendAll(host.players.clone());
 						}
-						sendAll(host.players.clone());
 					}
 					break;
 				}

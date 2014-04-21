@@ -5,6 +5,7 @@ import java.net.InetAddress;
 
 import GUI.GUI;
 import Network.ClientMessageHandler;
+import Network.ClientMessageHandler.LobbyFullException;
 import Network.ClientMessageHandler.NameTakenException;
 
 public class JoinHostThread extends Thread {
@@ -21,6 +22,7 @@ public class JoinHostThread extends Thread {
 	public void run() {
 		
 		GUI.joinMode.joinHostSuccess_flag = false;
+		GUI.joinMode.joinHostLobbyFull_flag = false;
 		GUI.joinMode.joinHostNameTaken_flag = false;
 		GUI.joinMode.joinHostError_flag = false;
 		
@@ -29,6 +31,9 @@ public class JoinHostThread extends Thread {
 			GUI.cmh = new ClientMessageHandler(
 					InetAddress.getByName(hostIp), 4321, playerName);
 			GUI.joinMode.joinHostSuccess_flag = true;
+		} catch (LobbyFullException e) {
+			GUI.cmh = null;
+			GUI.joinMode.joinHostLobbyFull_flag = true;
 		} catch (NameTakenException e) {
 			GUI.cmh = null;
 			GUI.joinMode.joinHostNameTaken_flag = true;

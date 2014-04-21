@@ -18,6 +18,7 @@ public class JoinMode extends Mode {
 	private final String[] joinListColumnNames = {"HOST", "IP ADDRESS"};//, "PLAYERS"};
 	private final int[] joinListColumnWidths = {280, 180};//, 120};
 	
+	private final String lobbyFullString = "The lobby is full.";
 	private final String nameTakenString = "The entered player name is already being used.";
 	private final String failedJoinString = "Failed to connect to game lobby. Retry?";
 	
@@ -31,6 +32,7 @@ public class JoinMode extends Mode {
 	
 	// status flags
 	public boolean joinHostSuccess_flag;
+	public boolean joinHostLobbyFull_flag;
 	public boolean joinHostNameTaken_flag;
 	public boolean joinHostError_flag;
 	
@@ -179,10 +181,15 @@ public class JoinMode extends Mode {
 				// get game state before going to lobby mode?
 				System.out.println("connection to host established... going to lobby");
 				game.enterState(3);
-				
+			} else if (joinHostLobbyFull_flag) {
+				popupLoading.setInvisible();
+				joinList.setVisible(false);
+				popupNameTaken.setMessageString(lobbyFullString);
+				popupNameTaken.setVisible(popupLoading.getPopupSource());
 			} else if (joinHostNameTaken_flag) {
 				popupLoading.setInvisible();
 				joinList.setVisible(false);
+				popupNameTaken.setMessageString(nameTakenString);
 				popupNameTaken.setVisible(popupLoading.getPopupSource());
 			} else if (joinHostError_flag) {
 				popupLoading.setInvisible();

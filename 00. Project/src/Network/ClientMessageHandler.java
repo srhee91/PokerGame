@@ -22,6 +22,12 @@ public class ClientMessageHandler {
 		}
 	}
 	
+	public static class LobbyFullException extends Exception {
+		public LobbyFullException(String msg) {
+			super(msg);
+		}
+	}
+	
 	/* 
 	 * Constructor 
 	 * Used to create ClientMessageHandler
@@ -30,7 +36,7 @@ public class ClientMessageHandler {
 	 * Get a pair of streams in socket
 	 **/
 	public ClientMessageHandler(InetAddress IP, int port, String playerName)
-			throws IOException, ClassNotFoundException, NameTakenException{
+			throws IOException, ClassNotFoundException, NameTakenException, LobbyFullException{
 
 		socket = new Socket();
 		socket.connect(new InetSocketAddress(IP, port), 1500);
@@ -41,7 +47,12 @@ public class ClientMessageHandler {
 		DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 		dos.writeUTF(playerName);
 		dos.flush();
+		boolean lobbyHasSpace = dis.readBoolean();
 		boolean playerNameOk = dis.readBoolean();
+		if (!lobbyHasSpace) {
+			socket.close();
+			throw new LobbyFullException("lobby full");
+		}
 		if (!playerNameOk) {
 			socket.close();
 			throw new NameTakenException("Name "+playerName+" is being used by another client.");

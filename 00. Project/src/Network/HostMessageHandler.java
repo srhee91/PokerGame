@@ -101,6 +101,9 @@ public class HostMessageHandler {
 	}
 	*/
 	
+	public int getNumConnectedPlayers() {
+		return clientConnections.size();
+	}
 	
 	// check if a player's connection is still alive
 	public boolean isConnected(String playerName) {

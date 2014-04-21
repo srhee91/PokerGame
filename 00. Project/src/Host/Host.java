@@ -164,11 +164,16 @@ public class Host{
 				
 				//each turn
 				do{
+					System.out.println("\t\twhoseturn = "+players[game.whoseTurn]);
+					System.out.println("\t\thighest better = "+players[game.highestBetter]);
+					
+					
 					if (game.player[game.highestBetter].hasFolded || game.player[game.highestBetter].isAllIn()) {
+						System.out.println("\t\t\twhoseturn = "+players[game.whoseTurn]);
 						game.highestBetter = game.whoseTurn;
 					}
 					
-					
+										
 					sendGameState();
 					UserAction ua = receiveUserAction();
 					updateAction(ua);

@@ -102,7 +102,11 @@ public class HostMessageHandler {
 	*/
 	
 	public int getNumConnectedPlayers() {
-		return clientConnections.size();
+		int ret;
+		synchronized (clientConnections) {
+			ret = clientConnections.size();
+		}
+		return ret;
 	}
 	
 	// check if a player's connection is still alive
@@ -218,6 +222,7 @@ public class HostMessageHandler {
 					System.out.println("Host receives an object from Client "+playerName);
 				}catch(IOException | ClassNotFoundException e){
 					System.out.println("Session end for client "+playerName);
+					
 					synchronized (clientConnections) {
 						clientConnections.remove(playerName);
 					}

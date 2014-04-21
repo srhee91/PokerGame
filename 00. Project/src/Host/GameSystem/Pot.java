@@ -11,6 +11,7 @@ public class Pot implements Serializable  {
 	public boolean playerInvolved[];
 	
 	public boolean winner[];
+	public int winnerRank;
 	
 	//special case
 	public int winnerByFold;
@@ -48,6 +49,8 @@ public class Pot implements Serializable  {
 	public Pot(Pot pot) {
 		totalPot = pot.totalPot;
 		winnerByFold = pot.winnerByFold;
+		winnerRank = pot.winnerRank;
+		
 		playerInvolved = new boolean[pot.playerInvolved.length];
 		for (int i=0; i<GameSystem.MAXPLAYER; i++)
 			playerInvolved[i] = pot.playerInvolved[i];
@@ -152,7 +155,7 @@ public class Pot implements Serializable  {
 				hands[i] = null;
 		}
 		
-		winner = (new Rank()).findWinner(game.flops, hands);
+		winner = (new Rank()).findWinner(this, game.flops, hands);
 		int winnerCount = 0;
 		
 		totalPot += game.leftover;

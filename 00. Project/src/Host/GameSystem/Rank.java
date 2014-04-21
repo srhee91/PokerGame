@@ -61,7 +61,7 @@ public class Rank {
 	}
 
 	// split pot winner not handled yet.
-	public boolean[] findWinner(Card[] flop, Card[][] hand) {
+	public boolean[] findWinner(Pot pot, Card[] flop, Card[][] hand) {
 
 		int rank[] = new int[8];
 		int max_rank = 0;
@@ -95,7 +95,7 @@ public class Rank {
 			}
 		}
 		// temporary exist for debug (
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < GameSystem.MAXPLAYER; i++) {
 			if (merge_arr[i] != null) {
 				int[] rank1 = findBestHand(merge_arr[i]);
 				System.out.println("Player " + i + " best set is "
@@ -117,6 +117,8 @@ public class Rank {
 			}
 		}
 		System.out.println("!");
+		
+		pot.winnerRank = max_rank;
 		return winner;
 	}
 

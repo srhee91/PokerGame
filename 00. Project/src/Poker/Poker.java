@@ -12,8 +12,9 @@ public class Poker {
 	public static boolean isSpectator;
 	
 	public static void main(String[] args) throws Exception {
-	
+		//new musics().start();
 		try {
+			
 			AppGameContainer app = new AppGameContainer(new GUI("Poker"));
 			app.setDisplayMode(1000, 600, false);
 			//app.setVSync(true);
@@ -23,6 +24,7 @@ public class Poker {
 		catch (SlickException e) {
 			System.out.println("ERROR: GUI could not be started");
 		}
+	
 	}
 	
 	public static void startHostProcess() throws Exception

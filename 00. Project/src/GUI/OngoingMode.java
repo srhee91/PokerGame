@@ -434,7 +434,7 @@ public class OngoingMode extends TableMode {
 					prevGameState = gameState;
 					gameState = (Gamestate)receivedObject;
 					
-								
+					/*			
 					// DEBUG: print game state
 					System.out.println("---------------------------------------------------------------------");
 					System.out.println("highest bet: "+gameState.highestBet);
@@ -455,7 +455,7 @@ public class OngoingMode extends TableMode {
 					}
 					System.out.println("It's player " + gameState.whoseTurn +"'s turn!");
 					// DONE printing game state
-					
+					*/
 					
 					
 					

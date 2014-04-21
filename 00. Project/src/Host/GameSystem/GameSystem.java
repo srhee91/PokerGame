@@ -59,6 +59,21 @@ public class GameSystem{
 		leftover = 0;
 	}
 	
+	public GameSystem(String[] players){
+		
+		player = new Player[MAXPLAYER];
+		for(int i=0; i<MAXPLAYER; i++){
+			if (players[i] != null)
+				player[i] = new Player();
+			else
+				player[i] = null;
+		}
+		
+		blind = INIT_BLIND;
+		dealer = -1;
+		leftover = 0;
+	}
+	
 	//Hand
 	//1. new deck
 	//2. assign cards

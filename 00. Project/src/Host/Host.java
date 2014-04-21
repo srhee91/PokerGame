@@ -103,7 +103,7 @@ public class Host{
 	public void startGame(){
 	
 		//each game
-		game = new GameSystem(playerCount);
+		game = new GameSystem(players);
 		
 		//each hand
 		while(game.playerCount() > 1) {
@@ -437,6 +437,8 @@ public class Host{
 		//host.endGame();
 		 
 		host.hmh.gameEnd();
+		
+		host.hmh.close();
 		
 		
 		/*

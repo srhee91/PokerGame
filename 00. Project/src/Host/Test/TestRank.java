@@ -6,7 +6,7 @@ import Host.GameSystem.Card;
 import Host.GameSystem.Rank;
 
 public class TestRank {
-	public TestRank(){
+	/*public TestRank(){
 	}
 	
 	// fullhouse check
@@ -245,5 +245,5 @@ public class TestRank {
 		
 		
 
-	}
+	}*/
 }

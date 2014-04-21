@@ -85,6 +85,7 @@ public class HostMessageHandler {
 	}
 	
 	
+	/* DEAD CONNECTIONS AUTOMATICALLY REMOVED WHEN SOCKET CLOSES
 	// remove dead connections, returns true if a dead connection was found
 	public boolean removeDeadConnections() {
 		boolean clientDisconnected = false;
@@ -98,17 +99,22 @@ public class HostMessageHandler {
 		}
 		return clientDisconnected;
 	}
+	*/
 	
-	
+	public int getNumConnectedPlayers() {
+		return clientConnections.size();
+	}
 	
 	// check if a player's connection is still alive
 	public boolean isConnected(String playerName) {
-		return clientConnections.containsKey(playerName);
+		boolean ret;
+		synchronized (clientConnections) {
+			ret = clientConnections.containsKey(playerName);
+		}
+		return ret;
 	}
 	
-	public Set<String> getConnectedPlayerNames() {
-		return clientConnections.keySet();
-	}
+
 	
 	public void gameStart(){
 		//blocking=true;
@@ -210,13 +216,12 @@ public class HostMessageHandler {
 						}
 					}
 					System.out.println("Host receives an object from Client "+playerName);
-				}catch(IOException e){
+				}catch(IOException | ClassNotFoundException e){
 					System.out.println("Session end for client "+playerName);
-					
+					synchronized (clientConnections) {
+						clientConnections.remove(playerName);
+					}
 					break;
-				}catch(ClassNotFoundException e){
-					System.out.println("ClassNotFound");
-					e.printStackTrace();
 				}
 			}
 		}

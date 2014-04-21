@@ -164,7 +164,7 @@ public class Host{
 				
 				//each turn
 				do{
-					if (game.player[game.highestBetter].hasFolded) {
+					if (game.player[game.highestBetter].hasFolded || game.player[game.highestBetter].isAllIn()) {
 						game.highestBetter = game.whoseTurn;
 					}
 					

@@ -255,8 +255,8 @@ public class Host{
 			
 			
 			
-			// send pot so GUI will have winners info before animating
-			sendPot();
+			// send post-hand so GUI will have winners info before animating
+			sendGameState();
 			
 			// send post-hand messages to show winners and distribute winnings
 			// we don't send gamestates because we're not updating anything on-screen
@@ -332,6 +332,7 @@ public class Host{
 		
 		
 		// trigges game-lost popup for everyone who lost/won
+		game.flopState = 5;
 		game.whoseTurn = -5;
 		sendGameState();
 		try {

@@ -226,9 +226,16 @@ public class LobbyMode extends TableMode {
 					for (int i=0; i<8; ++i) {
 						 String name = playerNames[localToHostIndex(i)];
 						 if (i!=0 && name!=null && infoFont.getWidth(name)>90) {
-							 name = name.substring(0,5)+"...";
+							 int prefixLength = 5;
+							 String shortName;
+							 do {
+								 prefixLength++;
+								 shortName = name.substring(0, prefixLength)+"...";
+							 } while (infoFont.getWidth(shortName)<=90);
+							 playerNamesLocal[i] = name.substring(0, prefixLength-1)+"...";
+						 } else {
+							 playerNamesLocal[i] = name;
 						 }
-						 playerNamesLocal[i] = name;
 					}
 					hostIndexLocal = (8 - GUI.playerIndexInHost) % 8;
 					

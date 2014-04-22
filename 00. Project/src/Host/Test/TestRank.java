@@ -171,23 +171,22 @@ public class TestRank {
 		
 		//calrank.findWinner(flop, hand);
 	}
-	// one pair
+	
+	/**
+	 * There are some exception cases.
+	 * The testing will start 3 3 13 12 11
+	 *                        3 3 12 11 10
+	 *                        3 3 11 10 9
+	 *                        .      .
+	 * 						  .      .
+	 * 						  .      .					      
+	 * 						  13 13 5 4 3
+	 * It is starting with 3 because there are temporary values 0 and 2 that exist for preventing null pointer error
+	 * Therefore there is other ranks happening. 
+	 */
 	public static void onepair_check(Rank calrank){
 		System.out.println("Testing OnePair");
-		/**
-		 * There are some exception cases.
-		 * The testing will start 3 3 13 12 11
-		 *                        3 3 12 11 10
-		 *                        3 3 11 10 9
-		 *                        .      .
-		 * 						  .      .
-		 * 						  .      .
-		 * 						  .      .
-		 * 					      .      .
-		 * 						  13 13 5 4 3
-		 * It is starting with 3 because there are temporary values 0 and 2 that exist for preventing null pointer error
-		 * Therefore there is other ranks happening. 
-		 */
+		
 		Card[]temp=new Card[7];
 		for(int i=3;i<14;i++){
 			for(int j=14;j>2;j--){
@@ -206,32 +205,47 @@ public class TestRank {
 		
 		//calrank.findWinner(flop, hand);
 	}
-	// high card
+	/**
+	 * There are some exception cases.
+	 * The testing will start 4 5 6 7 9      [i i+1 i+2 i+3 i+5]
+	 *                        4 5 6 7 10      
+	 *                        4 5 6 7 11
+	 *                        .      .
+	 * 						  .      .
+	 * 						  .      .					      
+	 * 						  9 10 11 12 14
+	 * It is starting with 4 because there are temporary values 0 and 2 that exist for preventing null pointer error.
+	 * 3 makes straight. 1 will be converted to 14
+	 */
 	public static void highcard_check(Rank calrank){
 		System.out.println("Testing HighCard");
-		Card[]flop=new Card[5];
-		flop[0]=new Card(4,2);
-		flop[1]=new Card(3,4);
-		flop[2]=new Card(1,6);
-		flop[3]=new Card(2,8);
-		flop[4]=new Card(1,10);
-		Card[][]hand=new Card[8][2];
-		hand[0][0]=new Card(1,11);
-		hand[0][1]=new Card(1,12);
-		hand[1]=null;
-		hand[2][0]=new Card(1,11);
-		hand[2][1]=new Card(3,12);
-		hand[3][0]=new Card(1,12);
-		hand[3][1]=new Card(2,13);
-		hand[4][0]=new Card(4,12);
-		hand[4][1]=new Card(1,13);
-		hand[5][0]=new Card(4,11);
-		hand[5][1]=new Card(3,12);
-		hand[6]=null;
-		hand[7]=null;
+		Card[]temp=new Card[7];
+		for(int i=4;i<10;i++){
+			for(int j=i+5;j<15;j++){
+				temp[0]=new Card(1,i);
+				temp[1]=new Card(2,i+1);
+				temp[2]=new Card(3,i+2);
+				temp[3]=new Card(4,i+3);
+				temp[4]=new Card(1,j);
+				temp[5]=new Card(2,0);
+				temp[6]=new Card(3,2);
+				calrank.findBestHand(temp);
+			}
+		}
+		for(int i=1;i<6;i++){
+			if(i!=2){
+			temp[0]=new Card(1,i);
+			temp[1]=new Card(2,i+2);
+			temp[2]=new Card(3,i+4);
+			temp[3]=new Card(4,i+6);
+			temp[4]=new Card(1,i+8);
+			temp[5]=new Card(2,0);
+			temp[6]=new Card(3,2);
+			calrank.findBestHand(temp);
+			}
+		}
 		
 		
-		//calrank.findWinner(flop, hand);
 	}
 	public static void main(String[] args){
 		Rank obj1=new Rank();
@@ -243,8 +257,8 @@ public class TestRank {
 		//flush_check(obj1);
 		//threeofkind_check(obj1);
 		//twopair_check(obj1);
-		onepair_check(obj1);
-		//highcard_check(obj1);
+		//onepair_check(obj1);
+		highcard_check(obj1);
 		
 		
 		

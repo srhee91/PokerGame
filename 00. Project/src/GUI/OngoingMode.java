@@ -443,8 +443,8 @@ public class OngoingMode extends TableMode {
 		
 		// check for received gamestates from host
 
-		Object receivedObject = GUI.cmh.getReceivedObject();
-		if (receivedObject!=null) {
+		Object receivedObject;
+		if (GUI.cmh!=null && (receivedObject=GUI.cmh.getReceivedObject())!=null) {
 			
 			if (receivedObject instanceof Gamestate) {
 			

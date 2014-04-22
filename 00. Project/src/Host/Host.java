@@ -273,7 +273,7 @@ public class Host{
 				// send int to show cards of players involved in this pot
 				sendInt(potIndex);
 				try {
-					Thread.sleep(1300);
+					Thread.sleep(2500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -281,7 +281,7 @@ public class Host{
 				// send int to show winner label(s) and trigger that pot to be distributed
 				sendInt(potIndex);
 				try {
-					Thread.sleep(1300);
+					Thread.sleep(2500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

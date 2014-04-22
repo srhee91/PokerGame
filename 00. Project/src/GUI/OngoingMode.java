@@ -962,7 +962,8 @@ public class OngoingMode extends TableMode {
 	
 	private void drawLabels(Graphics g) {
 		
-		if (gameState==null || gameState.showdown)	// no labels drawn during showdown
+		// no labels drawn during showdown or after postHandGameState is received
+		if (gameState==null || lastFlopState==4 || gameState.showdown)
 			return;
 		
 		for (int i=0; i<8; i++) {

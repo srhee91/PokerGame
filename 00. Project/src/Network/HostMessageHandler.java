@@ -295,7 +295,7 @@ public class HostMessageHandler {
 	// call this function will send game state to specific client,
 	// which are arguments
 	public synchronized void send(String playerName, Object ob){
-		if (blocking==true){
+		if (blocking==true && ob instanceof GameState.Gamestate){
 			int turn=((GameState.Gamestate)ob).whoseTurn;
 			if (turn>=0){ 
 				allowedPlayer=host.players[turn];
@@ -311,7 +311,7 @@ public class HostMessageHandler {
 			oos.writeObject(ob);
 			oos.flush();
 		}catch(IOException e){
-			System.out.println("Cannot send object");
+			System.out.println("Cannot send object: "+e.getMessage());
 			e.printStackTrace();
 		}
 	}

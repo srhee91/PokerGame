@@ -318,9 +318,9 @@ public class MyTextField extends AbstractComponent {
 	 */
 	public void setText(String value) {
 		this.value = value;
-		if (cursorPos > value.length()) {
+		//if (cursorPos > value.length()) {
 			cursorPos = value.length();
-		}
+		//}
 	}
 
 	/**

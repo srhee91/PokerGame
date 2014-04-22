@@ -255,10 +255,8 @@ public class Host{
 			
 			
 			
-			
-			// set these to avoid triggering hmh automatic timer
-			temp = game.whoseTurn;
-			game.whoseTurn = -4;
+			// send pot so GUI will have winners info before animating
+			sendPot();
 			
 			// send post-hand messages to show winners and distribute winnings
 			// we don't send gamestates because we're not updating anything on-screen
@@ -294,8 +292,6 @@ public class Host{
 				e.printStackTrace();
 			}
 			
-			
-			game.whoseTurn = temp;
 			
 			
 			
@@ -395,10 +391,14 @@ public class Host{
 		hmh.sendAll(gameState);	
 	}
 	
+	public void sendPot() {
+		System.out.println("\n\n\nSending pot...");
+		hmh.sendAll(new Pot(game.potTotal));
+	}
 	
 	public void sendInt(int x) {
-		
-		hmh.sendAll(x);
+		System.out.println("\n\n\nSending integer "+x+"...");
+		hmh.sendAll(new Integer(x));
 	}
 	
 	

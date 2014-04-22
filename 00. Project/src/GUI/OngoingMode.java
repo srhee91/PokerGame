@@ -100,6 +100,7 @@ public class OngoingMode extends TableMode {
 	
 	private int lastFlopState;
 	
+	private Host.GameSystem.Pot receivedPot;
 	private int lastPotIndex;
 	private String[] winnerLabels;
 	private int[] potLeftovers;
@@ -717,18 +718,23 @@ public class OngoingMode extends TableMode {
 					
 					System.out.println("\n\n\n\n");
 				
+				} else if (receivedObject instanceof Host.GameSystem.Pot) {
 					
-										} else if (receivedObject instanceof Integer) { // ******************************************************************
+					System.out.println("received pots from host!");
+					receivedPot = (Host.GameSystem.Pot)receivedObject;
+										
+									} else if (receivedObject instanceof Integer) { // ******************************************************************
 					
 					//  POST HAND: reveal cards, distribute winnings for each pot-------------
 					
 					int potIndex = ((Integer)receivedObject).intValue();
+					System.out.println("received int "+potIndex+" from host!");
 					
 					
 					if (potIndex >= 0) {
 						
 						// find the pot in question
-						Host.GameSystem.Pot pot = gameState.potTotal;
+						Host.GameSystem.Pot pot = receivedPot;
 						for (int i=0; i<potIndex; i++)
 							pot = pot.splitPot;
 						
@@ -793,7 +799,7 @@ public class OngoingMode extends TableMode {
 						
 						
 						// collect leftover in each pot into main pot
-						Host.GameSystem.Pot pot = gameState.potTotal.splitPot;
+						Host.GameSystem.Pot pot = receivedPot.splitPot;
 						for (int i=1; i<8; i++) {
 							if (pot==null)
 								break;

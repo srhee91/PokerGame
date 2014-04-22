@@ -256,7 +256,12 @@ public class Host{
 			
 			
 			// send post-hand so GUI will have winners info before animating
+			temp = game.whoseTurn;
+			game.whoseTurn = -4;
 			sendGameState();
+			game.whoseTurn = temp;
+			
+			
 			
 			// send post-hand messages to show winners and distribute winnings
 			// we don't send gamestates because we're not updating anything on-screen

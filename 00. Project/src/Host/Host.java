@@ -273,7 +273,7 @@ public class Host{
 				// send int to show cards of players involved in this pot
 				sendInt(potIndex);
 				try {
-					Thread.sleep(2500);
+					Thread.sleep(potIndex==0 ? 2500 : 1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

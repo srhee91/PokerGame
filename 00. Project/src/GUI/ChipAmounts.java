@@ -8,6 +8,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 
+import Poker.Music;
+
 public class ChipAmounts {
 	
 	
@@ -66,6 +68,7 @@ public class ChipAmounts {
 		private void start() {
 			started = true;
 			source.amount -= amount;
+			Music.ChipSound();
 		}
 		private void update(double delta) {
 			// update screen position
@@ -77,6 +80,7 @@ public class ChipAmounts {
 				if (dDist >= distToDest) {
 					destination.amount += amount;
 					completed = true;
+					Music.ChipSound();
 				}
 				else {
 					currX += dX / distToDest * dDist;

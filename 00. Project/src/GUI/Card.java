@@ -1,8 +1,11 @@
 package GUI;
 
 import java.util.*;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
+
+import Poker.Music;
 
 public class Card {
 	
@@ -88,14 +91,19 @@ public class Card {
 	// to animate card
 	public void setState(int[] destPosition, Boolean visible, Boolean faceUp,
 			boolean instant) {
+		
+		boolean playSound = false;
+		
 		if (destPosition!=null && !(destPosition[0]==currX && destPosition[1]==currY)) {
 			destX = destPosition[0];
 			destY = destPosition[1];
 			isMoving = true;
+			playSound = true;
 		}
 		if (faceUp!=null && faceUp!=currFaceUp) {
 			destFaceUp = faceUp;
 			isMoving = true;
+			playSound = true;
 		}
 		if (visible!=null) {
 			double alpha = visible.booleanValue() ? 1.0 : 0.0;
@@ -110,12 +118,16 @@ public class Card {
 			currFaceUp = destFaceUp;
 			currAlpha = destAlpha;
 			isMoving = false;
+			playSound = false;
 		}
 		
 		if (isMoving)
 			movingCards.add(this);
 		else
 			movingCards.remove(this);
+		
+		if (playSound)
+			Music.twoCardsSound();
 	}
 	
 	

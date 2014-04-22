@@ -278,25 +278,42 @@ public class Cards {
 		
 		System.out.println("###GUI ACTION: reveal player "+player+" cards");
 		
+		// don't wait for prevactions to finish.
+		// this method is usually called on multipe players
 		actionQueue.add(new QueuedAction(playerCards[player][0],
 				null, null, true, false, 0.0, false));
 		actionQueue.add(new QueuedAction(playerCards[player][1],
 				null, null, true, false, 0.0, false));
 	}
 	
+	public void hidePlayerCards(int player) {
+		
+		System.out.println("###GUI ACTION: hide player "+player+" cards");
+		
+		// don't wait for prevactions to finish.
+		// this method is usually called on multipe players
+		actionQueue.add(new QueuedAction(playerCards[player][0],
+				null, null, false, false, 0.0, false));
+		actionQueue.add(new QueuedAction(playerCards[player][1],
+				null, null, false, false, 0.0, false));
+	}
+	
+	
 	public void fold(int player) {
-		if (playerCards[player][0].isVisible()) {
-			// flip cards face down
-			actionQueue.add(new QueuedAction(playerCards[player][0],
-					null, null, false, false, 0.0, true));
-			actionQueue.add(new QueuedAction(playerCards[player][1],
-					null, null, false, false, 100.0, false));
-			// set cards invisible
-			actionQueue.add(new QueuedAction(playerCards[player][0],
-					null, false, null, false, 0.0, true));
-			actionQueue.add(new QueuedAction(playerCards[player][1],
-					null, false, null, false, 100.0, false));
-		}
+		
+		System.out.println("###GUI ACTION: fold player "+player+" cards");
+		
+		// flip cards face down
+		actionQueue.add(new QueuedAction(playerCards[player][0],
+				null, null, false, false, 0.0, true));
+		actionQueue.add(new QueuedAction(playerCards[player][1],
+				null, null, false, false, 100.0, false));
+		// set cards invisible
+		actionQueue.add(new QueuedAction(playerCards[player][0],
+				null, false, null, false, 0.0, true));
+		actionQueue.add(new QueuedAction(playerCards[player][1],
+				null, false, null, false, 100.0, false));
+		
 	}
 	
 	

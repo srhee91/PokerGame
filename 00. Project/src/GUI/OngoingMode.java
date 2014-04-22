@@ -42,13 +42,17 @@ public class OngoingMode extends TableMode {
 	private final int[] timeTextOffset = {43, 33};		// center
 	
 	
-	//private final Color winnerLabelColor = new Color(212, 65, 238, 242);
+	private final Color winnerLabelColor = new Color(212, 65, 238, 242);
 	private final Color thinkingLabelColor = new Color(128, 128, 128, 242);
 	private final Color foldLabelColor = new Color(206, 0, 0, 242);
 	private final Color raiseLabelColor = new Color(92, 184, 17, 242);
 	private final Color checkLabelColor = new Color(30, 98, 208, 242);
 	private final Color allInLabelColor = new Color(156, 51, 237, 242);
-	//...
+	
+	private final String[] winnerLabelStrings = {"High Card", "One Pair", "Two Pair", "Three of a Kind",
+					"Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush", "Royal Flush"};
+	
+	
 	
 	private PopupMessageOneButton popupRaiseInvalid;
 	
@@ -91,9 +95,14 @@ public class OngoingMode extends TableMode {
 	
 	private String[] playerNamesLocal;
 	
-	private Gamestate prevGameState;
+	
 	private Gamestate gameState;
 	
+	private int lastFlopState;
+	
+	private int lastPotIndex;
+	private String[] winnerLabels;
+	private int[] potLeftovers;
 
 	
 	@Override
@@ -344,6 +353,9 @@ public class OngoingMode extends TableMode {
 		for (int i=0; i<8; ++i) {
 			playerNamesLocal[i] = null;
 		}
+		
+		winnerLabels = new String[8];
+		potLeftovers = new int[8];
 	}
 	
 	protected void setPlayerNamesLocal(String[] names) {
@@ -381,7 +393,11 @@ public class OngoingMode extends TableMode {
 		// on-enter-mode actions
 		if (GUI.currentMode != 4) {
 			
-			prevGameState = null;
+			lastFlopState = 4;
+			lastPotIndex = -1;
+			for (int i=0; i<8; i++)
+				winnerLabels[i] = null;
+			
 			gameState = null;
 			
 			checkOrCall = true;
@@ -431,7 +447,6 @@ public class OngoingMode extends TableMode {
 				
 				if (receivedObject instanceof Gamestate) {
 				
-					prevGameState = gameState;
 					gameState = (Gamestate)receivedObject;
 					
 					/*			
@@ -599,8 +614,7 @@ public class OngoingMode extends TableMode {
 					
 					// update cards and dealerchip ---------------------------------------------------------------
 					
-					int lastFlopState = (prevGameState==null) ? 4 : prevGameState.flopState;
-					
+									
 					
 					// fold player's cards if needed
 					for (int i=0; i<8; i++) {
@@ -673,7 +687,7 @@ public class OngoingMode extends TableMode {
 							
 						} else if (lastFlopState == 0){
 							// flip over flop and turn cards
-							cards.dealFlop(500.0);
+							cards.dealFlop(0.0);
 							cards.dealTurn(0.0);							
 						}
 						break;
@@ -698,60 +712,64 @@ public class OngoingMode extends TableMode {
 						break;
 					}
 					
+					lastFlopState = gameState.flopState;
 					
-					// POST HAND: reveal cards, distribute winnings for each pot-------------
 					
-					if (gameState.flopState==4) {			// same as whosturn=-4								
+					System.out.println("\n\n\n\n");
+				
+					
+										} else if (receivedObject instanceof Integer) { // ******************************************************************
+					
+					//  POST HAND: reveal cards, distribute winnings for each pot-------------
+					
+					int potIndex = ((Integer)receivedObject).intValue();
+					
+					
+					if (potIndex >= 0) {
 						
-						// reveal everyone's cards if they haven't already
-						// as long winnerbyfold hasn't happened
-						if (!gameState.showdown && gameState.potTotal.winnerByFold==-1) {
-							for (int i=0; i<8; i++) {
-								if (gameState.player[i]!=null && !gameState.player[i].hasFolded) {
-									cards.showPlayerCards(hostToLocalIndex(i));
-								}
-							}
-						}
-						
-						// distribute each pot to its winners
-						
-						System.out.println("### GUI ACTION: distribute winnings");
-						
-						int leftOvers[] = new int[8];
-						
-						boolean first = true;
+						// find the pot in question
 						Host.GameSystem.Pot pot = gameState.potTotal;
-						for (int potIndex=0; potIndex<8; potIndex++) {
+						for (int i=0; i<potIndex; i++)
+							pot = pot.splitPot;
+						
+						
+						if (lastPotIndex != potIndex) {
 							
-							if (pot==null)
-								break;
+							// clear winner labels
+							for (int i=0; i<8; i++)
+								winnerLabels[i] = null;
 							
+							// show cards of the players involved in this pot
+							for (int i=0; i<8; i++) {
+								if (pot.playerInvolved[i])
+									cards.showPlayerCards(hostToLocalIndex(i));
+								else
+									cards.hidePlayerCards(hostToLocalIndex(i));
+							}
 							
-							// hide cards of players who aren't involved in this pot
-							// TODO:
+						} else {
 							
-							
-							
-							System.out.println("distributing pot "+potIndex+"...");
-							
+							// set winner labels for this pot, distribute winnings to those winner, calculate leftovers
 							// calculate winnings per winner
+							
+							
+							// set winner labels and count number of winners
 							int numWinners = 0;
 							for (int i=0; i<8; i++) {
-								if (pot.winner[i])
+								if (pot.winner[i]) {
+									winnerLabels[hostToLocalIndex(i)] = winnerLabelStrings[pot.winnerRank];
 									numWinners++;
+								}
 							}
 							int amountPerWinner = pot.totalPot / numWinners;
-							leftOvers[potIndex] = amountPerWinner % numWinners;
+							potLeftovers[potIndex] = amountPerWinner % numWinners;
 							
 							System.out.println("amt = $"+pot.totalPot);
 							System.out.println("amt per winner = $"+amountPerWinner);
 							
 							
-							// set winner labels for this pot to render
-							// TODO:
-							
-							
 							// send that amount to each winner of this pot
+							boolean first = true;
 							for (int i=0; i<8; i++) {
 								
 								if (gameState.player[i]!=null && pot.winner[i]) {
@@ -759,40 +777,42 @@ public class OngoingMode extends TableMode {
 											amountPerWinner,
 											false, potIndex,
 											true, hostToLocalIndex(i),
-											first ? 1500.0 : 0.0, first);
+											0.0, first);
 									first = false;
 								}
 							}
-							pot = pot.splitPot;
 							
 						}
 						
 						
+					} else {
 						
-						// collect each pot's leftover into the main pot
-						if (gameState.potTotal != null) {
-							pot = gameState.potTotal.splitPot;
-							for (int potIndex=1; potIndex<8; potIndex++) {
-								if (pot==null)
-									break;
-								System.out.println("pot "+potIndex+" has leftover $"+leftOvers[potIndex]);
-								if (leftOvers[potIndex] > 0) {
-									chipAmounts.addSendToQueue(
-											leftOvers[potIndex],
-											false, potIndex,
-											false, 0,	 // send to main pot
-											0.0, true);
-								}
-								pot = pot.splitPot;
+						// clear winner labels
+						for (int i=0; i<8; i++)
+							winnerLabels[i] = null;
+						
+						
+						// collect leftover in each pot into main pot
+						Host.GameSystem.Pot pot = gameState.potTotal.splitPot;
+						for (int i=1; i<8; i++) {
+							if (pot==null)
+								break;
+							System.out.println("pot "+i+" has leftover $"+potLeftovers[i]);
+							if (potLeftovers[i] > 0) {
+								chipAmounts.addSendToQueue(
+										potLeftovers[i],
+										false, i,
+										false, 0,	 // send to main pot
+										0.0, true);
 							}
+							pot = pot.splitPot;
 						}
-					} 	
+						
+					}
+				
+					lastPotIndex = potIndex;					
 					
-					
-					
-					System.out.println("\n\n\n\n");
-					
-					
+						
 				} else {
 					System.out.println("unexpected object type received in OngoingMode");
 				}
@@ -909,6 +929,7 @@ public class OngoingMode extends TableMode {
 		
 				
 		drawLabels(g);
+		drawWinnerLabels(g);
 		drawTotalAmounts(g);
 		drawInteractiveElements(container, g);
 		drawTimer(g);
@@ -950,14 +971,24 @@ public class OngoingMode extends TableMode {
 		}
 	}
 	
+	
 
+	private void drawWinnerLabels(Graphics g) {
+		for (int i=0; i<8; i++) {
+			if (winnerLabels[i] != null) {
+				drawPlayerLabel(g, i, winnerLabels[i], Color.white, winnerLabelColor);
+			}
+		}
+	}
+	
+	
 	
 	private void drawLabels(Graphics g) {
 		
 		if (gameState==null || gameState.showdown)	// no labels drawn during showdown
 			return;
 		
-		for (int i=0; i<8; ++i) {
+		for (int i=0; i<8; i++) {
 			if (gameState.player[i] != null) {
 				
 				int localIndex = hostToLocalIndex(i);
@@ -1019,15 +1050,8 @@ public class OngoingMode extends TableMode {
 			return;
 		
 		for (int i=0; i<8; i++) {
-			Player player;
 			
-			// do not update total amounts during flopstate 4:
-			// allow winnings to be added by next gamestate
-			if (gameState.flopState==4)
-				player = prevGameState.player[localToHostIndex(i)];
-			else
-				player = gameState.player[localToHostIndex(i)];
-			
+			Player player = gameState.player[localToHostIndex(i)];			
 			if (player != null) {
 				if (i==0) {
 					GUI.drawStringLeftCenter(g, totalAmountFont, Color.white,

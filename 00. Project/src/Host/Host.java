@@ -256,6 +256,50 @@ public class Host{
 			
 			
 			
+			// set these to avoid triggering hmh automatic timer
+			temp = game.whoseTurn;
+			game.whoseTurn = -4;
+			
+			// send post-hand messages to show winners and distribute winnings
+			// we don't send gamestates because we're not updating anything on-screen
+			// directly with gamestate info.  everything is animated
+			Pot pot = game.potTotal;
+			int potIndex = 0;
+			while (pot != null) {
+				
+				// send int to show cards of players involved in this pot
+				sendInt(potIndex);
+				try {
+					Thread.sleep(1300);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				// send int to show winner label(s) and trigger that pot to be distributed
+				sendInt(potIndex);
+				try {
+					Thread.sleep(1300);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				pot = pot.splitPot;
+				potIndex++;
+			}
+			// send another int to trigger leftovers collection and clear winner labels
+			sendInt(-1);
+			try {
+				Thread.sleep(650);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			
+			game.whoseTurn = temp;
+			
+			
+			
+			/*
 			// send a post-hand gamestate to reveal everyone's cards (if needed),
 			// distribute each pot to its winners, and gather pot leftovers into the main pot
 			temp = game.whoseTurn;
@@ -267,7 +311,7 @@ public class Host{
 				e.printStackTrace();
 			}
 			game.whoseTurn = temp;
-			
+			*/
 			
 			
 			game.nullLosers();
@@ -349,6 +393,12 @@ public class Host{
 		System.out.println("showdown = "+gameState.showdown);
 		
 		hmh.sendAll(gameState);	
+	}
+	
+	
+	public void sendInt(int x) {
+		
+		hmh.sendAll(x);
 	}
 	
 	

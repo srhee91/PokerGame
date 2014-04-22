@@ -751,6 +751,8 @@ public class OngoingMode extends TableMode {
 							winnerLabels[i] = null;
 						
 						// show cards of the players involved in this pot
+						// unless winner by fold occurred
+						if (postHandGameState.potTotal.winnerByFold == -1)
 						for (int i=0; i<8; i++) {
 							if (pot.playerInvolved[i])
 								cards.showPlayerCards(hostToLocalIndex(i));
@@ -969,7 +971,7 @@ public class OngoingMode extends TableMode {
 				int localIndex = hostToLocalIndex(i);
 				
 				if (i==gameState.whoseTurn) {
-					if (i!=0) {
+					if (localIndex!=0) {
 						String timeString = String.format("%d", (int)getRemainingTimeThisTurn());
 						drawPlayerLabel(g, localIndex, "Thinking... "+timeString, Color.white, thinkingLabelColor);
 					} else {

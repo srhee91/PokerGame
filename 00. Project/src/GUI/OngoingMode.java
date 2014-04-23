@@ -572,13 +572,18 @@ public class OngoingMode extends TableMode {
 					// update pot amounts (should be redundant)
 					Host.GameSystem.Pot pot = gameState.potTotal;
 					for (int i=0; i<8; i++) {
-						if (pot==null)
-							break;
-						if (chipAmounts.getPotAmount(i) != pot.totalPot) {
-							System.out.println("pot "+i+" inconsistent with gamestate!");
-							chipAmounts.setPotAmount(i, pot.totalPot);
+						if (pot!=null) {
+							if (chipAmounts.getPotAmount(i) != pot.totalPot) {
+								System.out.println("pot "+i+" inconsistent with gamestate!");
+								chipAmounts.setPotAmount(i, pot.totalPot);
+							}
+							pot = pot.splitPot;
+						} else {
+							if (chipAmounts.getPotAmount(i) != 0) {
+								System.out.println("pot "+i+" inconsistent with gamestate!");
+								chipAmounts.setPotAmount(i, 0);
+							}
 						}
-						pot = pot.splitPot;
 					}
 
 				} else {									// COLLECT BETS -----
@@ -786,7 +791,7 @@ public class OngoingMode extends TableMode {
 							}
 						}
 						int amountPerWinner = pot.totalPot / numWinners;
-						potLeftovers[potIndex] = amountPerWinner % numWinners;
+						potLeftovers[potIndex] = pot.totalPot % numWinners;
 						
 						System.out.println("amt = $"+pot.totalPot);
 						System.out.println("amt per winner = $"+amountPerWinner);

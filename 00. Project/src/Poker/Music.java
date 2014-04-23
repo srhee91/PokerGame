@@ -13,10 +13,22 @@ public abstract class Music {
 	static AudioStream ring=null;
 	static FileInputStream file=null;
 	
-	public static void ChipSound(){
+	public static void oneChipSound(){
 		AudioStream cardSound=null;
 		try {
-			cardSound=new AudioStream(new FileInputStream(new File("chips.wav")));
+			cardSound=new AudioStream(new FileInputStream(new File("OneChip.wav")));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		AudioPlayer.player.start(cardSound);
+	}
+	
+	public static void manyChipSound(){
+		AudioStream cardSound=null;
+		try {
+			cardSound=new AudioStream(new FileInputStream(new File("ManyChips.wav")));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -65,11 +77,6 @@ public abstract class Music {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	
-	public static void main(String[] args){
-		ChipSound();
 	}
 	
 }

@@ -1006,37 +1006,34 @@ public class OngoingMode extends TableMode {
 				if (gameState.player[i].isAllIn()) {
 					drawPlayerLabel(g, localIndex, "All In $"+gameState.player[i].betAmount,
 							Color.white, allInLabelColor);
+					continue;
 				}
 				*/
-				//else {
 
-					UserAction lastAction = gameState.player[i].latestAction;
-					if (lastAction!=null) {
-						switch (lastAction.action) {
-						case CHECK:
-							drawPlayerLabel(g, localIndex, "Check", Color.white, checkLabelColor);
-							break;
-						case CALL:
-							drawPlayerLabel(g, localIndex, "Call $"+lastAction.raiseAmount, Color.white, checkLabelColor);
-							break;
-						case FOLD:
-							drawPlayerLabel(g, localIndex, "Fold", Color.white, foldLabelColor);
-							break;
-						case BET:
-							drawPlayerLabel(g, localIndex, "Bet $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
-							break;
-						case RAISE:
-							drawPlayerLabel(g, localIndex, "Raise to $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
-							break;
-						case ALL_IN:
-							drawPlayerLabel(g, localIndex, "All In $"+lastAction.raiseAmount, Color.white, allInLabelColor);
-							break;
-						default:
-							break;
-						}
-						
-					//}
-				
+				UserAction lastAction = gameState.player[i].latestAction;
+				if (lastAction!=null) {
+					switch (lastAction.action) {
+					case CHECK:
+						drawPlayerLabel(g, localIndex, "Check", Color.white, checkLabelColor);
+						break;
+					case CALL:
+						drawPlayerLabel(g, localIndex, "Call $"+lastAction.raiseAmount, Color.white, checkLabelColor);
+						break;
+					case FOLD:
+						drawPlayerLabel(g, localIndex, "Fold", Color.white, foldLabelColor);
+						break;
+					case BET:
+						drawPlayerLabel(g, localIndex, "Bet $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
+						break;
+					case RAISE:
+						drawPlayerLabel(g, localIndex, "Raise to $"+lastAction.raiseAmount, Color.white, raiseLabelColor);
+						break;
+					case ALL_IN:
+						drawPlayerLabel(g, localIndex, "All In $"+lastAction.raiseAmount, Color.white, allInLabelColor);
+						break;
+					default:
+						break;
+					}
 				}
 			}
 		}

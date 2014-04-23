@@ -60,6 +60,7 @@ public class Player implements Serializable {
 		if(betAmount > totalChip){
 			this.betAmount += totalChip;
 			totalChip = 0;
+			latestAction = new UserAction(UserAction.Action.ALL_IN, this.betAmount);
 			return false;
 		}
 		

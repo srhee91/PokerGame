@@ -17,6 +17,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import GameState.Gamestate;
 import Host.GameSystem.Player;
 import Network.UserAction;
+import Poker.Music;
 
 public class OngoingMode extends TableMode {
 	
@@ -555,15 +556,19 @@ public class OngoingMode extends TableMode {
 					
 					// update bets without animation if this gamestate comes
 					// before/after a player's turn
+					boolean changed = false;
 					for (int i=0; i<8; i++) {
-					
 						if (gameState.player[i] != null) {
 							int localIndex = hostToLocalIndex(i);
 							int amount = gameState.player[i].betAmount;
-							chipAmounts.setPlayerAmount(localIndex, amount);
+							if (chipAmounts.setPlayerAmount(localIndex, amount))
+								changed = true;
 						}
 					}
+					if (changed)
+						Music.oneChipSound();
 					
+						
 					// update pot amounts (should be redundant)
 					Host.GameSystem.Pot pot = gameState.potTotal;
 					for (int i=0; i<8; i++) {

@@ -15,6 +15,7 @@ public class Poker {
 			
 			AppGameContainer app = new AppGameContainer(new GUI("Poker"));
 			app.setDisplayMode(1000, 600, false);
+			app.setIcon(GUI.RESOURCES_PATH+"chip30.png");
 			//app.setVSync(true);
 			app.setTargetFrameRate(60);
 			app.start();

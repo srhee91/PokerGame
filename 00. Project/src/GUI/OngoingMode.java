@@ -105,6 +105,7 @@ public class OngoingMode extends TableMode {
 	private String[] winnerLabels;
 	private int[] potLeftovers;
 
+
 	
 	@Override
 	public void init(GameContainer container, final StateBasedGame game)throws SlickException {
@@ -209,7 +210,6 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent arg0) {	// ok action
 						// close popup, re-enable gui, erase raise amount
-						raiseTextField.setText("");
 						setButtonsEnable(true);
 					}
 				});
@@ -303,7 +303,6 @@ public class OngoingMode extends TableMode {
 									
 									if (raiseAmount < raiseToAtLeast) {
 										// must raise to above the highest bet
-										raiseTextField.setText("");
 										setButtonsEnable(false);
 										popupRaiseInvalid.setMessageString(betOrRaise
 												? "Must bet at least $"+raiseToAtLeast
@@ -311,7 +310,6 @@ public class OngoingMode extends TableMode {
 										popupRaiseInvalid.setVisible(raiseButton);
 									} else if (raiseAmount >= playerTotalPlusBet) {
 										// assume this means all in, show all in popup 
-										raiseTextField.setText(""+playerTotalPlusBet);
 										setButtonsEnable(false);
 										popupAllInConfirm.setVisible(raiseButton);
 									} else {
@@ -342,9 +340,6 @@ public class OngoingMode extends TableMode {
 					@Override
 					public void componentActivated(AbstractComponent source) {
 						// show all in popup
-						Player player = gameState.player[GUI.playerIndexInHost];
-						int playerTotalPlusBet = player.totalChip + player.betAmount;
-						raiseTextField.setText(""+playerTotalPlusBet);
 						setButtonsEnable(false);
 						popupAllInConfirm.setVisible(allInButton);
 					}
@@ -405,6 +400,7 @@ public class OngoingMode extends TableMode {
 			checkOrCall = true;
 			betOrRaise = true;
 			
+			
 			// reset cards
 			cards.resetCards();
 			
@@ -454,14 +450,16 @@ public class OngoingMode extends TableMode {
 				
 				if (receivedGameState.flopState==4) {
 					postHandGameState = receivedGameState;
-					raiseTextField.setText("");
+					setButtonsEnable(false);
 					lastFlopState = 4;	// need to do this to ensure proper card actions for next hand
 					return;
 				}
 				
 				
 				gameState = receivedGameState;
-				raiseTextField.setText(""+(gameState.highestBet+minimumRaise));
+				
+				
+				
 				
 				/*			
 				// DEBUG: print game state
@@ -517,8 +515,10 @@ public class OngoingMode extends TableMode {
 					// disable cmh now so no further gameStates are received
 					GUI.cmh.close();
 					GUI.cmh = null;
+					return;
 				}
 				
+								
 				
 				
 				// update call/check and bet/raise flags
@@ -854,42 +854,51 @@ public class OngoingMode extends TableMode {
 	
 	protected void setButtonsEnable(boolean enable) {
 		
+		// enable/disable leave button
 		leaveButton.setEnable(enable);
 		
+		Player player = null;
+		int highestBetPlusMinRaise = -1;
+		int playerTotalPlusBet = -1;
+		
+		
+		if (gameState != null) {
+			
+			player = gameState.player[GUI.playerIndexInHost];
+			highestBetPlusMinRaise = gameState.highestBet + minimumRaise;
+			playerTotalPlusBet = player.totalChip + player.betAmount;
+			
+			// update raiseTextField text
+			raiseTextField.setText(Integer.toString(
+					Math.min(highestBetPlusMinRaise, playerTotalPlusBet)));
+		} else {
+			raiseTextField.setText("");
+		}
+		
+		
+		// enable/disable mainplayer buttons
 		if (!enable || gameState==null || gameState.whoseTurn!=GUI.playerIndexInHost) {
 			checkButton.setEnable(false);
 			foldButton.setEnable(false);
 			raiseButton.setEnable(false);
 			allInButton.setEnable(false);
 			raiseTextField.setEnable(false);
+			
 		} else {
 			
-			Player player = gameState.player[GUI.playerIndexInHost];
-			int playerTotalPlusBet = player.totalChip + player.betAmount;
-			
-			checkButton.setEnable(true);
+			// fold and all in are always allowed
 			foldButton.setEnable(true);
-			raiseButton.setEnable(true);
 			allInButton.setEnable(true);
-			raiseTextField.setEnable(true);
-			raiseTextField.setText(""+(gameState.highestBet+minimumRaise));
 			
+			// enable check button if player has more than highest bet
+			// i.e. player can check without going all in
+			checkButton.setEnable(playerTotalPlusBet > gameState.highestBet);
 			
-			if (enable && gameState!=null) {
-				
-				// if current bet is more than what I have, the only options are all in and fold
-				if (gameState.highestBet >= playerTotalPlusBet) {
-					checkButton.setEnable(false);
-					raiseTextField.setText("");
-					raiseButton.setEnable(false);
-				}
-				// if I have enough to call but not to raise by at least the minimum,
-				// my options are call, all in, and fold
-				else if (gameState.highestBet + minimumRaise >= playerTotalPlusBet) {
-					raiseTextField.setText("");
-					raiseButton.setEnable(false);
-				}
-			}
+			// enable raise button and field if player has more than highestBetPlusMinRaise
+			// i.e. player can bet/raise without going all in
+			boolean raiseEnable = playerTotalPlusBet > highestBetPlusMinRaise;
+			raiseButton.setEnable(raiseEnable);
+			raiseTextField.setEnable(raiseEnable);
 		}
 	}
 	

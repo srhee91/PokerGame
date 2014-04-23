@@ -45,7 +45,6 @@ public class RaiseTextField extends MyTextField{
 	public void setEnable(boolean enable) {
 		
 		if (enable && !isAcceptingInput()) {
-			setText("");
 			setAcceptingInput(true);
 			setBackgroundColor(new Color(1.0f, 1.0f, 1.0f, 0.2f));
 			setTextColor(Color.white);

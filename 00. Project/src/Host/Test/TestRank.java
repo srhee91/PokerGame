@@ -226,6 +226,9 @@ public class TestRank {
 		//i i+1 i+3 i+4 i+5
 		System.out.println("i i+1 i+3 i+4 i+5");
 		for(int k=1;k<3;k++){
+			if(k==2){
+				System.out.println("i i+2 i+3 i+4 i+5");
+			}
 			for (int i = 3; i < 10; i++) {
 				if (i != 2) {
 					temp[0] = new Card(1, i);
@@ -269,6 +272,8 @@ public class TestRank {
 				}
 			}
 		}
+		
+		
 		
 		//i i+2 i+4 i+6 i+8
 		System.out.println("i i+2 i+4 i+6 i+8");

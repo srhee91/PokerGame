@@ -453,12 +453,14 @@ public class OngoingMode extends TableMode {
 				
 				if (receivedGameState.flopState==4) {
 					postHandGameState = receivedGameState;
+					raiseTextField.setText("");
 					lastFlopState = 4;	// need to do this to ensure proper card actions for next hand
 					return;
 				}
 				
 				
 				gameState = receivedGameState;
+				raiseTextField.setText(""+(gameState.highestBet+minimumRaise));
 				
 				/*			
 				// DEBUG: print game state

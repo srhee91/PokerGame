@@ -1,1 +1,1 @@
-C:\Windows\System32\javaw.exe -Djava.library.path=native -jar Game.jar &
+java -Djava.library.path=native -jar Game.jar &

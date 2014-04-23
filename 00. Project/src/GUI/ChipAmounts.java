@@ -68,7 +68,6 @@ public class ChipAmounts {
 		private void start() {
 			started = true;
 			source.amount -= amount;
-			Music.ChipSound();
 		}
 		private void update(double delta) {
 			// update screen position
@@ -80,7 +79,7 @@ public class ChipAmounts {
 				if (dDist >= distToDest) {
 					destination.amount += amount;
 					completed = true;
-					Music.ChipSound();
+					Music.manyChipSound();
 				}
 				else {
 					currX += dX / distToDest * dDist;
@@ -186,8 +185,11 @@ public class ChipAmounts {
 		sendQueue = new ArrayDeque<QueuedSend>();
 	}
 	
-	public void setPlayerAmount(int player, int amount) {
+	// return true if amount changed
+	public boolean setPlayerAmount(int player, int amount) {
+		int oldAmount = playerAmounts[player].amount;
 		playerAmounts[player].setAmount(amount);
+		return (oldAmount!=amount);
 	}
 	
 	public void setPotAmount(int pot, int amount) {

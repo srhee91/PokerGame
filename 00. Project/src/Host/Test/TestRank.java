@@ -225,16 +225,18 @@ public class TestRank {
 		
 		//i i+1 i+3 i+4 i+5
 		System.out.println("i i+1 i+3 i+4 i+5");
-		for (int i = 3; i < 10; i++) {
-			if (i != 2) {
-				temp[0] = new Card(1, i);
-				temp[1] = new Card(2, i + 1);
-				temp[2] = new Card(3, i + 3);
-				temp[3] = new Card(4, i + 4);
-				temp[4] = new Card(1, i + 5);
-				temp[5] = new Card(2, 0);
-				temp[6] = new Card(3, 2);
-				calrank.findBestHand(temp);
+		for(int k=1;k<3;k++){
+			for (int i = 3; i < 10; i++) {
+				if (i != 2) {
+					temp[0] = new Card(1, i);
+					temp[1] = new Card(2, i + k);
+					temp[2] = new Card(3, i + k+2);
+					temp[3] = new Card(4, i + k+3);
+					temp[4] = new Card(1, i + k+4);
+					temp[5] = new Card(2, 0);
+					temp[6] = new Card(3, 2);
+					calrank.findBestHand(temp);
+				}
 			}
 		}
 		//i i+2 i+3 i+4 i+5
@@ -287,16 +289,15 @@ public class TestRank {
 
 	public static void main(String[] args) {
 		Rank obj1 = new Rank();
-		System.out
-				.println("ROYAL_STRAIGHT_FLUSH(9) STRAIGHT_FLUSH(8) FOURCARD(7) FULLHOUSE(6) FLUSH(5) STRAIGHT(4) THREEPAIR(3) TWOPAIR(2) ONEPAIR(1) NOPAIR(0)");
-		//straightflush_check(obj1);
-		//fullhouse_check(obj1);
-		//fourcard_check(obj1);
-		//straight_check(obj1);
-		//flush_check(obj1);
-		//threeofkind_check(obj1);
-		//twopair_check(obj1);
-		//onepair_check(obj1);
+		System.out.println("ROYAL_STRAIGHT_FLUSH(9) STRAIGHT_FLUSH(8) FOURCARD(7) FULLHOUSE(6) FLUSH(5) STRAIGHT(4) THREEPAIR(3) TWOPAIR(2) ONEPAIR(1) NOPAIR(0)");
+		straightflush_check(obj1);
+		fullhouse_check(obj1);
+		fourcard_check(obj1);
+		straight_check(obj1);
+		flush_check(obj1);
+		threeofkind_check(obj1);
+		twopair_check(obj1);
+		onepair_check(obj1);
 		highcard_check(obj1);
 
 	}

@@ -10,13 +10,23 @@ import sun.audio.AudioStream;
 
 
 public abstract class Music {
-	static AudioStream ring=null;
-	static FileInputStream file=null;
 	
-	public static void ChipSound(){
+	public static void oneChipSound(){
 		AudioStream cardSound=null;
 		try {
-			cardSound=new AudioStream(new FileInputStream(new File("chips.wav")));
+			cardSound=new AudioStream(new FileInputStream(new File("OneChip.wav")));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		AudioPlayer.player.start(cardSound);
+	}
+	
+	public static void manyChipSound(){
+		AudioStream cardSound=null;
+		try {
+			cardSound=new AudioStream(new FileInputStream(new File("ManyChips.wav")));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -47,44 +57,5 @@ public abstract class Music {
 			e.printStackTrace();
 		} 
 		AudioPlayer.player.start(cardSound);
-	}
-	
-	public static void start(){
-		try{
-			file=new FileInputStream(new File("whole.wav"));
-			ring=new AudioStream(file);  
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		AudioPlayer.player.start(ring);
-	}
-	
-	public static void stop(){
-		try {
-			file.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	public static void main(String[] args){
-		ChipSound();
-	}
-	
-}
-
-class musics extends Thread{
-	public void run(){
-		int time=3*60000+34000;
-		while(true){
-			Music.start();
-			try {
-				Thread.sleep(time);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			Music.stop();	
-		}
 	}
 }

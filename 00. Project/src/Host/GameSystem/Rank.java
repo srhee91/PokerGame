@@ -205,7 +205,7 @@ public class Rank {
 			highHand = noPair(cards);
 			final_rank = 0;
 		}
-		System.out.print("rank:"+final_rank+" | Five Cards : ");
+		System.out.print("rank:"+final_rank+" | Five Cards: ");
 		printCard(highHand);
 		
 		return highHand;

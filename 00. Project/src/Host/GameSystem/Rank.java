@@ -205,8 +205,33 @@ public class Rank {
 			highHand = noPair(cards);
 			final_rank = 0;
 		}
-		System.out.println("rank:"+final_rank+"  "+Arrays.toString(highHand));
+		System.out.print("rank:"+final_rank+" | Five Cards : ");
+		printCard(highHand);
+		
 		return highHand;
+	}
+	
+	private void printCard(int[]highHand){
+			System.out.print("[ ");
+		for(int i=0;i<5;i++){
+			if(highHand[i]==11){
+				System.out.print("J");
+			}else if(highHand[i]==12){
+				System.out.print("Q");
+			}else if(highHand[i]==13){
+				System.out.print("K");
+			}else if(highHand[i]==14){
+				System.out.print("A");
+			}else if(highHand[i]==1){
+				System.out.print("A");
+			}else{
+				System.out.print(highHand[i]);
+			}
+			if(i!=4){
+				System.out.print(", ");
+			}
+		}
+			System.out.println(" ]");
 	}
 
 	private int[] isRoyalStraightFlush(Card cards[]) {

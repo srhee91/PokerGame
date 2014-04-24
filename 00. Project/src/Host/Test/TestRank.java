@@ -224,10 +224,10 @@ public class TestRank {
 		}
 		
 		//i i+1 i+3 i+4 i+5
-		System.out.println("i i+1 i+3 i+4 i+5");
+		//System.out.println("i i+1 i+3 i+4 i+5");
 		for(int k=1;k<3;k++){
 			if(k==2){
-				System.out.println("i i+2 i+3 i+4 i+5");
+				//System.out.println("i i+2 i+3 i+4 i+5");
 			}
 			for (int i = 3; i < 10; i++) {
 				if (i != 2) {
@@ -243,7 +243,7 @@ public class TestRank {
 			}
 		}
 		//i i+2 i+3 i+4 i+5
-		System.out.println("i i+2 i+3 i+4 i+5");
+		//System.out.println("i i+2 i+3 i+4 i+5");
 		for (int i = 3; i < 10; i++) {
 			if (i != 2) {
 				temp[0] = new Card(1, i);
@@ -258,7 +258,7 @@ public class TestRank {
 		}
 		
 		for(int k=3;k<9;k++){
-			System.out.println("i i+"+k+" i+"+(k+1)+" i+"+(k+2)+" i+"+(k+3));
+			//System.out.println("i i+"+k+" i+"+(k+1)+" i+"+(k+2)+" i+"+(k+3));
 			for (int i = 1; i < 12-k; i++) {
 				if (i != 2) {
 					temp[0] = new Card(1, i);
@@ -276,7 +276,7 @@ public class TestRank {
 		
 		
 		//i i+2 i+4 i+6 i+8
-		System.out.println("i i+2 i+4 i+6 i+8");
+		//System.out.println("i i+2 i+4 i+6 i+8");
 		for (int i = 1; i < 7; i++) {
 			if (i != 2) {
 				temp[0] = new Card(1, i);
@@ -296,14 +296,23 @@ public class TestRank {
 		Rank obj1 = new Rank();
 		System.out.println("ROYAL_STRAIGHT_FLUSH(9) STRAIGHT_FLUSH(8) FOURCARD(7) FULLHOUSE(6) FLUSH(5) STRAIGHT(4) THREEPAIR(3) TWOPAIR(2) ONEPAIR(1) NOPAIR(0)");
 		straightflush_check(obj1);
-		fullhouse_check(obj1);
+		System.out.println("=============================================[next rank]====================================================================");
 		fourcard_check(obj1);
+		System.out.println("=============================================[next rank]====================================================================");
+		fullhouse_check(obj1);
+		System.out.println("=============================================[next rank]====================================================================");
 		straight_check(obj1);
+		System.out.println("=============================================[next rank]====================================================================");
 		flush_check(obj1);
+		System.out.println("=============================================[next rank]====================================================================");
 		threeofkind_check(obj1);
-		twopair_check(obj1);
+		//System.out.println("=============================================[next rank]====================================================================");
+		//twopair_check(obj1);
+		System.out.println("=============================================[next rank]====================================================================");
 		onepair_check(obj1);
+		System.out.println("=============================================[next rank]====================================================================");
 		highcard_check(obj1);
+		System.out.println("=============================================[   end   ]====================================================================");
 
 	}
 }

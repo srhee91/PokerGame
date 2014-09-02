@@ -10,7 +10,7 @@ import GUI.GUI;
 public class Poker {
 	
 	public static void main(String[] args) throws Exception {
-		//new musics().start();
+		//new Music().start();
 		try {
 			
 			AppGameContainer app = new AppGameContainer(new GUI("Poker"));

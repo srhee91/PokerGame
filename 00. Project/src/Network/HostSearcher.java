@@ -38,7 +38,7 @@ public abstract class HostSearcher {
 	}
 	
 	protected static int byteToInt(byte b) {
-		if (b>0) 
+		if (b>=0) 
 			return (int)b;
 		else
 			return (int)b+256;

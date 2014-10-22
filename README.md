@@ -1,9 +1,8 @@
 PokerGame
 =========
 
-Link for demo - http://youtu.be/jvgt26JQcTE
-
 Team 3 Sang Rhee, Yixin Wang, Hanchen Li, Yuying Wang, Boheon Jeong, Somi choi
+Link for demo - http://youtu.be/jvgt26JQcTE
 
 A semester-long project for CS307 Software Engineering
 
